@@ -17,6 +17,10 @@ Here are a couple of additional resources that have been provided:
   - [HELM Monomer Editor Conceptual Wireframes.pdf](https://drive.google.com/file/d/0BybDwk56P1wFdVlDLXFmeDB5Zkk/view?usp=sharing)
   - [HELM Base Website](http://www.pistoiaalliance.org/projects/active-projects/hierarchical-editing-language-for-macromolecules-helm/)
 
+Pistoia HELM Wiki: 
+
+  - [HELM Wiki](https://pistoiaalliance.atlassian.net/wiki/display/PUB/HELM+Resources)
+
 CSCI-E 599-specific resources:
 
   - [HELM Project Page](https://canvas.harvard.edu/courses/8360/pages/helm-project)
