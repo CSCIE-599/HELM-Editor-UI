@@ -21,6 +21,10 @@ Pistoia HELM Wiki:
 
   - [HELM Wiki](https://pistoiaalliance.atlassian.net/wiki/display/PUB/HELM+Resources)
 
+Link to existing HELM 2.0 Toolkit implementation:
+
+  - [HELM 2.0 Toolkit initial implementation](https://github.com/MarkusWeisser)
+
 CSCI-E 599-specific resources:
 
   - [HELM Project Page](https://canvas.harvard.edu/courses/8360/pages/helm-project)
