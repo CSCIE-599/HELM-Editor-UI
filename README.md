@@ -21,9 +21,14 @@ Pistoia HELM Wiki:
 
   - [HELM Wiki](https://pistoiaalliance.atlassian.net/wiki/display/PUB/HELM+Resources)
 
+Updated HELM 2.0 Editor Wireframes:
+
+  - [Updated HELM Wireframes](https://drive.google.com/file/d/0BzWuaNlFrlmkaEQ1cFpCYjRhMnhXdzRndFdZbTJ6MkR0dlFN/view?usp=sharing)
+
 Link to existing HELM 2.0 Toolkit implementation:
 
   - [HELM 2.0 Toolkit initial implementation](https://github.com/MarkusWeisser)
+  - [Hosted version of above toolkit](http://104.236.250.11:8080/WebService/HowToUse.html)
 
 CSCI-E 599-specific resources:
 
@@ -33,8 +38,8 @@ CSCI-E 599-specific resources:
 
   - [Justin Sanford](https://github.com/jsanford8)
   - [Thankam Girija](https://github.com/thankam)
-  - [Stephanie Dube]()
-  - [Simili Abhilash]()
-  - [Sarah Leinecke]()
-  - [Chinedu Okongwu]()
+  - [Stephanie Dube](https://github.com/stephdube)
+  - [Simili Abhilash](https://github.com/sabhilash)
+  - [Sarah Leinecke](https://github.com/SarahL88)
+  - [Chinedu Okongwu](https://github.com/cokongwu)
   
