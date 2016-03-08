@@ -4,6 +4,8 @@ This project is an undertaking by students in CSCI-E 599 to port the HELM Editor
 
 ## helmeditor2 application
 
+[![Build Status](https://travis-ci.org/CSCIE-599/HELM-Editor-UI.svg?branch=master)](https://travis-ci.org/CSCIE-599/HELM-Editor-UI)
+
 This project was generated with [yo angular generator](https://github.com/yeoman/generator-angular) version 0.15.1.
 
 ### Setting up development environment
