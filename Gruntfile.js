@@ -463,6 +463,16 @@ module.exports = function (grunt) {
     'karma:unit'
   ]);
 
+  // task for running continous unit tests in devlopment
+  grunt.registerTask('test-continuous', [
+    'clean:server',
+    'wiredep',
+    'concurrent:test',
+    'postcss',
+    'connect:test',
+    'karma:continuous'
+  ]);
+
   grunt.registerTask('build', [
     'clean:dist',
     'wiredep',
