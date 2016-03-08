@@ -3,7 +3,9 @@ node_js:
   - "4.3.2"
 
 before_script:
-  - echo "before_script"
+  - echo "installing bower"
+  - bower install
 
 script:
-  - echo "script"
+  - echo "running tests"
+  - grunt test
