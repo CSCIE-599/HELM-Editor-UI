@@ -42,4 +42,16 @@ CSCI-E 599-specific resources:
   - [Simili Abhilash](https://github.com/sabhilash)
   - [Sarah Leinecke](https://github.com/SarahL88)
   - [Chinedu Okongwu](https://github.com/cokongwu)
+
+### helmeditor2 application
   
+This project is generated with [yo angular generator](https://github.com/yeoman/generator-angular)
+version 0.15.1.
+
+## Build & development
+
+Run `grunt` for building and `grunt serve` for preview.
+
+## Testing
+
+Running `grunt test` will run the unit tests with karma.
