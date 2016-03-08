@@ -13,4 +13,4 @@ before_script:
 
 script:
   - echo "running tests"
-  - node_modules/.bin/grunt test
+  - grunt test
