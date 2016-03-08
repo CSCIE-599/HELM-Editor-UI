@@ -1,0 +1,16 @@
+language: node_js
+node_js:
+  - "4.3.2"
+cache:
+  directories:
+  - node_modules
+  - bower_components
+
+before_script:
+  - npm install -g grunt-cli
+  - npm install -g bower
+  - bower install
+
+script:
+  - echo "running tests"
+  - grunt test
