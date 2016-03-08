@@ -419,9 +419,16 @@ module.exports = function (grunt) {
 
     // Test settings
     karma: {
+      // discrete unit tests
       unit: {
         configFile: 'test/karma.conf.js',
         singleRun: true
+      },
+
+      // continuous unit tests
+      continuous: {
+        configFile: 'test/karma.conf.js',
+        singleRun: false
       }
     }
   });
@@ -453,7 +460,7 @@ module.exports = function (grunt) {
     'concurrent:test',
     'postcss',
     'connect:test',
-    'karma'
+    'karma:unit'
   ]);
 
   grunt.registerTask('build', [
