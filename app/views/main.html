@@ -1,13 +1,14 @@
 <p>This is the main HELM editor view.</p>
+
 <div ng-controller="MainCtrl">
   	<div>
 	  <form>
 	    <table>
 	      <tr>
 	        <td rowspan="3"></td>
-	        <td><label>Enter sequence</label></td> <td align="right"><select id="type">
-	          <option value="PEPTIDE" selected>PEPTIDE</option>
-	          <option value="RNA">RNA/DNA</option>
+	        <td><label>Enter sequence</label></td> <td align="right">
+	        <select ng-model="seletedOption" 
+	        	ng-options="option as option.label for option in monomerTypes">
 	        </select></td>
 	      </tr>
 	      <tr>
