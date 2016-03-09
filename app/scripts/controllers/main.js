@@ -7,6 +7,7 @@
  * # MainCtrl
  * Controller of the helmeditor2App
  */
+ 
 angular.module('helmeditor2App')
   .controller('MainCtrl', function ($scope, $http) {
     this.awesomeThings = [
@@ -15,11 +16,17 @@ angular.module('helmeditor2App')
       'Karma'
     ];
 
-  var baseUrl = 'http://104.236.250.11:8080/WebService/service/Sequence/';
-	var functUrl = baseUrl + $("#type").val() + '/';
+    $scope.monomerTypes = [
+          { value: 'PEPTIDE', label:'PEPTIDE' },
+          { value: 'RNA', label:'RNA/DNA' }
+    ];
+    $scope.seletedOption = $scope.monomerTypes[0];
 
+    var baseUrl = 'http://104.236.250.11:8080/WebService/service/Sequence/';
+	
 	$scope.getResult = function() {
-	   	var fullUrl = functUrl + $scope.input;
+	   	var functUrl = baseUrl + $scope.seletedOption.value + '/';
+		var fullUrl = functUrl + $scope.input;
 	  	console.log(fullUrl);
 
 	  	$http.get(fullUrl)
