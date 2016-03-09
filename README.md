@@ -28,27 +28,30 @@ The following steps must be done in order to set up your development environment
     ```
 3. If desired (Yeoman was used to create the scaffolding), install Yeoman (yeoman.io)
 
-
     ```
     $ sudo npm install -g yo
     ```
 4. Install bower
 
-
     ```
     $ sudo npm install -g bower
     ```
-5. Install node dependencies
+5. Install grun
+
+    ```
+    $ sudo npm install -g grunt-cli
+    ```
+6. Install node dependencies
 
     ```
     $ npm install (you may need to run this with sudo if you get an EACCESS error)
     ```
-6. Install bower dependencies
+7. Install bower dependencies
 
     ```
     $ bower install
     ```
-7. Grunt targets
+8. Grunt targets
 
     ```
     $ grunt - run all tests, build, minify, and distribute
