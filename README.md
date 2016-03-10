@@ -66,6 +66,22 @@ The following steps must be done in order to set up your development environment
     $ grunt test-continuous - run Karma continuously, testing with every file that's saved
     ```
 
+### A note on Yeoman
+
+Yeoman was used to generate the scaffolding for the application, which is how all of the folders and files have been created. It is highly suggested that for modifications and additions to components of the application (views, controllers, factories, etc) you use Yeoman. For instance, the following commands might be useful (they should all be run from within the root folder of the application):
+
+  - Create a new view:
+
+    ```
+    $ yo angular:view <view name>
+    ```
+  - Create a new factory:
+
+    ```
+    $ yo angular:factory <factory name>
+    ```
+  - Full information on the angular generator can be found here: [Yeoman generator:angular](https://github.com/yeoman/generator-angular)
+
 ## Resources
 
 Current source code can be found here: [Pistoia Alliance GitHub](https://github.com/PistoiaHELM).
