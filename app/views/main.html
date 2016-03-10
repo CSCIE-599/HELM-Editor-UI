@@ -1,5 +1,4 @@
 <p>This is the main HELM editor view.</p>
-
 <div ng-controller="MainCtrl">
   	<div>
 	  <form>
@@ -7,23 +6,23 @@
 	      <tr>
 	        <td rowspan="3"></td>
 	        <td><label>Enter sequence</label></td> <td align="right">
-	        <select ng-model="seletedOption" 
-	        	ng-options="option as option.label for option in monomerTypes">
+	        <select ng-model="polymerType" 
+	        	ng-options="option as option.label for option in polyTypes">
 	        </select></td>
 	      </tr>
 	      <tr>
-	        <td colspan="2"><textarea ng-model="input" id="input" name="Query" cols="80" rows="3"></textarea></td>
+	        <td colspan="2"><textarea ng-model="inputSequence" id="input" name="Query" cols="80" rows="3"></textarea></td>
 	      </tr>
-	      <tr><td align="right" colspan="2" > <input id="reset" type="reset" value="Reset"/>
-	      <button ng-click="getResult()">Get Result</button>
-	          </td></tr>
-	          <tr><td colspan="3" align="center"><div id="outputcontainer">
-	            <label><output id="output"></output> </label></div></td>
-	      </tr>
+	      <tr><td align="right" colspan="2" >
+	      	<input id="reset" type="reset" value="Reset"/>
+			<button ng-click="getHelmNotation(polymerType, inputSequence)">Get HELM Notation</button>
+			<button ng-click="getHelmImage(inputSequence)">Get HELM Image</button>
+			</td></tr>
 	    </table>
 	    </form>
 	  </div>
 	<div>
 		<p>Output: {{result.HELMNotation}}</p>
+		<p><img ng-src="{{result}}"/></p>
 	</div>
 </div>
