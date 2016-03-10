@@ -31,27 +31,32 @@ The following steps must be done in order to set up your development environment
     ```
     $ sudo npm install -g yo
     ```
-4. Install bower
+4. Also install the generators that we need
+
+    ```
+    $ sudo npm install -g generator-karma generator-angular
+    ```
+5. Install bower
 
     ```
     $ sudo npm install -g bower
     ```
-5. Install grun
+6. Install grun
 
     ```
     $ sudo npm install -g grunt-cli
     ```
-6. Install node dependencies
+7. Install node dependencies
 
     ```
     $ npm install (you may need to run this with sudo if you get an EACCESS error)
     ```
-7. Install bower dependencies
+8. Install bower dependencies
 
     ```
     $ bower install
     ```
-8. Grunt targets
+9. Grunt targets
 
     ```
     $ grunt - run all tests, build, minify, and distribute
