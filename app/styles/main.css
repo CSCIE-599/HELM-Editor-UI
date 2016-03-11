@@ -7,7 +7,7 @@
 
 body {
   padding: 0;
-}
+ }
 
 /* Everything but the jumbotron gets side spacing for mobile first views */
 .header,
@@ -80,4 +80,40 @@ body {
   .jumbotron {
     border-bottom: 0;
   }
+
+.stdNucleotideBtnA {
+  color : green;
 }
+
+.stdNucleotideBtnC {
+  color : red;
+
+}
+
+
+.stdNucleotideBtnG {
+  color : orange;
+
+}
+
+.stdNucleotideBtnU, .stdNucleotideBtnT {
+  color : cyan;
+}
+
+
+.stdNucleotideBtnA, .stdNucleotideBtnC, .stdNucleotideBtnG, .stdNucleotideBtnU, .stdNucleotideBtnT{
+  font-weight: bolder;
+  font-size: 1.5em;
+  background-color: Transparent;
+  background-repeat:no-repeat;
+  border: none;
+  cursor:pointer;
+  overflow: hidden;
+  outline:none;
+
+}
+
+
+
+
+
