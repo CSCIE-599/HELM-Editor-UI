@@ -31,27 +31,32 @@ The following steps must be done in order to set up your development environment
     ```
     $ sudo npm install -g yo
     ```
-4. Install bower
+4. Also install the generators that we need
+
+    ```
+    $ sudo npm install -g generator-karma generator-angular
+    ```
+5. Install bower
 
     ```
     $ sudo npm install -g bower
     ```
-5. Install grun
+6. Install grun
 
     ```
     $ sudo npm install -g grunt-cli
     ```
-6. Install node dependencies
+7. Install node dependencies
 
     ```
     $ npm install (you may need to run this with sudo if you get an EACCESS error)
     ```
-7. Install bower dependencies
+8. Install bower dependencies
 
     ```
     $ bower install
     ```
-8. Grunt targets
+9. Grunt targets
 
     ```
     $ grunt - run all tests, build, minify, and distribute
@@ -60,6 +65,22 @@ The following steps must be done in order to set up your development environment
     $ grunt test - run Karma unit tests one time
     $ grunt test-continuous - run Karma continuously, testing with every file that's saved
     ```
+
+### A note on Yeoman
+
+Yeoman was used to generate the scaffolding for the application, which is how all of the folders and files have been created. It is highly suggested that for modifications and additions to components of the application (views, controllers, factories, etc) you use Yeoman. For instance, the following commands might be useful (they should all be run from within the root folder of the application):
+
+  - Create a new view:
+
+    ```
+    $ yo angular:view <view name>
+    ```
+  - Create a new factory:
+
+    ```
+    $ yo angular:factory <factory name>
+    ```
+  - Full information on the angular generator can be found here: [Yeoman generator:angular](https://github.com/yeoman/generator-angular)
 
 ## Resources
 
