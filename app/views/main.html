@@ -1,24 +1,54 @@
 <p>This is the main HELM editor view.</p>
 
-<button class="stdNucleotideBtnA"> A </button>
 
-<button class="stdNucleotideBtnC"> C </button>
+<ul class="nav nav-tabs">
+  <li class="active"><a data-toggle="tab" href="#home">Nucleic Acid</a></li>
+  <li><a data-toggle="tab" href="#menu1">Peptide</a></li>
+  <li><a data-toggle="tab" href="#menu2">Chemical Modifier</a></li>
+</ul>
 
-<button class="stdNucleotideBtnG"> G </button>
+<div class="tab-content">
+  <div id="home" class="tab-pane fade in active">
 
-<button class="stdNucleotideBtnT"> T </button>
+<p> 
+<button class="stdNucleotideBtnA" ng-click="addNucleicAcid('A', 'green')"> A </button>
+<button class="stdNucleotideBtnC" ng-click="addNucleicAcid('C', 'red')"> C </button>
+<button class="stdNucleotideBtnG" ng-click="addNucleicAcid('G', 'orange')"> G </button>
+<button class="stdNucleotideBtnT" ng-click="addNucleicAcid('T', 'cyan')"> T </button>
+<button class="stdNucleotideBtnU" ng-click="addNucleicAcid('U', 'cyan')"> U </button></p>
+  </div>
+  <div id="menu1" class="tab-pane fade">
 
-<button class="stdNucleotideBtnU"> U </button>
+    <p> </p>
+  </div>
+  <div id="menu2" class="tab-pane fade">
 
-<!--TO-DO: Move to separate js file-->
- <!-- canvas begin -->
-<svg id="canvas" width="100%" height="300" xmlns="http://www.w3.org/2000/svg">
-  <defs>
-    <pattern id="grid" width="80" height="80" patternUnits="userSpaceOnUse">
-         <path d="M 80 0 L 0 0 0 80" fill="none" stroke="gray" stroke-width="0.3" />
-	</pattern>
-  </defs>
-<rect width="100%" height="100%" fill="url(#grid)" stroke="red"/>
-</svg>
-<!-- canvas end -->
+<p>
+  <!-- <button class="stdNucleotideBtnA">  MCc </button>
+  <button class="stdNucleotideBtnC"> Az </button>
+  <button class="stdNucleotideBtnG"> hxy </button> -->
+</p>
+</div>
+</div>
 
+
+<div style="width: 80%; height:80%;overflow: auto;">
+        <!-- <div style="width: 600px; height:400px; float: left;"> 
+        <textarea 
+          style="width: 100px; height:100px"
+          chart-json-edit
+          view-model="chartViewModel"
+          >
+        </textarea>
+       
+      </div> -->
+        <div style="margin-left: 20px;">
+       
+        <!--
+        This custom element defines the helm canvas.
+        -->
+          <helm-canvas style="margin: 5px; width: 400px; height:300px;"
+              chart="chartViewModel" >
+          </helm-canvas> 
+        </div>
+    </div>
