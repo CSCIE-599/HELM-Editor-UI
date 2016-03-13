@@ -99,7 +99,6 @@ var helmnotation = {
 		//	rotation 
 		this.transform = 'rotate(0 0 0)';//default is no rotation
 
-		//
 		// Name of the node.
 		this.name = function () {
 			return this.data.name || "";
@@ -110,18 +109,15 @@ var helmnotation = {
 			return this.data.colour;
 		};
 
-		//
 		// X coordinate of the node.
 		this.x = function () { 
 			return this.data.x;
 		};
 
-		//
 		// Y coordinate of the node.
 		this.y = function () {
 			return this.data.y;
 		};
-
 
 		//
 		// X radius of the node.
@@ -137,25 +133,29 @@ var helmnotation = {
 
 		// Width of the node.
 		this.width = function () {
-			return helmnotation.nodeWidth;
+			return this.data.width;
 		}
 
 		// Height of the node.
 		this.height = function () {
-			return 40;
-
-			// var numConnectors =
-			// 	Math.max(
-			// 		this.inputConnectors.length, 
-			// 		this.outputConnectors.length);
-			// return helmnotation.computeConnectorY(numConnectors);
+			return this.data.height;
 		}
 
+	//rotation of the node
+		this.transformx = function () { 
+			return this.data.transformx;
+		};
 
 		//rotation of the node
-		this.transform = function () { 
-			return this.data.transform;
+		this.transformy = function () { 
+			return this.data.transformy;
 		};
+
+		//rotation of the node
+		this.transformDegree = function () { 
+			return this.data.transformDegree;
+		};
+
 
 		//
 		// Select the node.
@@ -232,24 +232,26 @@ var helmnotation = {
 		return nodesViewModel;
 	};
 
-	//
+//
 	// View model for a connection.
 	//
-	helmnotation.ConnectionViewModel = function (connectionDataModel, sourceConnector, destConnector) {
+	helmnotation.ConnectionViewModel= function (connectionDataModel, sourceNode, destNode) {
 
 		this.data = connectionDataModel;
-		this.source = sourceConnector;
-		this.dest = destConnector;
+		this.source = sourceNode;
+		this.dest = destNode;
+
+		var connectionOffset = 5;
 
 		// Set to true when the connection is selected.
 		this._selected = false;
 
 		this.sourceCoordX = function () { 
-			return this.source.parentNode().x() + this.source.x();
+			return ((sourceNode.width/2)+sourceNode.x);
 		};
 
 		this.sourceCoordY = function () { 
-			return this.source.parentNode().y() + this.source.y();
+			return sourceNode.y + sourceNode.height;
 		};
 
 		this.sourceCoord = function () {
@@ -259,20 +261,12 @@ var helmnotation = {
 			};
 		}
 
-		this.sourceTangentX = function () { 
-			return helmnotation.computeConnectionSourceTangentX(this.sourceCoord(), this.destCoord());
-		};
-
-		this.sourceTangentY = function () { 
-			return helmnotation.computeConnectionSourceTangentY(this.sourceCoord(), this.destCoord());
-		};
-
 		this.destCoordX = function () { 
-			return this.dest.parentNode().x() + this.dest.x();
+			return destNode.transformx;
 		};
 
 		this.destCoordY = function () { 
-			return this.dest.parentNode().y() + this.dest.y();
+			return (destNode.transformy-destNode.height/2)-connectionOffset;
 		};
 
 		this.destCoord = function () {
@@ -282,38 +276,22 @@ var helmnotation = {
 			};
 		}
 
-		this.destTangentX = function () { 
-			return helmnotation.computeConnectionDestTangentX(this.sourceCoord(), this.destCoord());
-		};
-
-		this.destTangentY = function () { 
-			return helmnotation.computeConnectionDestTangentY(this.sourceCoord(), this.destCoord());
-		};
-
-		//
 		// Select the connection.
-		//
 		this.select = function () {
 			this._selected = true;
 		};
 
-		//
 		// Deselect the connection.
-		//
 		this.deselect = function () {
 			this._selected = false;
 		};
 
-		//
 		// Toggle the selection state of the connection.
-		//
 		this.toggleSelected = function () {
 			this._selected = !this._selected;
 		};
 
-		//
 		// Returns true if the connection is selected.
-		//
 		this.selected = function () {
 			return this._selected;
 		};
@@ -454,56 +432,8 @@ var helmnotation = {
 		// Create a view-model for connections.
 		this.connections = this._createConnectionsViewModel(this.data.connections);
 
-		// Create a view model for a new connection.
-		this.createNewConnection = function (sourceConnector, destConnector) {
 
-			debug.assertObjectValid(sourceConnector);
-			debug.assertObjectValid(destConnector);
-
-			var connectionsDataModel = this.data.connections;
-			if (!connectionsDataModel) {
-				connectionsDataModel = this.data.connections = [];
-			}
-
-			var connectionsViewModel = this.connections;
-			if (!connectionsViewModel) {
-				connectionsViewModel = this.connections = [];
-			}
-
-			var sourceNode = sourceConnector.parentNode();
-			var sourceConnectorIndex = sourceNode.outputConnectors.indexOf(sourceConnector);
-			if (sourceConnectorIndex == -1) {
-				sourceConnectorIndex = sourceNode.inputConnectors.indexOf(sourceConnector);
-				if (sourceConnectorIndex == -1) {
-					throw new Error("Failed to find source connector within either inputConnectors or outputConnectors of source node.");
-				}
-			}
-
-			var destNode = destConnector.parentNode();
-			var destConnectorIndex = destNode.inputConnectors.indexOf(destConnector);
-			if (destConnectorIndex == -1) {
-				destConnectorIndex = destNode.outputConnectors.indexOf(destConnector);
-				if (destConnectorIndex == -1) {
-					throw new Error("Failed to find dest connector within inputConnectors or ouputConnectors of dest node.");
-				}
-			}
-
-			var connectionDataModel = {
-				source: {
-					nodeID: sourceNode.data.id,
-					connectorIndex: sourceConnectorIndex,
-				},
-				dest: {
-					nodeID: destNode.data.id,
-					connectorIndex: destConnectorIndex,
-				},
-			};
-			connectionsDataModel.push(connectionDataModel);
-
-			var connectionViewModel = new helmnotation.ConnectionViewModel(connectionDataModel, sourceConnector, destConnector);
-			connectionsViewModel.push(connectionViewModel);
-		};		
-
+		
 		// Add a node to the view model.
 		this.addNode = function (nodeDataModel) {
 			if (!this.data.nodes) {
@@ -516,6 +446,30 @@ var helmnotation = {
 			// Update the view model.
 			this.nodes.push(new helmnotation.NodeViewModel(nodeDataModel));		
 		};
+
+
+		// Create a view model for a new connection.
+		this.addConnection = function (sourceNode, destNode) {
+			var connectionsDataModel = this.data.connections;
+			var connectionsViewModel = this.connections;
+			
+			var connectionDataModel = {
+				source: {
+					nodeID: sourceNode.id,
+				},
+				dest: {
+					nodeID: destNode.id,
+				},
+			};
+			//push to connectionsdatamodel
+			connectionsDataModel.push(connectionDataModel);
+			
+			//push to connectionsviewmodel
+			var connectionViewModel = new helmnotation.ConnectionViewModel(connectionDataModel, sourceNode, destNode);
+			connectionsViewModel.push(connectionViewModel);
+
+		};
+
 
 		// Select all nodes and connections in the chart.
 		this.selectAll = function () {
