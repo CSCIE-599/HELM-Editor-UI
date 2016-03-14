@@ -88,6 +88,9 @@ app.controller('MainCtrl', ['$scope', function ($scope) {
 			rotateDegree = '45';
 		}
 
+		var nodeHeight = 30;
+		var nodeWidth = 30;
+
 		var newNodeDataModel = {
 			name: nodeName,
 			id: nextNodeID++,
@@ -96,10 +99,10 @@ app.controller('MainCtrl', ['$scope', function ($scope) {
 			rx:'4',
 			ry: '4',
 			colour: nodeColor,
-			height:40,
-			width:40,
-			transformx:xpos+20,
-			transformy:ypos+20,
+			height:nodeHeight,
+			width:nodeWidth,
+			transformx:xpos+nodeHeight/2,
+			transformy:ypos+nodeWidth/2,
 			transformDegree:rotateDegree,
 		};
 
