@@ -1,21 +1,21 @@
 <p>This is the main HELM editor view.</p>
 
-
+<!--
 <ul class="nav nav-tabs">
   <li class="active"><a data-toggle="tab" href="#home">Nucleic Acid</a></li>
   <li><a data-toggle="tab" href="#menu1">Peptide</a></li>
   <li><a data-toggle="tab" href="#menu2">Chemical Modifier</a></li>
 </ul>
 
-<div class="tab-content">
+ <div class="tab-content">
   <div id="home" class="tab-pane fade in active">
 
 <p> 
-<button class="stdNucleotideBtnA" ng-click="addNucleicAcid('A', 'green')"> A </button>
-<button class="stdNucleotideBtnC" ng-click="addNucleicAcid('C', 'red')"> C </button>
-<button class="stdNucleotideBtnG" ng-click="addNucleicAcid('G', 'orange')"> G </button>
-<button class="stdNucleotideBtnT" ng-click="addNucleicAcid('T', 'cyan')"> T </button>
-<button class="stdNucleotideBtnU" ng-click="addNucleicAcid('U', 'cyan')"> U </button></p>
+<button class="stdNucleotideBtnA" ng-click="addSequence('ACGTUAC', 'nucleotide')"> A </button>
+<button class="stdNucleotideBtnC" ng-click="addSequence('C', 'nucleotide')"> C </button>
+<button class="stdNucleotideBtnG" ng-click="addSequence('G', 'nucleotide')"> G </button>
+<button class="stdNucleotideBtnT" ng-click="addSequence('T', 'nucleotide')"> T </button>
+<button class="stdNucleotideBtnU" ng-click="addSequence('U', 'nucleotide')"> U </button></p>
   </div>
   <div id="menu1" class="tab-pane fade">
 
@@ -23,13 +23,34 @@
   </div>
   <div id="menu2" class="tab-pane fade">
 
-<p>
-  <!-- <button class="stdNucleotideBtnA">  MCc </button>
-  <button class="stdNucleotideBtnC"> Az </button>
-  <button class="stdNucleotideBtnG"> hxy </button> -->
-</p>
-</div>
-</div>
+  <p>
+    <button class="stdNucleotideBtnA">  MCc </button>
+    <button class="stdNucleotideBtnC"> Az </button>
+    <button class="stdNucleotideBtnG"> hxy </button> 
+  </p>
+  </div>
+
+</div> -->
+
+
+
+<table>
+    <tr>
+      <td rowspan="3"></td>
+      <td><label>Enter sequence</label></td> <td align="right">
+      <select ng-model="polymerType" 
+        ng-options="option as option.label for option in polyTypes">
+      </select></td>
+    </tr>
+    <tr>
+      <td colspan="2"><textarea ng-model="inputSequence" id="input" name="Query" cols="80" rows="3"></textarea></td>
+    </tr>
+    <tr><td align="right" colspan="2" >
+          <input id="reset" type="reset" value="Reset"/>
+          <button ng-click="getNotation(polymerType, inputSequence)">Load</button>
+        </td>
+    </tr>
+</table>
 
 
 <div style="width: 80%; height:80%;overflow: auto;">
@@ -47,8 +68,8 @@
         <!--
         This custom element defines the helm canvas.
         -->
-          <helm-canvas style="margin: 5px; width: 400px; height:300px;"
+          <helm-canvas style="margin: 5px; width: 500px; height:300px;"
               chart="chartViewModel" >
           </helm-canvas> 
         </div>
-    </div>
+</div>

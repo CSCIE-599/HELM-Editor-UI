@@ -16,6 +16,16 @@ app.controller('MainCtrl', ['$scope', function ($scope) {
       'AngularJS',
       'Karma'
     ];
+
+
+    /* Variables related to the prototype code in HTML */
+	$scope.polyTypes = [
+	  {	value: '', label:'--Select--' },
+	  { value: 'Nucleotide', label:'Nucleotide' },
+	  { value: 'Peptide', label:'Peptide' }
+	  
+	];
+	$scope.polymerType = $scope.polyTypes[0];
     
     // Code for the delete key.
 	var deleteKeyCode = 46;
@@ -119,11 +129,11 @@ app.controller('MainCtrl', ['$scope', function ($scope) {
 
 	// Add a new node to the chart.
 	//A simple nucleic acid has an attacher node, main monomer node and a connection
-	$scope.addNucleicAcid = function (nodeName,  nodeColor) {
+	$scope.addNucleicAcid = function (nodeName,  nodeColor, xPos, yPos) {
 	 	
 	 	//TO-DO Make the default position to be the middle of canvas, instead of hardcoding
-		var sourceNodeXpos = 40;
-		var sourceNodeYpos = 20;
+		var sourceNodeXpos = xPos;
+		var sourceNodeYpos = yPos;
 
 		var destNodeXpos = sourceNodeXpos;
 		var destNodeYpos = sourceNodeYpos + 140;
@@ -137,14 +147,54 @@ app.controller('MainCtrl', ['$scope', function ($scope) {
 	 	//create the connection between 2 nodes
 	 	$scope.createConnection(sourceNode, destNode);
 
+
+	 };
+
+
+	$scope.getNotation= function (sequenceType, sequence) {
+		
+		var startXpos = 40;
+		var startYpos = 20;
+		var color;
+		
+		if(sequenceType.value ==''){
+			alert("Please select a Polymer Type");
+		}
+		if(sequenceType.value == 'Nucleotide'){
+			angular.forEach(sequence, function(value, key) {
+				color = $scope.getNodeColor(value);
+				$scope.addNucleicAcid (value, color, startXpos, startYpos);
+				startXpos = startXpos + 100;
+			});
+		}
+
+		else if(sequenceType.value == "Peptide"){
+
+		}
 	};
 
-	
 	// Delete selected nodes and connections.
 	$scope.deleteSelected = function () {
-
 		$scope.chartViewModel.deleteSelected();
 	};
+
+
+	$scope.getNodeColor = function(nodeName){
+
+		if(nodeName == 'A'){
+				return "lightgreen";
+			}
+			else if(nodeName == 'C'){
+				return "red";
+			}
+			else if(nodeName == 'G'){
+				return "orange";
+			}
+			else if(nodeName == 'T' || nodeName == 'U'){
+				return "cyan";
+			}
+	}
+
 
 	// Create the view-model for the chart and attach to the scope.
 	$scope.chartViewModel = new helmnotation.ChartViewModel(chartDataModel);
