@@ -26,37 +26,38 @@ The following steps must be done in order to set up your development environment
     $ npm -v  
     3.8.0
     ```
-3. If desired (Yeoman was used to create the scaffolding), install Yeoman (yeoman.io)
+3. If desired (Yeoman was used to create the scaffolding), install Yeoman (yeoman.io), and the generators we need
 
     ```
-    $ sudo npm install -g yo
+    $ sudo npm install -g yo generator-karma generator-angular generator-protractor
     ```
-4. Also install the generators that we need
-
-    ```
-    $ sudo npm install -g generator-karma generator-angular
-    ```
-5. Install bower
+4. Install bower
 
     ```
     $ sudo npm install -g bower
     ```
-6. Install grun
+5. Install grunt
 
     ```
     $ sudo npm install -g grunt-cli
     ```
-7. Install node dependencies
+6. Install node dependencies
 
     ```
     $ npm install (you may need to run this with sudo if you get an EACCESS error)
     ```
-8. Install bower dependencies
+7. Install bower dependencies
 
     ```
     $ bower install
     ```
-9. Grunt targets
+8. Install Selenium (for e2e tests)
+
+    ```
+    $ node ./node_modules/protractor/bin/webdriver-manager update
+    ```
+    Note this can take a little while
+8. Grunt targets
 
     ```
     $ grunt - run all tests, build, minify, and distribute
