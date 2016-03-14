@@ -15,41 +15,41 @@ angular.module('helmeditor2App')
       'Karma'
     ];
 
-	/* Variables related to the prototype code in HTML */
-	$scope.polyTypes = [
-	  { value: 'PEPTIDE', label:'PEPTIDE' },
-	  { value: 'RNA', label:'RNA/DNA' }
-	];
-	$scope.polymerType = $scope.polyTypes[0];
-	$scope.result;
-	$scope.imageUrl;
+  	/* Variables related to the prototype code in HTML */
+  	$scope.polyTypes = [
+      { value: 'PEPTIDE', label:'PEPTIDE' },
+      { value: 'RNA', label:'RNA/DNA' }
+  	];
+  	$scope.polymerType = $scope.polyTypes[0];
+  	$scope.result = '';
+  	$scope.imageUrl = '';
 
-	/* Event processing prototype - invoke factory function to get HELM notation */   
-	$scope.getHelmNotation = function (polymerType, inputSequence) {
-		if (!angular.isDefined(inputSequence)) {
-      		alert('Invalid input');
-      		return;
-    	}
-		webservice.getHelmNotation(polymerType.value, inputSequence)
-		.success(function (response) {
-        	$scope.result = response.HELMNotation;
+  	/* Event processing prototype - invoke factory function to get HELM notation */   
+  	$scope.getHelmNotation = function (polymerType, inputSequence) {
+      if (!angular.isDefined(inputSequence)) {
+        window.alert('Invalid input');
+        return;
+      }
+      webservice.getHelmNotation(polymerType.value, inputSequence)
+        .success(function (response) {
+          $scope.result = response.HELMNotation;
         })
         .error(function (response) {
-        	scope.result = 'Invalid sequence';
-        	console.log(response);
+          $scope.result = 'Invalid sequence';
+          console.log(response);
+        });
+    };  
+
+  	/* Event processing prototype - invoke factory function to get HELM image */ 
+  	$scope.getHelmImage = function (inputSequence) {
+      if (!angular.isDefined(inputSequence)) {
+        window.alert('Invalid input');
+        return;
+    	}
+      $scope.imageUrl = webservice.getHelmImage(inputSequence);
+      $http.get($scope.imageUrl)
+        .error(function (response) {
+          window.alert(response);
         });
     };
-
-	/* Event processing prototype - invoke factory function to get HELM image */ 
-	$scope.getHelmImage = function (inputSequence) {
-	    if (!angular.isDefined(inputSequence)) {
-      		alert('Invalid input');
-      		return;
-    	}
-    	$scope.imageUrl = webservice.getHelmImage(inputSequence);
-    	$http.get($scope.imageUrl)
-			.error(function (response) {
-	        	alert(response);
-	       	});
-	};
-}]);
+  }]);

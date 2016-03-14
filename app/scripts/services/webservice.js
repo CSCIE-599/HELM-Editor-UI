@@ -14,10 +14,10 @@ angular.module('helmeditor2App')
     
     return {
       getMonomerImage: function (monomerId, polymerType, showRgroups) {
-        var fullUrl = baseUrl + 'Image/Monomer/' 
-          + 'monomerId=' + monomerId 
-          + '/polymerType=' + polymerType 
-          + '/showRgroups=' + showRgroups;
+        var fullUrl = baseUrl + 'Image/Monomer/' + 
+          'monomerId=' + monomerId + 
+          '/polymerType=' + polymerType + 
+          '/showRgroups=' + showRgroups;
         return fullUrl;
       }, 
       getHelmImage: function (inputSequence) {
@@ -48,7 +48,7 @@ angular.module('helmeditor2App')
         return $http.get(baseUrl + 'Fasta/Produce/' + inputSequence);
       },
       getFastaRead: function (peptide, rna) {
-        return $http.get(baseUrl + 'Fasta/Read/', {params:{"PEPTIDE": peptide, "RNA": rna}});
+        return $http.get(baseUrl + 'Fasta/Read/', {params:{'PEPTIDE': peptide, 'RNA': rna}});
       },     
       getFastaConvertRNA: function (inputSequence) {
         return $http.get(baseUrl + 'Fasta/Convert/RNA' + inputSequence);
