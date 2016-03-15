@@ -12,92 +12,19 @@ var helmnotation = {
 	
 	// Width of a node.
 	helmnotation.nodeWidth = 40;
-	
-	// Amount of space reserved for displaying the node's name.
-	helmnotation.nodeNameHeight = 10;
 
-	// Height of a connector in a node.
-	helmnotation.connectorHeight = 35;
 
-	// Compute the Y coordinate of a connector, given its index.
-	helmnotation.computeConnectorY = function (connectorIndex) {
-		return helmnotation.nodeNameHeight + (connectorIndex * helmnotation.connectorHeight);
-	}
-
-	// Compute the position of a connector in the graph.
-	helmnotation.computeConnectorPos = function (node, connectorIndex, inputConnector) {
-		return {
-			x: node.x() + (inputConnector ? 0 : helmnotation.nodeWidth),
-			y: node.y() + helmnotation.computeConnectorY(connectorIndex),
-		};
-	};
-
-	// View model for a connector.
-	helmnotation.ConnectorViewModel = function (connectorDataModel, x, y, parentNode) {
-
-		this.data = connectorDataModel;
-		this._parentNode = parentNode;
-		this._x = x;
-		this._y = y;
-
-		// The name of the connector.
-		this.name = function () {
-			return this.data.name;
-		}
-
-		//
-		// X coordinate of the connector.
-		this.x = function () {
-			return this._x;
-		};
-
-		//
-		// Y coordinate of the connector.
-		this.y = function () { 
-			return this._y;
-		};
-
-		//
-		// The parent node that the connector is attached to.
-		this.parentNode = function () {
-			return this._parentNode;
-		};
-	};
-
-	//
-	// Create view model for a list of data models.
-	var createConnectorsViewModel = function (connectorDataModels, x, parentNode) {
-		var viewModels = [];
-
-		if (connectorDataModels) {
-			for (var i = 0; i < connectorDataModels.length; ++i) {
-				var connectorViewModel = 
-					new helmnotation.ConnectorViewModel(connectorDataModels[i], x, helmnotation.computeConnectorY(i), parentNode);
-				viewModels.push(connectorViewModel);
-			}
-		}
-
-		return viewModels;
-	};
-
-	//
 	// View model for a node.
 	helmnotation.NodeViewModel = function (nodeDataModel) {
 
 		this.data = nodeDataModel;
-		this.inputConnectors = createConnectorsViewModel(this.data.inputConnectors, 0, this);
-		this.outputConnectors = createConnectorsViewModel(this.data.outputConnectors, helmnotation.nodeWidth, this);
-
+		
 		// Set to true when the node is selected.
 		this._selected = false;
-		this.colour = 'white';//default
-
-		//for rounded corners
-		this.rx = 0;
-		this.ry = 0;
-
-		//	rotation 
-		this.transform = 'rotate(0 0 0)';//default is no rotation
+				
+		this.id = function () {
+			return this.data.id;
+		};
 
 		// Name of the node.
 		this.name = function () {
@@ -107,6 +34,11 @@ var helmnotation = {
 		//color of the node
 		this.colour = function () { 
 			return this.data.colour;
+		};
+
+		//type of the node
+		this.nodeType = function () { 
+			return this.data.nodeType;
 		};
 
 		// X coordinate of the node.
@@ -119,13 +51,11 @@ var helmnotation = {
 			return this.data.y;
 		};
 
-		//
 		// X radius of the node.
 		this.rx = function () { 
 			return this.data.rx;
 		};
 
-		//
 		// Y radius of the node.
 		this.ry = function () {
 			return this.data.ry;
@@ -141,7 +71,7 @@ var helmnotation = {
 			return this.data.height;
 		}
 
-	//rotation of the node
+		//rotation of the node
 		this.transformx = function () { 
 			return this.data.transformx;
 		};
@@ -156,22 +86,17 @@ var helmnotation = {
 			return this.data.transformDegree;
 		};
 
-
-		//
 		// Select the node.
 		this.select = function () {
 			this._selected = true;
 		};
 
-		//
 		// Deselect the node.
 		this.deselect = function () {
 			this._selected = false;
 		};
 
-		//
 		// Toggle the selection state of the node.
-		//
 		this.toggleSelected = function () {
 			this._selected = !this._selected;
 		};
@@ -181,45 +106,46 @@ var helmnotation = {
 			return this._selected;
 		};
 
-		//
-		// Internal function to add a connector.
-		this._addConnector = function (connectorDataModel, x, connectorsDataModel, connectorsViewModel) {
-			var connectorViewModel = 
-				new helmnotation.ConnectorViewModel(connectorDataModel, x, 
-						helmnotation.computeConnectorY(connectorsViewModel.length), this);
-
-			connectorsDataModel.push(connectorDataModel);
-
-			// Add to node's view model.
-			connectorsViewModel.push(connectorViewModel);
-		}
-
-		//
-		// Add an input connector to the node.
-		//
-		this.addInputConnector = function (connectorDataModel) {
-
-			if (!this.data.inputConnectors) {
-				this.data.inputConnectors = [];
-			}
-			this._addConnector(connectorDataModel, 0, this.data.inputConnectors, this.inputConnectors);
+		//visibility of the sequence#
+		this.seqVisible = function () { 
+			return this.data.seqVisible;
 		};
 
-		//
-		// Add an ouput connector to the node.
-		//
-		this.addOutputConnector = function (connectorDataModel) {
+	};
+			
+	// View model for a connector.
+	helmnotation.ConnectorViewModel = function (connectorDataModel, x, y, parentNode) {
 
-			if (!this.data.outputConnectors) {
-				this.data.outputConnectors = [];
-			}
-			this._addConnector(connectorDataModel, helmnotation.nodeWidth, this.data.outputConnectors, this.outputConnectors);
+		this.data = connectorDataModel;
+		this._parentNode = parentNode;
+		this._x = x;
+		this._y = y;
+
+		// The name of the connector.
+		this.name = function () {
+			return this.data.name;
+		}
+
+		// X coordinate of the connector.
+		this.x = function () {
+			return this._x;
+		};
+
+		// Y coordinate of the connector.
+		this.y = function () { 
+			return this._y;
+		};
+
+		// The parent node that the connector is attached to.
+		this.parentNode = function () {
+			return this._parentNode;
 		};
 	};
 
-	// 
+	
+	
+
 	// Wrap the nodes data-model in a view-model.
-	//
 	var createNodesViewModel = function (nodesDataModel) {
 		var nodesViewModel = [];
 
@@ -228,13 +154,10 @@ var helmnotation = {
 				nodesViewModel.push(new helmnotation.NodeViewModel(nodesDataModel[i]));
 			}
 		}
-
 		return nodesViewModel;
 	};
 
-//
 	// View model for a connection.
-	//
 	helmnotation.ConnectionViewModel= function (connectionDataModel, sourceNode, destNode) {
 
 		this.data = connectionDataModel;
@@ -297,69 +220,8 @@ var helmnotation = {
 		};
 	};
 
-	//
-	// Helper function.
-	//
-	var computeConnectionTangentOffset = function (pt1, pt2) {
-
-		return (pt2.x - pt1.x) / 2;	
-	}
-
-	//
-	// Compute the tangent for the bezier curve.
-	//
-	helmnotation.computeConnectionSourceTangentX = function (pt1, pt2) {
-
-		return pt1.x + computeConnectionTangentOffset(pt1, pt2);
-	};
-
-	//
-	// Compute the tangent for the bezier curve.
-	//
-	helmnotation.computeConnectionSourceTangentY = function (pt1, pt2) {
-
-		return pt1.y;
-	};
-
-	//
-	// Compute the tangent for the bezier curve.
-	//
-	helmnotation.computeConnectionSourceTangent = function(pt1, pt2) {
-		return {
-			x: helmnotation.computeConnectionSourceTangentX(pt1, pt2),
-			y: helmnotation.computeConnectionSourceTangentY(pt1, pt2),
-		};
-	};
-
-	//
-	// Compute the tangent for the bezier curve.
-	//
-	helmnotation.computeConnectionDestTangentX = function (pt1, pt2) {
-
-		return pt2.x - computeConnectionTangentOffset(pt1, pt2);
-	};
-
-	//
-	// Compute the tangent for the bezier curve.
-	//
-	helmnotation.computeConnectionDestTangentY = function (pt1, pt2) {
-
-		return pt2.y;
-	};
-
-	//
-	// Compute the tangent for the bezier curve.
-	//
-	helmnotation.computeConnectionDestTangent = function(pt1, pt2) {
-		return {
-			x: helmnotation.computeConnectionDestTangentX(pt1, pt2),
-			y: helmnotation.computeConnectionDestTangentY(pt1, pt2),
-		};
-	};
-
-	//
+	
 	// View model for the chart.
-	//
 	helmnotation.ChartViewModel = function (chartDataModel) {
 
 		// Find a specific node within the chart.
@@ -396,7 +258,6 @@ var helmnotation = {
 			if (!node.outputConnectors || node.outputConnectors.length <= connectorIndex) {
 				throw new Error("Node " + nodeID + " has invalid output connectors.");
 			}
-
 			return node.outputConnectors[connectorIndex];
 		};
 
@@ -419,7 +280,6 @@ var helmnotation = {
 					connectionsViewModel.push(this._createConnectionViewModel(connectionsDataModel[i]));
 				}
 			}
-
 			return connectionsViewModel;
 		};
 
@@ -432,14 +292,11 @@ var helmnotation = {
 		// Create a view-model for connections.
 		this.connections = this._createConnectionsViewModel(this.data.connections);
 
-
-		
 		// Add a node to the view model.
 		this.addNode = function (nodeDataModel) {
 			if (!this.data.nodes) {
 				this.data.nodes = [];
 			}
-
 			// Update the data model.
 			this.data.nodes.push(nodeDataModel);
 
@@ -467,9 +324,7 @@ var helmnotation = {
 			//push to connectionsviewmodel
 			var connectionViewModel = new helmnotation.ConnectionViewModel(connectionDataModel, sourceNode, destNode);
 			connectionsViewModel.push(connectionViewModel);
-
 		};
-
 
 		// Select all nodes and connections in the chart.
 		this.selectAll = function () {

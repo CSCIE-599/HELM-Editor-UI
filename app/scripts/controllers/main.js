@@ -10,7 +10,7 @@
 
 var app = angular.module('helmeditor2App');
 
-app.controller('MainCtrl', ['$scope', function ($scope) {
+app.controller('MainCtrl', ['$scope', '$window', function ($scope, $window) {
     this.awesomeThings = [
       'HTML5 Boilerplate',
       'AngularJS',
@@ -25,6 +25,7 @@ app.controller('MainCtrl', ['$scope', function ($scope) {
 	  { value: 'Peptide', label:'Peptide' }
 	  
 	];
+
 	$scope.polymerType = $scope.polyTypes[0];
     
     // Code for the delete key.
@@ -43,7 +44,23 @@ app.controller('MainCtrl', ['$scope', function ($scope) {
 	var escKeyCode = 27;
 	
 	// Selects the next node id.
-	var nextNodeID = 10;
+	var nextNodeID = 0;
+
+	//node height
+	var nodeHeight = 25;
+
+	//node width
+	var nodeWidth = 25;
+
+	//length of a connection, between A and attacher node R
+	var connectionLength = 100;
+
+	//space between 2 monomers, like A and G
+	var monomerSpacing = 100;
+
+	//regular node radius
+	var radiusX = '4';
+	var radiusY = '4';
 
 	// Setup the data-model for the chart.
 	var chartDataModel = {
@@ -71,12 +88,12 @@ app.controller('MainCtrl', ['$scope', function ($scope) {
 			$scope.chartViewModel.deleteSelected();
 		}
 
-		if (evt.keyCode == aKeyCode && ctrlDown) {
+		if (evt.keyCode === aKeyCode && ctrlDown) {
 			// Ctrl + A
 			$scope.chartViewModel.selectAll();
 		}
 
-		if (evt.keyCode == escKeyCode) {
+		if (evt.keyCode === escKeyCode) {
 			// Escape.
 			$scope.chartViewModel.deselectAll();
 		}
@@ -90,33 +107,46 @@ app.controller('MainCtrl', ['$scope', function ($scope) {
 
 
 	// Add a new node to the chart.
-	$scope.addNewNode = function (nodeName, nodeColor, isRotate, xpos, ypos) {
+	$scope.addNewNode = function (nodeName, nodeColor, isRotate, xpos, ypos, nodeType) {
 
 		var rotateDegree = '0';
+		var sequenceVisibility = 'hidden';
+		
+		var rx = radiusX;
+		var ry = radiusX;
 		
 		if(isRotate){
 			rotateDegree = '45';
 		}
 
-		var nodeHeight = 30;
-		var nodeWidth = 30;
+		if(nodeType == 'p'){//phosphate
+			rx = radiusX +10;
+			ry = radiusY +10;
+		}
+
+		if(nodeType == 'n'){//nucleotide
+			nextNodeID++;
+			sequenceVisibility = 'visible';
+		}
 
 		var newNodeDataModel = {
 			name: nodeName,
-			id: nextNodeID++,
+			id: nextNodeID,
 			x: xpos,
 			y: ypos,
-			rx:'4',
-			ry: '4',
+			rx:rx,
+			ry: ry,
 			colour: nodeColor,
 			height:nodeHeight,
 			width:nodeWidth,
 			transformx:xpos+nodeHeight/2,
 			transformy:ypos+nodeWidth/2,
 			transformDegree:rotateDegree,
+			seqVisible:	sequenceVisibility,				
 		};
 
 		$scope.chartViewModel.addNode(newNodeDataModel);
+
 		return newNodeDataModel;
 	};
 
@@ -131,46 +161,59 @@ app.controller('MainCtrl', ['$scope', function ($scope) {
 	//A simple nucleic acid has an attacher node, main monomer node and a connection
 	$scope.addNucleicAcid = function (nodeName,  nodeColor, xPos, yPos) {
 	 	
-	 	//TO-DO Make the default position to be the middle of canvas, instead of hardcoding
-		var sourceNodeXpos = xPos;
+	 	var sourceNodeXpos = xPos;
 		var sourceNodeYpos = yPos;
 
 		var destNodeXpos = sourceNodeXpos;
-		var destNodeYpos = sourceNodeYpos + 140;
+		var destNodeYpos = sourceNodeYpos + connectionLength;
 
 		//attacher node
-	 	var sourceNode = $scope.addNewNode("R",'lightgrey', false, sourceNodeXpos, sourceNodeYpos);
+	 	var sourceNode = $scope.addNewNode("R",'lightgrey', false, sourceNodeXpos, sourceNodeYpos, "r");
 
 	 	//A,C, G, T, U
-	 	var destNode = $scope.addNewNode(nodeName, nodeColor, true, destNodeXpos, destNodeYpos);
+	 	var destNode = $scope.addNewNode(nodeName, nodeColor, true, destNodeXpos, destNodeYpos, "n");
 
 	 	//create the connection between 2 nodes
-	 	$scope.createConnection(sourceNode, destNode);
-
-
+	 	$scope.createConnection(sourceNode, destNode);	 	
 	 };
 
+	$scope.addPhosphate = function (sourceNodeXpos, sourceNodeYpos, isHide) {
+		$scope.addNewNode("P",'lightgrey', false, sourceNodeXpos + monomerSpacing/2, sourceNodeYpos, "p");
+		//create the connection between 2 nodes
+	 	//$scope.createConnection(sourceNode, destNode);
+	}
 
-	$scope.getNotation= function (sequenceType, sequence) {
-		
+	$scope.getNotation= function (sequenceType, sequence) {		
 		var startXpos = 40;
 		var startYpos = 20;
 		var color;
-		
-		if(sequenceType.value ==''){
-			alert("Please select a Polymer Type");
+				
+		if(sequenceType.value === ''){
+			$window.alert("Please select a Polymer Type");
 		}
-		if(sequenceType.value == 'Nucleotide'){
+		if(sequenceType.value === 'Nucleotide'){
+
 			angular.forEach(sequence, function(value, key) {
-				color = $scope.getNodeColor(value);
-				$scope.addNucleicAcid (value, color, startXpos, startYpos);
-				startXpos = startXpos + 100;
+				color = $scope.getNodeColor(value);				
+				var sourceNode = $scope.addNucleicAcid (value, color, startXpos, startYpos);
+				
+				if(key!=sequence.length-1){//do not add phosphate for the last momomer in the sequence
+					$scope.addPhosphate(startXpos,startYpos);
+					//To-DO//$scope.createConnection(sourceNode, destNode);
+				}
+				startXpos = startXpos + monomerSpacing;		
+					
 			});
 		}
 
-		else if(sequenceType.value == "Peptide"){
+		else if(sequenceType.value === "Peptide"){
 
 		}
+	};
+
+	$scope.reset = function() {
+	    $scope.inputSequence =" ";
+	    $scope.polymerType = " ";
 	};
 
 	// Delete selected nodes and connections.
@@ -181,20 +224,22 @@ app.controller('MainCtrl', ['$scope', function ($scope) {
 
 	$scope.getNodeColor = function(nodeName){
 
-		if(nodeName == 'A'){
-				return "lightgreen";
-			}
-			else if(nodeName == 'C'){
-				return "red";
-			}
-			else if(nodeName == 'G'){
-				return "orange";
-			}
-			else if(nodeName == 'T' || nodeName == 'U'){
-				return "cyan";
-			}
-	}
-
+		if(nodeName === 'A'){
+			return "lightgreen";
+		}
+		else if(nodeName === 'C'){
+			return "red";
+		}
+		else if(nodeName === 'G'){
+			return "orange";
+		}
+		else if(nodeName === 'T' || nodeName === 'U'){
+			return "cyan";
+		}
+		else {
+			return false;			
+		}
+	};
 
 	// Create the view-model for the chart and attach to the scope.
 	$scope.chartViewModel = new helmnotation.ChartViewModel(chartDataModel);

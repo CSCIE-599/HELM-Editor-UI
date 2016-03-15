@@ -5,10 +5,10 @@
   ng-mousemove="mouseMove($event)" >
 
 <!-- loop thru all the nodes -->
-  <g
-    ng-repeat="node in chart.nodes"
+  <g ng-repeat="node in chart.nodes"
     ng-mousedown="nodeMouseDown($event, node)"    
   >
+
     <rect 
       ng-attr-class="{{node.selected() && 'selected-node-rect' || (node == mouseOverNode && 'mouseover-node-rect' || 'node-rect')}}"
       ng-attr-width="{{node.width()}}" 
@@ -18,7 +18,8 @@
       ng-attr-y="{{node.y()}}"
       ng-attr-rx="{{node.rx()}}"
       ng-attr-ry="{{node.ry()}}"
-      ng-attr-transform="rotate({{node.transformDegree()}}, {{node.transformx()}}, {{node.transformy()}})"
+      ng-attr-transform="rotate({{node.transformDegree()}}, {{node.transformx()}}, {{node.transformy()}})" 
+      
     >
     </rect> 
     <text
@@ -28,7 +29,16 @@
       alignment-baseline="middle"
      >
       {{node.name()}}
+    </text>
 
+    <text
+      ng-attr-x="{{(node.x()-5)}}"
+      ng-attr-y="{{(node.y()-5)}}"
+      text-anchor="middle"
+      alignment-baseline="middle"
+      ng-attr-visibility="{{node.seqVisible()}}"
+     >
+      {{node.id()}}
     </text>
       
   </g>
