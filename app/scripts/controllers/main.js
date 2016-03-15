@@ -23,11 +23,11 @@ app.controller('MainCtrl', ['$scope', '$window', function ($scope, $window) {
 	  {	value: '', label:'--Select--' },
 	  { value: 'Nucleotide', label:'Nucleotide' },
 	  { value: 'Peptide', label:'Peptide' }
-	  
+
 	];
 
 	$scope.polymerType = $scope.polyTypes[0];
-    
+
     // Code for the delete key.
 	var deleteKeyCode = 46;
 
@@ -42,7 +42,7 @@ app.controller('MainCtrl', ['$scope', '$window', function ($scope, $window) {
 
 	// Code for esc key.
 	var escKeyCode = 27;
-	
+
 	// Selects the next node id.
 	var nextNodeID = 0;
 
@@ -111,20 +111,20 @@ app.controller('MainCtrl', ['$scope', '$window', function ($scope, $window) {
 
 		var rotateDegree = '0';
 		var sequenceVisibility = 'hidden';
-		
+
 		var rx = radiusX;
 		var ry = radiusX;
-		
+
 		if(isRotate){
 			rotateDegree = '45';
 		}
 
-		if(nodeType == 'p'){//phosphate
+		if(nodeType === 'p'){//phosphate
 			rx = radiusX +10;
 			ry = radiusY +10;
 		}
 
-		if(nodeType == 'n'){//nucleotide
+		if(nodeType === 'n'){//nucleotide
 			nextNodeID++;
 			sequenceVisibility = 'visible';
 		}
@@ -142,7 +142,7 @@ app.controller('MainCtrl', ['$scope', '$window', function ($scope, $window) {
 			transformx:xpos+nodeHeight/2,
 			transformy:ypos+nodeWidth/2,
 			transformDegree:rotateDegree,
-			seqVisible:	sequenceVisibility,				
+			seqVisible:	sequenceVisibility,
 		};
 
 		$scope.chartViewModel.addNode(newNodeDataModel);
@@ -160,7 +160,7 @@ app.controller('MainCtrl', ['$scope', '$window', function ($scope, $window) {
 	// Add a new node to the chart.
 	//A simple nucleic acid has an attacher node, main monomer node and a connection
 	$scope.addNucleicAcid = function (nodeName,  nodeColor, xPos, yPos) {
-	 	
+
 	 	var sourceNodeXpos = xPos;
 		var sourceNodeYpos = yPos;
 
@@ -174,35 +174,43 @@ app.controller('MainCtrl', ['$scope', '$window', function ($scope, $window) {
 	 	var destNode = $scope.addNewNode(nodeName, nodeColor, true, destNodeXpos, destNodeYpos, "n");
 
 	 	//create the connection between 2 nodes
-	 	$scope.createConnection(sourceNode, destNode);	 	
+	 	$scope.createConnection(sourceNode, destNode);
+
+        return sourceNode;
 	 };
 
-	$scope.addPhosphate = function (sourceNodeXpos, sourceNodeYpos, isHide) {
-		$scope.addNewNode("P",'lightgrey', false, sourceNodeXpos + monomerSpacing/2, sourceNodeYpos, "p");
+	$scope.addPhosphate = function (sourceNodeXpos, sourceNodeYpos, sourceNode, isHide) {
+		var destNode = $scope.addNewNode("P",'lightgrey', false, sourceNodeXpos + monomerSpacing/2, sourceNodeYpos, "p");
 		//create the connection between 2 nodes
-	 	//$scope.createConnection(sourceNode, destNode);
-	}
+	 	$scope.createConnection(sourceNode, destNode);
 
-	$scope.getNotation= function (sequenceType, sequence) {		
+        return destNode;
+	};
+
+	$scope.getNotation= function (sequenceType, sequence) {
 		var startXpos = 40;
 		var startYpos = 20;
 		var color;
-				
+
 		if(sequenceType.value === ''){
 			$window.alert("Please select a Polymer Type");
 		}
 		if(sequenceType.value === 'Nucleotide'){
+            var pNode ='';
 
 			angular.forEach(sequence, function(value, key) {
-				color = $scope.getNodeColor(value);				
-				var sourceNode = $scope.addNucleicAcid (value, color, startXpos, startYpos);
-				
-				if(key!=sequence.length-1){//do not add phosphate for the last momomer in the sequence
-					$scope.addPhosphate(startXpos,startYpos);
-					//To-DO//$scope.createConnection(sourceNode, destNode);
+				color = $scope.getNodeColor(value);
+				var rNode = $scope.addNucleicAcid (value, color, startXpos, startYpos);
+
+                if (pNode){ //if there is a 'P' Node before 'R', attach 'P' to 'R'
+                    $scope.createConnection(pNode, rNode);
+                }
+
+				if(key!==sequence.length-1){//do not add phosphate for the last momomer in the sequence
+                    pNode = $scope.addPhosphate(startXpos,startYpos,rNode);
 				}
-				startXpos = startXpos + monomerSpacing;		
-					
+				startXpos = startXpos + monomerSpacing;
+
 			});
 		}
 
@@ -237,7 +245,7 @@ app.controller('MainCtrl', ['$scope', '$window', function ($scope, $window) {
 			return "cyan";
 		}
 		else {
-			return false;			
+			return false;
 		}
 	};
 
@@ -245,4 +253,3 @@ app.controller('MainCtrl', ['$scope', '$window', function ($scope, $window) {
 	$scope.chartViewModel = new helmnotation.ChartViewModel(chartDataModel);
 
     }]);
- 
