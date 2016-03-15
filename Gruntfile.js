@@ -414,6 +414,10 @@ module.exports = function (grunt) {
         'copy:styles',
         'imagemin',
         'svgmin'
+      ],
+      protractor_test: [
+        'protractor-chrome',
+        'protractor-firefox'
       ]
     },
 
@@ -430,9 +434,36 @@ module.exports = function (grunt) {
         configFile: 'test/karma.conf.js',
         singleRun: false
       }
-    }
+    },
+
+    protractor: {
+      options: {
+        configFile: 'test/e2e/protractor.conf.js', // protractor config file
+        keepAlive: true, // if false, the grunt process stops when the test fails.
+        noColor: false, // if true, protractor will not use colors in its output.
+        args: {
+          // Arguments passed to the command
+        }
+      },
+      chrome: {
+        options: {
+          args: {
+            browser: 'chrome'
+          }
+        }
+      },
+      firefox: {
+        options: {
+          args: {
+            browser: 'firefox'
+          }
+        }
+      }
+    } 
   });
 
+  // load the protractor task
+  grunt.loadNpmTasks('grunt-protractor-runner'); 
 
   grunt.registerTask('serve', 'Compile then start a connect web server', function (target) {
     if (target === 'dist') {
@@ -490,6 +521,10 @@ module.exports = function (grunt) {
     'usemin',
     'htmlmin'
   ]);
+
+  grunt.registerTask('protractor-chrome', ['protractor:chrome']);
+  grunt.registerTask('protractor-firefox', ['protractor:firefox']);
+  grunt.registerTask('protractor-e2e', ['concurrent:protractor_test']); 
 
   grunt.registerTask('default', [
     'newer:jshint',
