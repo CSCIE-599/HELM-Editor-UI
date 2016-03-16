@@ -416,8 +416,8 @@ module.exports = function (grunt) {
         'svgmin'
       ],
       protractorTest: [
-        'protractor-chrome',
-        'protractor-firefox'
+        'protractor:chrome',
+        'protractor:firefox'
       ]
     },
 
@@ -459,7 +459,7 @@ module.exports = function (grunt) {
           }
         }
       }
-    } 
+    }
   });
 
   // load the protractor task
@@ -522,9 +522,29 @@ module.exports = function (grunt) {
     'htmlmin'
   ]);
 
-  grunt.registerTask('protractor-chrome', ['protractor:chrome']);
-  grunt.registerTask('protractor-firefox', ['protractor:firefox']);
-  grunt.registerTask('protractor-e2e', ['concurrent:protractorTest']); 
+  grunt.registerTask('protractor-chrome', [
+    'clean:server',
+    'wiredep',
+    'concurrent:test',
+    'postcss',
+    'connect:test',
+    'protractor:chrome'
+  ]);
+  grunt.registerTask('protractor-firefox', [
+    'clean:server',
+    'wiredep',
+    'concurrent:test',
+    'postcss',
+    'connect:test',
+    'protractor:firefox'
+  ]);
+  grunt.registerTask('protractor-all', [
+    'clean:server',
+    'wiredep',
+    'concurrent:test',
+    'postcss',
+    'connect:test',
+    'concurrent:protractorTest']);
 
   grunt.registerTask('default', [
     'newer:jshint',

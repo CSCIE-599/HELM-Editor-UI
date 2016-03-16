@@ -65,6 +65,9 @@ The following steps must be done in order to set up your development environment
     $ grunt serve - build app and run server locally to test manually
     $ grunt test - run Karma unit tests one time
     $ grunt test-continuous - run Karma continuously, testing with every file that's saved
+    $ grunt protractor-chrome - run Protractor tests only on Chrome
+    $ grunt protractor-firefox - run Protractor tests only on Firefox
+    $ grunt protractor-all - run Protractor tests on Firefox and Chrome, simultaneously
     ```
 
 ### A note on Yeoman
