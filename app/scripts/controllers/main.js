@@ -27,21 +27,8 @@ app.controller('MainCtrl', ['$scope', '$window', function ($scope, $window) {
 	];
 
 	$scope.polymerType = $scope.polyTypes[0];
-    
-    // Code for the delete key.
-	var deleteKeyCode = 46;
 
-	// Code for control key.
-	var ctrlKeyCode = 65;
 
-	// Set to true when the ctrl key is down.
-	var ctrlDown = false;
-
-	// Code for A key.
-	var aKeyCode = 17;
-
-	// Code for esc key.
-	var escKeyCode = 27;
 	
 	// Selects the next node id.
 	var nextNodeID = 0;
@@ -62,47 +49,28 @@ app.controller('MainCtrl', ['$scope', '$window', function ($scope, $window) {
 	var radiusX = '4';
 	var radiusY = '4';
 
+    
+    // Code for the delete key.
+	var deleteKeyCode = 46;
+
+	// Code for control key.
+	var ctrlKeyCode = 65;
+
+	// Set to true when the ctrl key is down.
+	var ctrlDown = false;
+
+	// Code for A key.
+	var aKeyCode = 17;
+
+	// Code for esc key.
+	var escKeyCode = 27;
+	
+	
 	// Setup the data-model for the chart.
 	var chartDataModel = {
 
 		nodes: [],
 		connections: []
-	};
-
-	// Event handler for key-down on the helmnotation.
-	$scope.keyDown = function (evt) {
-
-		if (evt.keyCode === ctrlKeyCode) {
-
-			ctrlDown = true;
-			evt.stopPropagation();
-			evt.preventDefault();
-		}
-	};
-
-	// Event handler for key-up on the helmnotation.
-	$scope.keyUp = function (evt) {
-
-		if (evt.keyCode === deleteKeyCode) {
-			// Delete key.
-			$scope.chartViewModel.deleteSelected();
-		}
-
-		if (evt.keyCode === aKeyCode && ctrlDown) {
-			// Ctrl + A
-			$scope.chartViewModel.selectAll();
-		}
-
-		if (evt.keyCode === escKeyCode) {
-			// Escape.
-			$scope.chartViewModel.deselectAll();
-		}
-
-		if (evt.keyCode === ctrlKeyCode) {
-			ctrlDown = false;
-			evt.stopPropagation();
-			evt.preventDefault();
-		}
 	};
 
 
@@ -119,12 +87,13 @@ app.controller('MainCtrl', ['$scope', '$window', function ($scope, $window) {
 			rotateDegree = '45';
 		}
 
-		if(nodeType == 'p'){//phosphate
+		if(nodeType === 'p'){//phosphate
 			rx = radiusX +10;
 			ry = radiusY +10;
 		}
 
-		if(nodeType == 'n'){//nucleotide
+	//make the sequence visible for the nucloeotide only
+		if(nodeType === 'n'){//nucleotide
 			nextNodeID++;
 			sequenceVisibility = 'visible';
 		}
@@ -158,7 +127,7 @@ app.controller('MainCtrl', ['$scope', '$window', function ($scope, $window) {
 
 
 	// Add a new node to the chart.
-	//A simple nucleic acid has an attacher node, main monomer node and a connection
+	//A simple nucleic acid has Ribose node, main monomer node and a connection
 	$scope.addNucleicAcid = function (nodeName,  nodeColor, xPos, yPos) {
 	 	
 	 	var sourceNodeXpos = xPos;
@@ -167,7 +136,7 @@ app.controller('MainCtrl', ['$scope', '$window', function ($scope, $window) {
 		var destNodeXpos = sourceNodeXpos;
 		var destNodeYpos = sourceNodeYpos + connectionLength;
 
-		//attacher node
+		//Ribose node
 	 	var sourceNode = $scope.addNewNode("R",'lightgrey', false, sourceNodeXpos, sourceNodeYpos, "r");
 
 	 	//A,C, G, T, U
@@ -240,6 +209,7 @@ app.controller('MainCtrl', ['$scope', '$window', function ($scope, $window) {
 			return false;			
 		}
 	};
+
 
 	// Create the view-model for the chart and attach to the scope.
 	$scope.chartViewModel = new helmnotation.ChartViewModel(chartDataModel);

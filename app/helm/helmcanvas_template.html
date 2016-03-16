@@ -1,13 +1,9 @@
-<svg 
-  class="draggable-container"
+<svg class="draggable-container"
   xmlns="http://www.w3.org/2000/svg"
-  ng-mousedown="mouseDown($event)"
-  ng-mousemove="mouseMove($event)" >
+  >
 
 <!-- loop thru all the nodes -->
-  <g ng-repeat="node in chart.nodes"
-    ng-mousedown="nodeMouseDown($event, node)"    
-  >
+  <g ng-repeat="node in chart.nodes">
 
     <rect 
       ng-attr-class="{{node.selected() && 'selected-node-rect' || (node == mouseOverNode && 'mouseover-node-rect' || 'node-rect')}}"
@@ -18,10 +14,10 @@
       ng-attr-y="{{node.y()}}"
       ng-attr-rx="{{node.rx()}}"
       ng-attr-ry="{{node.ry()}}"
-      ng-attr-transform="rotate({{node.transformDegree()}}, {{node.transformx()}}, {{node.transformy()}})" 
-      
+      ng-attr-transform="rotate({{node.transformDegree()}}, {{node.transformx()}}, {{node.transformy()}})"     
     >
     </rect> 
+
     <text
       ng-attr-x="{{(node.width()/2)+node.x()}}"
       ng-attr-y="{{(node.height()/2)+node.y()}}"
@@ -44,11 +40,7 @@
   </g>
 
 <!-- loop thru all the connections -->
-  <g
-    ng-repeat="connection in chart.connections"
-    class="connection"
-    ng-mousedown="connectionMouseDown($event, connection)"
-    >
+  <g ng-repeat="connection in chart.connections">
       <path ng-attr-d="M{{connection.sourceCoordX()}}, {{connection.sourceCoordY()}}
                        L{{connection.destCoordX()}}, {{connection.destCoordY()}}"
          style="stroke:#660000; fill:none;">
