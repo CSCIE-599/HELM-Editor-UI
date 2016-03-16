@@ -114,10 +114,10 @@ app.controller('MainCtrl', ['$scope', '$window', function ($scope, $window) {
 		var destNodeYpos = sourceNodeYpos + connectionLength;
 
 		//R ribose node
-	 	var sourceNode = $scope.addNewNode("R",'lightgrey', false, sourceNodeXpos, sourceNodeYpos, "r");
+	 	var sourceNode = $scope.addNewNode('R','lightgrey', false, sourceNodeXpos, sourceNodeYpos, 'r');
 
 	 	//A,C, G, T, U
-	 	var destNode = $scope.addNewNode(nodeName, nodeColor, true, destNodeXpos, destNodeYpos, "n");
+	 	var destNode = $scope.addNewNode(nodeName, nodeColor, true, destNodeXpos, destNodeYpos, 'n');
 
 	 	//create the connection between 2 nodes
 	 	$scope.createConnection(sourceNode, destNode);
@@ -126,7 +126,7 @@ app.controller('MainCtrl', ['$scope', '$window', function ($scope, $window) {
 	 };
 
 	$scope.addPhosphate = function (sourceNodeXpos, sourceNodeYpos, sourceNode) {
-		var destNode = $scope.addNewNode("P",'lightgrey', false, sourceNodeXpos + monomerSpacing/2, sourceNodeYpos, "p");
+		var destNode = $scope.addNewNode('P','lightgrey', false, sourceNodeXpos + monomerSpacing/2, sourceNodeYpos, 'p');
 		//create the connection between 2 nodes
 	 	$scope.createConnection(sourceNode, destNode);
 
@@ -140,7 +140,7 @@ app.controller('MainCtrl', ['$scope', '$window', function ($scope, $window) {
 		var color;
 
 		if(sequenceType.value === ''){
-			$window.alert("Please select a Polymer Type");
+			$window.alert('Please select a Polymer Type');
 		}
 		if(sequenceType.value === 'Nucleotide'){
             var pNode ='';
@@ -161,15 +161,15 @@ app.controller('MainCtrl', ['$scope', '$window', function ($scope, $window) {
 			});
 		}
 
-		else if(sequenceType.value === "Peptide"){
+		else if(sequenceType.value === 'Peptide'){
 			//TO-DO
 		}
 	};
 
 
 	$scope.reset = function() {
-	    $scope.inputSequence =" ";
-	    $scope.polymerType = " ";
+	    $scope.inputSequence =' ';
+	    $scope.polymerType = ' ';
 	};
 
 	// Delete selected nodes and connections.
@@ -181,16 +181,16 @@ app.controller('MainCtrl', ['$scope', '$window', function ($scope, $window) {
 	$scope.getNodeColor = function(nodeName){
 
 		if(nodeName === 'A'){
-			return "lightgreen";
+			return 'lightgreen';
 		}
 		else if(nodeName === 'C'){
-			return "red";
+			return 'red';
 		}
 		else if(nodeName === 'G'){
-			return "orange";
+			return 'orange';
 		}
 		else if(nodeName === 'T' || nodeName === 'U'){
-			return "cyan";
+			return 'cyan';
 		}		
 	};
 
