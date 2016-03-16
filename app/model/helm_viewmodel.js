@@ -1,19 +1,11 @@
 
-//
-// Global accessor.
-//
+// Global accessor
 var helmnotation = {
 
 };
 
-// Module.
 (function () {
-
-
-	// Width of a node.
-	helmnotation.nodeWidth = 40;
-
-
+	
 	// View model for a node.
 	helmnotation.NodeViewModel = function (nodeDataModel) {
 
@@ -22,6 +14,7 @@ var helmnotation = {
 		// Set to true when the node is selected.
 		this._selected = false;
 
+		//id of a node, used to display the sequence# next to the monomer
 		this.id = function () {
 			return this.data.id;
 		};
@@ -37,6 +30,7 @@ var helmnotation = {
 		};
 
 		//type of the node
+		//'n' : main monomer, 'p' : phosphate ,'r' : ribose
 		this.nodeType = function () {
 			return this.data.nodeType;
 		};

@@ -17,7 +17,6 @@ app.controller('MainCtrl', ['$scope', '$window', function ($scope, $window) {
       'Karma'
     ];
 
-
     /* Variables related to the prototype code in HTML */
 	$scope.polyTypes = [
 	  {	value: '', label:'--Select--' },
@@ -28,22 +27,7 @@ app.controller('MainCtrl', ['$scope', '$window', function ($scope, $window) {
 
 	$scope.polymerType = $scope.polyTypes[0];
 
-    // Code for the delete key.
-	var deleteKeyCode = 46;
-
-	// Code for control key.
-	var ctrlKeyCode = 65;
-
-	// Set to true when the ctrl key is down.
-	var ctrlDown = false;
-
-	// Code for A key.
-	var aKeyCode = 17;
-
-	// Code for esc key.
-	var escKeyCode = 27;
-
-	// Selects the next node id.
+    // Selects the next node id.
 	var nextNodeID = 0;
 
 	//node height
@@ -64,47 +48,9 @@ app.controller('MainCtrl', ['$scope', '$window', function ($scope, $window) {
 
 	// Setup the data-model for the chart.
 	var chartDataModel = {
-
 		nodes: [],
 		connections: []
 	};
-
-	// Event handler for key-down on the helmnotation.
-	$scope.keyDown = function (evt) {
-
-		if (evt.keyCode === ctrlKeyCode) {
-
-			ctrlDown = true;
-			evt.stopPropagation();
-			evt.preventDefault();
-		}
-	};
-
-	// Event handler for key-up on the helmnotation.
-	$scope.keyUp = function (evt) {
-
-		if (evt.keyCode === deleteKeyCode) {
-			// Delete key.
-			$scope.chartViewModel.deleteSelected();
-		}
-
-		if (evt.keyCode === aKeyCode && ctrlDown) {
-			// Ctrl + A
-			$scope.chartViewModel.selectAll();
-		}
-
-		if (evt.keyCode === escKeyCode) {
-			// Escape.
-			$scope.chartViewModel.deselectAll();
-		}
-
-		if (evt.keyCode === ctrlKeyCode) {
-			ctrlDown = false;
-			evt.stopPropagation();
-			evt.preventDefault();
-		}
-	};
-
 
 	// Add a new node to the chart.
 	$scope.addNewNode = function (nodeName, nodeColor, isRotate, xpos, ypos, nodeType) {
@@ -119,7 +65,7 @@ app.controller('MainCtrl', ['$scope', '$window', function ($scope, $window) {
 			rotateDegree = '45';
 		}
 
-		if(nodeType === 'p'){//phosphate
+		if(nodeType === 'p'){//for phosphate, round the rectangle corners to look like circle
 			rx = radiusX +10;
 			ry = radiusY +10;
 		}
@@ -158,7 +104,7 @@ app.controller('MainCtrl', ['$scope', '$window', function ($scope, $window) {
 
 
 	// Add a new node to the chart.
-	//A simple nucleic acid has an attacher node, main monomer node and a connection
+	//A simple nucleic acid has a ribose node, main monomer node and a connection
 	$scope.addNucleicAcid = function (nodeName,  nodeColor, xPos, yPos) {
 
 	 	var sourceNodeXpos = xPos;
@@ -167,7 +113,7 @@ app.controller('MainCtrl', ['$scope', '$window', function ($scope, $window) {
 		var destNodeXpos = sourceNodeXpos;
 		var destNodeYpos = sourceNodeYpos + connectionLength;
 
-		//attacher node
+		//R ribose node
 	 	var sourceNode = $scope.addNewNode("R",'lightgrey', false, sourceNodeXpos, sourceNodeYpos, "r");
 
 	 	//A,C, G, T, U
@@ -179,7 +125,7 @@ app.controller('MainCtrl', ['$scope', '$window', function ($scope, $window) {
         return sourceNode;
 	 };
 
-	$scope.addPhosphate = function (sourceNodeXpos, sourceNodeYpos, sourceNode, isHide) {
+	$scope.addPhosphate = function (sourceNodeXpos, sourceNodeYpos, sourceNode) {
 		var destNode = $scope.addNewNode("P",'lightgrey', false, sourceNodeXpos + monomerSpacing/2, sourceNodeYpos, "p");
 		//create the connection between 2 nodes
 	 	$scope.createConnection(sourceNode, destNode);
@@ -187,7 +133,8 @@ app.controller('MainCtrl', ['$scope', '$window', function ($scope, $window) {
         return destNode;
 	};
 
-	$scope.getNotation= function (sequenceType, sequence) {
+	//Parse the sequence, and generate the notation
+	$scope.generateNotationAndLoadCanvas= function (sequenceType, sequence) {
 		var startXpos = 40;
 		var startYpos = 20;
 		var color;
@@ -206,18 +153,19 @@ app.controller('MainCtrl', ['$scope', '$window', function ($scope, $window) {
                     $scope.createConnection(pNode, rNode);
                 }
 
-				if(key!==sequence.length-1){//do not add phosphate for the last momomer in the sequence
+				if(key!==sequence.length-1){//do not add phosphate for the last element in the sequence
                     pNode = $scope.addPhosphate(startXpos,startYpos,rNode);
 				}
+				//increment the startPos for the next element in the sequence
 				startXpos = startXpos + monomerSpacing;
-
 			});
 		}
 
 		else if(sequenceType.value === "Peptide"){
-
+			//TO-DO
 		}
 	};
+
 
 	$scope.reset = function() {
 	    $scope.inputSequence =" ";
@@ -243,10 +191,7 @@ app.controller('MainCtrl', ['$scope', '$window', function ($scope, $window) {
 		}
 		else if(nodeName === 'T' || nodeName === 'U'){
 			return "cyan";
-		}
-		else {
-			return false;
-		}
+		}		
 	};
 
 	// Create the view-model for the chart and attach to the scope.

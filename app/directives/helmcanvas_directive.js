@@ -1,6 +1,6 @@
 
 // helmNotation module.
-angular.module('helmNotation', ['dragging'] )
+angular.module('helmNotation', [] )
 
 // Directive that generates the helm canvas 
 .directive('helmCanvas', function() {
@@ -8,7 +8,7 @@ angular.module('helmNotation', ['dragging'] )
  return {
 
   	restrict: 'E',
-  	templateUrl: "helm/helmcanvas_template.html",
+  	templateUrl: "templates/helmcanvas_template.html",
   	replace: true,
   	scope: {
   		chart: "=chart",

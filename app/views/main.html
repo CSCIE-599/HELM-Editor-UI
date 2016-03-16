@@ -12,10 +12,8 @@
       <td colspan="2"><textarea ng-model="inputSequence" id="input" name="Query" cols="80" rows="3"></textarea></td>
     </tr>
     <tr><td align="right" colspan="2" >
-         <!--  <input id="reset" type="reset" value="Reset"/> -->
-
           <button type="reset" ng-click="reset()">Reset</button>
-          <button ng-click="getNotation(polymerType, inputSequence)">Load</button>
+          <button ng-click="generateNotationAndLoadCanvas(polymerType, inputSequence)">Load</button>
         </td>
     </tr>
 </table>
@@ -24,9 +22,7 @@
 <div style="width: 80%; height:80%;overflow: auto;">
         <div style="margin-left: 20px;">
        
-        <!--
-        This custom element defines the helm canvas.
-        -->
+        <!--This custom element defines the helm canvas.-->
           <helm-canvas style="margin: 5px; width: 500px; height:300px;"
               chart="chartViewModel" >
           </helm-canvas> 
