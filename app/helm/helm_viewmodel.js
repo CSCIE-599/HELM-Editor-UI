@@ -8,7 +8,8 @@ var helmnotation = {
 
 // Module.
 (function () {
-	
+
+
 	// Width of a node.
 	helmnotation.nodeWidth = 40;
 
@@ -17,7 +18,10 @@ var helmnotation = {
 	helmnotation.NodeViewModel = function (nodeDataModel) {
 
 		this.data = nodeDataModel;
-						
+
+		// Set to true when the node is selected.
+		this._selected = false;
+
 		this.id = function () {
 			return this.data.id;
 		};
@@ -28,20 +32,17 @@ var helmnotation = {
 		};
 
 		//color of the node
-		this.colour = function () { 
+		this.colour = function () {
 			return this.data.colour;
 		};
 
 		//type of the node
-		//'n' : nucleotide
-		//'p' : phosphate
-		//'r' : ribose
-		this.nodeType = function () { 
+		this.nodeType = function () {
 			return this.data.nodeType;
 		};
 
 		// X coordinate of the node.
-		this.x = function () { 
+		this.x = function () {
 			return this.data.x;
 		};
 
@@ -51,7 +52,7 @@ var helmnotation = {
 		};
 
 		// X radius of the node.
-		this.rx = function () { 
+		this.rx = function () {
 			return this.data.rx;
 		};
 
@@ -71,17 +72,17 @@ var helmnotation = {
 		}
 
 		//rotation of the node
-		this.transformx = function () { 
+		this.transformx = function () {
 			return this.data.transformx;
 		};
 
 		//rotation of the node
-		this.transformy = function () { 
+		this.transformy = function () {
 			return this.data.transformy;
 		};
 
 		//rotation of the node
-		this.transformDegree = function () { 
+		this.transformDegree = function () {
 			return this.data.transformDegree;
 		};
 
@@ -106,12 +107,12 @@ var helmnotation = {
 		};
 
 		//visibility of the sequence#
-		this.seqVisible = function () { 
+		this.seqVisible = function () {
 			return this.data.seqVisible;
 		};
 
 	};
-			
+
 	// View model for a connector.
 	helmnotation.ConnectorViewModel = function (connectorDataModel, x, y, parentNode) {
 
@@ -131,7 +132,7 @@ var helmnotation = {
 		};
 
 		// Y coordinate of the connector.
-		this.y = function () { 
+		this.y = function () {
 			return this._y;
 		};
 
@@ -140,9 +141,6 @@ var helmnotation = {
 			return this._parentNode;
 		};
 	};
-
-	
-	
 
 	// Wrap the nodes data-model in a view-model.
 	var createNodesViewModel = function (nodesDataModel) {
@@ -168,11 +166,17 @@ var helmnotation = {
 		// Set to true when the connection is selected.
 		this._selected = false;
 
-		this.sourceCoordX = function () { 
+		this.sourceCoordX = function () {
+			if (destNode.name === 'P' || destNode.name === 'R'){
+				return sourceNode.width + sourceNode.x;
+			}
 			return ((sourceNode.width/2)+sourceNode.x);
 		};
 
-		this.sourceCoordY = function () { 
+		this.sourceCoordY = function () {
+			if(destNode.name === 'P' || destNode.name === 'R'){
+				return (sourceNode.y + (sourceNode.height/2));
+			}
 			return sourceNode.y + sourceNode.height;
 		};
 
@@ -183,11 +187,17 @@ var helmnotation = {
 			};
 		}
 
-		this.destCoordX = function () { 
+		this.destCoordX = function () {
+			if (destNode.name === 'P' || destNode.name === 'R'){
+				return destNode.x;
+			}
 			return destNode.transformx;
 		};
 
-		this.destCoordY = function () { 
+		this.destCoordY = function () {
+			if (destNode.name === 'P' || destNode.name === 'R'){
+				return (destNode.y + (destNode.height/2));
+			}
 			return (destNode.transformy-destNode.height/2)-connectionOffset;
 		};
 
@@ -197,9 +207,29 @@ var helmnotation = {
 				y: this.destCoordY()
 			};
 		}
+
+		// Select the connection.
+		this.select = function () {
+			this._selected = true;
+		};
+
+		// Deselect the connection.
+		this.deselect = function () {
+			this._selected = false;
+		};
+
+		// Toggle the selection state of the connection.
+		this.toggleSelected = function () {
+			this._selected = !this._selected;
+		};
+
+		// Returns true if the connection is selected.
+		this.selected = function () {
+			return this._selected;
+		};
 	};
 
-	
+
 	// View model for the chart.
 	helmnotation.ChartViewModel = function (chartDataModel) {
 
@@ -245,7 +275,7 @@ var helmnotation = {
 		this._createConnectionViewModel = function(connectionDataModel) {
 
 			var sourceConnector = this.findOutputConnector(connectionDataModel.source.nodeID, connectionDataModel.source.connectorIndex);
-			var destConnector = this.findInputConnector(connectionDataModel.dest.nodeID, connectionDataModel.dest.connectorIndex);			
+			var destConnector = this.findInputConnector(connectionDataModel.dest.nodeID, connectionDataModel.dest.connectorIndex);
 			return new helmnotation.ConnectionViewModel(connectionDataModel, sourceConnector, destConnector);
 		};
 
@@ -280,7 +310,7 @@ var helmnotation = {
 			this.data.nodes.push(nodeDataModel);
 
 			// Update the view model.
-			this.nodes.push(new helmnotation.NodeViewModel(nodeDataModel));		
+			this.nodes.push(new helmnotation.NodeViewModel(nodeDataModel));
 		};
 
 
@@ -288,7 +318,7 @@ var helmnotation = {
 		this.addConnection = function (sourceNode, destNode) {
 			var connectionsDataModel = this.data.connections;
 			var connectionsViewModel = this.connections;
-			
+
 			var connectionDataModel = {
 				source: {
 					nodeID: sourceNode.id,
@@ -299,11 +329,12 @@ var helmnotation = {
 			};
 			//push to connectionsdatamodel
 			connectionsDataModel.push(connectionDataModel);
-			
+
 			//push to connectionsviewmodel
 			var connectionViewModel = new helmnotation.ConnectionViewModel(connectionDataModel, sourceNode, destNode);
 			connectionsViewModel.push(connectionViewModel);
-		};
+		};		
+
 	};
 
 
