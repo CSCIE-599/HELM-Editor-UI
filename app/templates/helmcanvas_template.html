@@ -5,18 +5,18 @@
 <!-- loop thru all the nodes -->
   <g ng-repeat="node in chart.nodes">
 
-    <rect 
+    <rect
       ng-attr-class="{{node.selected() && 'selected-node-rect' || (node == mouseOverNode && 'mouseover-node-rect' || 'node-rect')}}"
-      ng-attr-width="{{node.width()}}" 
-      ng-attr-height="{{node.height()}}" 
-      ng-attr-fill="{{node.colour()}}" 
+      ng-attr-width="{{node.width()}}"
+      ng-attr-height="{{node.height()}}"
+      ng-attr-fill="{{node.colour()}}"
       ng-attr-x="{{node.x()}}"
       ng-attr-y="{{node.y()}}"
       ng-attr-rx="{{node.rx()}}"
       ng-attr-ry="{{node.ry()}}"
-      ng-attr-transform="rotate({{node.transformDegree()}}, {{node.transformx()}}, {{node.transformy()}})"     
+      ng-attr-transform="rotate({{node.transformDegree()}}, {{node.transformx()}}, {{node.transformy()}})"
     >
-    </rect> 
+    </rect>
 
     <text
       ng-attr-x="{{(node.width()/2)+node.x()}}"
@@ -34,9 +34,9 @@
       alignment-baseline="middle"
       ng-attr-visibility="{{node.seqVisible()}}"
      >
-      {{node.id()}}
+      {{node.num()}}
     </text>
-      
+
   </g>
 
 <!-- loop thru all the connections -->
@@ -46,6 +46,5 @@
          style="stroke:#660000; fill:none;">
       </path>
   </g>
- 
-</svg>
 
+</svg>

@@ -21,14 +21,18 @@ app.controller('MainCtrl', ['$scope', '$window', function ($scope, $window) {
 	$scope.polyTypes = [
 	  {	value: '', label:'--Select--' },
 	  { value: 'Nucleotide', label:'Nucleotide' },
-	  { value: 'Peptide', label:'Peptide' }
+	  { value: 'Peptide', label:'Peptide' },
+      { value: 'HELMNotation', label:'HELM Notation'}
 
 	];
 
 	$scope.polymerType = $scope.polyTypes[0];
 
-    // Selects the next node id.
-	var nextNodeID = 0;
+    // node id
+	var nodeId = 0;
+
+    //number printed by node
+    var nodeNum = 0;
 
 	//node height
 	var nodeHeight = 25;
@@ -40,7 +44,7 @@ app.controller('MainCtrl', ['$scope', '$window', function ($scope, $window) {
 	var connectionLength = 100;
 
 	//space between 2 monomers, like A and G
-	var monomerSpacing = 100;
+	var monomerSpacing = 50;//100;
 
 	//regular node radius
 	var radiusX = '4';
@@ -70,14 +74,15 @@ app.controller('MainCtrl', ['$scope', '$window', function ($scope, $window) {
 			ry = radiusY +10;
 		}
 
+
+
 		if(nodeType === 'n'){//nucleotide
-			nextNodeID++;
 			sequenceVisibility = 'visible';
 		}
 
 		var newNodeDataModel = {
 			name: nodeName,
-			id: nextNodeID,
+			id: nodeId,
 			x: xpos,
 			y: ypos,
 			rx:rx,
@@ -90,6 +95,14 @@ app.controller('MainCtrl', ['$scope', '$window', function ($scope, $window) {
 			transformDegree:rotateDegree,
 			seqVisible:	sequenceVisibility,
 		};
+
+        if (nodeName !== 'R' && nodeName.indexOf('P') === -1){
+            nodeNum++;
+            newNodeDataModel.num = nodeNum;
+            console.log("main line 102: made node " + nodeName + ", num: " + newNodeDataModel.num);
+        }
+
+        nodeId++;
 
 		$scope.chartViewModel.addNode(newNodeDataModel);
 
@@ -125,44 +138,124 @@ app.controller('MainCtrl', ['$scope', '$window', function ($scope, $window) {
         return sourceNode;
 	 };
 
-	$scope.addPhosphate = function (sourceNodeXpos, sourceNodeYpos, sourceNode) {
-		var destNode = $scope.addNewNode('P','lightgrey', false, sourceNodeXpos + monomerSpacing/2, sourceNodeYpos, 'p');
-		//create the connection between 2 nodes
-	 	$scope.createConnection(sourceNode, destNode);
+	$scope.addPhosphate = function (sPorP, sourceNodeXpos, sourceNodeYpos, previousRNode) {
+		var pNode = $scope.addNewNode(sPorP,'lightgrey', false, sourceNodeXpos + monomerSpacing/2, sourceNodeYpos, 'p');
+		//link R to P
+        pNode.horizSource = previousRNode.id;
+        console.log('Connect r to p: ' + previousRNode.name + '.' + previousRNode.id + ' to ' + pNode.name + '.' + pNode.id );
+	 	$scope.createConnection(previousRNode, pNode);
 
-        return destNode;
+        return pNode;
 	};
+
+    //takes HELM notation,
+    //finds sequence type (nucleotide or peptide) and node letters (R, P, sP, A, C, G, T, etc.)
+    //
+    //TO-DO: parse requested connection source/destinations (text after '$')
+    //TO-DO: move this method to be a service
+    $scope.translateHELMNotationToString = function(sequence){
+        console.log('the unparsed sequence is: ' + sequence);
+        var sequenceType;
+        if (sequence.indexOf('RNA') > -1){
+            sequenceType = 'Nucleotide';
+        }
+        else if (sequence.indexOf('PEPTIDE') > -1){
+            sequenceType = 'Peptide';
+        }
+        else {
+            //TO-DO: Handle this error in correct way.
+			$window.alert('HELM Notation has no Polymer Type');
+        }
+
+        var curlyBrace = sequence.indexOf('{');
+        sequence = sequence.substring(curlyBrace, sequence.length);
+
+        var sequenceArray = [];
+        var inNonNaturalAminoAcid = false;
+        var nonNaturalAminoAcid = '';      //multi-letter codes - inside '[]' in HELM
+
+        for (var i = 0; i < sequence.length-1; i++){
+            if (sequence[i] === '}'){
+                break;
+            }
+
+            //process multi-letter codes
+            while (inNonNaturalAminoAcid === true){
+                if (sequence[i] === ']'){
+                    sequenceArray.push(nonNaturalAminoAcid);
+                    inNonNaturalAminoAcid = false;
+                }
+
+                if (/[a-zA-Z0-9]/.test(sequence[i])){  //if char is alphanumeric
+                    nonNaturalAminoAcid += sequence[i];
+                }
+                i += 1;
+            }
+
+            if (sequence[i] === '['){
+                inNonNaturalAminoAcid = true;
+            }
+
+            if (/[a-zA-Z0-9]/.test(sequence[i])){
+                //TO-DO: validate letters? but, we handle input validation in Issue 6
+                sequenceArray.push(sequence[i]);
+            }
+        }
+
+        $scope.generateNotationAndLoadCanvas(sequenceType, sequenceArray);
+    };
+
 
 	//Parse the sequence, and generate the notation
 	$scope.generateNotationAndLoadCanvas= function (sequenceType, sequence) {
+
 		var startXpos = 40;
 		var startYpos = 20;
 		var color;
 
-		if(sequenceType.value === ''){
-			$window.alert('Please select a Polymer Type');
-		}
-		if(sequenceType.value === 'Nucleotide'){
-            var pNode ='';
+		if(sequenceType === 'Nucleotide'){
+            var pNode = '';
+            var rNode = '';
 
 			angular.forEach(sequence, function(value, key) {
 				color = $scope.getNodeColor(value);
-				var rNode = $scope.addNucleicAcid (value, color, startXpos, startYpos);
 
-                if (pNode){ //if there is a 'P' Node before 'R', attach 'P' to 'R'
-                    $scope.createConnection(pNode, rNode);
+                if (value === 'P' || value === 'sP'){
+                    pNode = $scope.addPhosphate(value, startXpos,startYpos,rNode);
                 }
+                else if (value !== 'R'){
+				    rNode = $scope.addNucleicAcid(value, color, startXpos, startYpos);
 
-				if(key!==sequence.length-1){//do not add phosphate for the last element in the sequence
-                    pNode = $scope.addPhosphate(startXpos,startYpos,rNode);
-				}
+                    if (pNode){     //link previous P to R
+                        rNode.horizSource = pNode.id;
+                        $scope.createConnection(pNode, rNode);
+                    }
+                    pNode = '';
+                }
 				//increment the startPos for the next element in the sequence
 				startXpos = startXpos + monomerSpacing;
 			});
 		}
 
-		else if(sequenceType.value === 'Peptide'){
-			//TO-DO
+		else if(sequenceType === 'Peptide'){
+            var xPos = 40;
+            var yPos = 20;
+            var prevNode;
+
+			angular.forEach(sequence, function(value, key) {
+
+        	 	var newNode = $scope.addNewNode(value, 'lightblue', true, xPos, yPos, 'n');
+
+                //connect 2 nodes horizontally
+                if (prevNode){
+                    newNode.horizSource = prevNode.id;
+        	 	    $scope.createConnection(prevNode, newNode);
+                }
+
+                prevNode = newNode;
+                xPos = xPos + monomerSpacing;
+            });
+
 		}
 	};
 
@@ -191,7 +284,13 @@ app.controller('MainCtrl', ['$scope', '$window', function ($scope, $window) {
 		}
 		else if(nodeName === 'T' || nodeName === 'U'){
 			return 'cyan';
-		}		
+		}
+        else if (nodeName === 'R'){
+            return 'lightgrey';
+        }
+        else if (nodeName === 'P' || nodeName === 'sP'){
+            return 'lightgrey';
+        }
 	};
 
 	// Create the view-model for the chart and attach to the scope.

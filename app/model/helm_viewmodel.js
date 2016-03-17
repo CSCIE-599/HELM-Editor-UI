@@ -5,7 +5,7 @@ var helmnotation = {
 };
 
 (function () {
-	
+
 	// View model for a node.
 	helmnotation.NodeViewModel = function (nodeDataModel) {
 
@@ -14,9 +14,14 @@ var helmnotation = {
 		// Set to true when the node is selected.
 		this._selected = false;
 
-		//id of a node, used to display the sequence# next to the monomer
+		//each node has unique id
 		this.id = function () {
 			return this.data.id;
+		};
+
+		//used to display the sequence# next to the monomer
+		this.num = function () {
+			return this.data.num || "";
 		};
 
 		// Name of the node.
@@ -63,6 +68,11 @@ var helmnotation = {
 		// Height of the node.
 		this.height = function () {
 			return this.data.height;
+		}
+
+		// id of node from which this node links horizontally
+		this.horizSource = function(){
+			return this.data.horizDest || "";
 		}
 
 		//rotation of the node
@@ -161,14 +171,15 @@ var helmnotation = {
 		this._selected = false;
 
 		this.sourceCoordX = function () {
-			if (destNode.name === 'P' || destNode.name === 'R'){
+			if (sourceNode.id === destNode.horizSource){ //if link is horizontal
+				//console.log('source ' + sourceNode.name + ' has horiz link to ' + destNode.name);
 				return sourceNode.width + sourceNode.x;
 			}
 			return ((sourceNode.width/2)+sourceNode.x);
 		};
 
 		this.sourceCoordY = function () {
-			if(destNode.name === 'P' || destNode.name === 'R'){
+			if(sourceNode.id === destNode.horizSource){
 				return (sourceNode.y + (sourceNode.height/2));
 			}
 			return sourceNode.y + sourceNode.height;
@@ -182,14 +193,15 @@ var helmnotation = {
 		}
 
 		this.destCoordX = function () {
-			if (destNode.name === 'P' || destNode.name === 'R'){
+			if (sourceNode.id === destNode.horizSource){
 				return destNode.x;
 			}
 			return destNode.transformx;
 		};
 
 		this.destCoordY = function () {
-			if (destNode.name === 'P' || destNode.name === 'R'){
+			if (sourceNode.id === destNode.horizSource){
+				//console.log('for destCoordY, link from ' + sourceNode.name + ' to ' + destNode.name);
 				return (destNode.y + (destNode.height/2));
 			}
 			return (destNode.transformy-destNode.height/2)-connectionOffset;
@@ -327,7 +339,7 @@ var helmnotation = {
 			//push to connectionsviewmodel
 			var connectionViewModel = new helmnotation.ConnectionViewModel(connectionDataModel, sourceNode, destNode);
 			connectionsViewModel.push(connectionViewModel);
-		};		
+		};
 
 	};
 
