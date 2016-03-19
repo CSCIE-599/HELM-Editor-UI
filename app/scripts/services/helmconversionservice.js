@@ -66,8 +66,7 @@ angular.module('helmeditor2App')
             }
         }
 
-        console.log('SequenceArray generated succesfully: ' + sequenceArray);
-
+         console.log('Sequence generated succesfully: ' + sequenceArray);
 
         return {
         	sequenceType: sequenceType,
@@ -78,8 +77,7 @@ angular.module('helmeditor2App')
 
 
   	/*this.testFunction = function(){
-
-  		alert('hello');
+        alert('hello');
   	}*/    
 
 

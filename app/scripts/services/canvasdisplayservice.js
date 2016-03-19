@@ -129,9 +129,9 @@ angular.module('helmeditor2App')
         }
 	};
 
-	this.testFun = function(){
+	/*this.testFunction = function(){
   		alert('in CanvasDisplayService');
-  	};
+  	};*/
 
 
   });
