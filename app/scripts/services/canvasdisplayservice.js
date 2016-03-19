@@ -73,12 +73,10 @@ angular.module('helmeditor2App')
 			seqVisible:	sequenceVisibility,
 		};
 
-		//debugger;
-
-        if (nodeName !== 'R' && nodeName.indexOf('P') === -1){
+        if (nodeName.charAt(nodeName.length-1) !== 'R' && nodeName.indexOf('P') === -1){
             nodeNum++;
             newNode.num = nodeNum;
-            console.log("main line 102: made node " + nodeName + ", num: " + newNode.num);
+            console.log("Created node " + nodeName + ", num: " + newNode.num);
         }
 
         nodeId++;
@@ -87,7 +85,7 @@ angular.module('helmeditor2App')
 	};
 
 	//A simple nucleic acid has a ribose node, main monomer node and a connection
-	self.createNucleicAcidNodes = function (nodeName,  nodeColor, xPos, yPos) {
+	self.createNucleicAcidNodes = function (nodeName,  nodeColor, xPos, yPos, riboseType) {
 
 		var sourceNodeXpos = xPos;
 		var sourceNodeYpos = yPos;
@@ -96,14 +94,14 @@ angular.module('helmeditor2App')
 		var destNodeYpos = sourceNodeYpos + connectionLength;
 
 		//R ribose node
-	 	var sourceNode = self.createNode('R','lightgrey', false, sourceNodeXpos, sourceNodeYpos, 'r');
+	 	var riboseNode = self.createNode(riboseType,'lightgrey', false, sourceNodeXpos, sourceNodeYpos, 'r');
 
 	 	//A,C, G, T, U
-	 	var destNode = self.createNode(nodeName, nodeColor, true, destNodeXpos, destNodeYpos, 'n');
+	 	var monomerNode = self.createNode(nodeName, nodeColor, true, destNodeXpos, destNodeYpos, 'n');
 
 	 	return {
-       	ribose: sourceNode,
-       	monomer: destNode
+       	ribose: riboseNode,
+       	monomer: monomerNode
        };
 
 	 };

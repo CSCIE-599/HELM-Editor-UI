@@ -42,8 +42,7 @@ app.controller('MainCtrl', ['$scope', '$window', 'HelmConversionService', 'Canva
 	 $scope.displayOnCanvas = function(notation){
 
     	var sequence = HelmConversionService.convertHelmNotationToSequence(notation);
-    	 console.log("Sequence generated: " +sequence.sequenceArray);
-		$scope.generateGraph(sequence.sequenceType, sequence.sequenceArray);          	
+    	$scope.generateGraph(sequence.sequenceType, sequence.sequenceArray);          	
     };
 
 
@@ -53,6 +52,7 @@ app.controller('MainCtrl', ['$scope', '$window', 'HelmConversionService', 'Canva
 		var startXpos = 40;
 		var startYpos = 20;
 		var color;
+		var riboseType;
 
 		if(sequenceType === 'Nucleotide'){
             var pNode = '';
@@ -61,11 +61,15 @@ app.controller('MainCtrl', ['$scope', '$window', 'HelmConversionService', 'Canva
 			angular.forEach(sequence, function(value, key) {
 				color = CanvasDisplayService.getNodeColor(value);
 
+				 if(value.charAt(value.length-1) === 'R')
+                	riboseType = value;
+				
                 if (value === 'P' || value === 'sP'){
                     pNode = $scope.addPhosphate(value, startXpos,startYpos,rNode);
-                }
-                else if (value !== 'R'){
-				    rNode = $scope.addNucleicAcid(value, color, startXpos, startYpos);
+                }               
+               
+                else if (value.charAt(value.length-1) !== 'R'){//exclude any element that ends in 'R', like dR, sR, R etc
+                    rNode = $scope.addNucleicAcid(value, color, startXpos, startYpos, riboseType);
 
                     if (pNode){     //link previous P to R
                         rNode.horizSource = pNode.id;
@@ -117,9 +121,10 @@ app.controller('MainCtrl', ['$scope', '$window', 'HelmConversionService', 'Canva
 
 
 	//A simple nucleic acid has a ribose node, main monomer node and a connection
-	$scope.addNucleicAcid = function (nodeName,  nodeColor, xPos, yPos) {
+	$scope.addNucleicAcid = function (nodeName,  nodeColor, xPos, yPos, riboseType) {
 
-		var nucleicAcidNodes =  CanvasDisplayService.createNucleicAcidNodes(nodeName,  nodeColor, xPos, yPos);
+		
+		var nucleicAcidNodes =  CanvasDisplayService.createNucleicAcidNodes(nodeName,  nodeColor, xPos, yPos, riboseType);
 		
 		$scope.chartViewModel.addNode(nucleicAcidNodes.ribose);
 		$scope.chartViewModel.addNode(nucleicAcidNodes.monomer);
@@ -140,6 +145,8 @@ app.controller('MainCtrl', ['$scope', '$window', 'HelmConversionService', 'Canva
 
         return pNode;
 	};
+
+
 
 
 	// Create the view-model for the chart and attach to the scope.
