@@ -6,6 +6,7 @@ var helmnotation = {
 
 (function () {
 
+
 	// View model for a node.
 	helmnotation.NodeViewModel = function (nodeDataModel) {
 
@@ -117,35 +118,6 @@ var helmnotation = {
 
 	};
 
-	// View model for a connector.
-	helmnotation.ConnectorViewModel = function (connectorDataModel, x, y, parentNode) {
-
-		this.data = connectorDataModel;
-		this._parentNode = parentNode;
-		this._x = x;
-		this._y = y;
-
-		// The name of the connector.
-		this.name = function () {
-			return this.data.name;
-		}
-
-		// X coordinate of the connector.
-		this.x = function () {
-			return this._x;
-		};
-
-		// Y coordinate of the connector.
-		this.y = function () {
-			return this._y;
-		};
-
-		// The parent node that the connector is attached to.
-		this.parentNode = function () {
-			return this._parentNode;
-		};
-	};
-
 	// Wrap the nodes data-model in a view-model.
 	var createNodesViewModel = function (nodesDataModel) {
 		var nodesViewModel = [];
@@ -158,6 +130,7 @@ var helmnotation = {
 		return nodesViewModel;
 	};
 
+	
 	// View model for a connection.
 	helmnotation.ConnectionViewModel= function (connectionDataModel, sourceNode, destNode) {
 
@@ -165,7 +138,7 @@ var helmnotation = {
 		this.source = sourceNode;
 		this.dest = destNode;
 
-		var connectionOffset = 5;
+		var connectionOffset = 0;
 
 		// Set to true when the connection is selected.
 		this._selected = false;
@@ -239,50 +212,9 @@ var helmnotation = {
 	// View model for the chart.
 	helmnotation.ChartViewModel = function (chartDataModel) {
 
-		// Find a specific node within the chart.
-		this.findNode = function (nodeID) {
-
-			for (var i = 0; i < this.nodes.length; ++i) {
-				var node = this.nodes[i];
-				if (node.data.id == nodeID) {
-					return node;
-				}
-			}
-
-			throw new Error("Failed to find node " + nodeID);
-		};
-
-		// Find a specific input connector within the chart.
-		this.findInputConnector = function (nodeID, connectorIndex) {
-
-			var node = this.findNode(nodeID);
-
-			if (!node.inputConnectors || node.inputConnectors.length <= connectorIndex) {
-				throw new Error("Node " + nodeID + " has invalid input connectors.");
-			}
-
-			return node.inputConnectors[connectorIndex];
-		};
-
-		//
-		// Find a specific output connector within the chart.
-		this.findOutputConnector = function (nodeID, connectorIndex) {
-
-			var node = this.findNode(nodeID);
-
-			if (!node.outputConnectors || node.outputConnectors.length <= connectorIndex) {
-				throw new Error("Node " + nodeID + " has invalid output connectors.");
-			}
-			return node.outputConnectors[connectorIndex];
-		};
-
-		//
 		// Create a view model for connection from the data model.
 		this._createConnectionViewModel = function(connectionDataModel) {
-
-			var sourceConnector = this.findOutputConnector(connectionDataModel.source.nodeID, connectionDataModel.source.connectorIndex);
-			var destConnector = this.findInputConnector(connectionDataModel.dest.nodeID, connectionDataModel.dest.connectorIndex);
-			return new helmnotation.ConnectionViewModel(connectionDataModel, sourceConnector, destConnector);
+			return new helmnotation.ConnectionViewModel(connectionDataModel);
 		};
 
 		// Wrap the connections data-model in a view-model.
@@ -296,7 +228,7 @@ var helmnotation = {
 				}
 			}
 			return connectionsViewModel;
-		};
+		};		
 
 		// Reference to the underlying data.
 		this.data = chartDataModel;
