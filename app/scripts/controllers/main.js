@@ -28,8 +28,8 @@ app.controller('MainCtrl', ['$scope', '$window', 'HelmConversionService', 'Canva
 
 	$scope.polymerType = $scope.polyTypes[0];
 
-	//space between 2 monomers, like A and G
-	var monomerSpacing = 50;//100;
+	//space between 2 base nodes, like A and G
+	var monomerSpacing = 50;;
 
 	//length of a connection, between A and attacher node R
 	var connectionLength = 100;
@@ -54,19 +54,18 @@ app.controller('MainCtrl', ['$scope', '$window', 'HelmConversionService', 'Canva
 		var startXpos = 20;
 		var startYpos = 40;
 		var color;
-
 		                     
         var riboseNode;
-	    var monomerNode;
+	    var baseNode;
 	    var phosphateNode; 
 	    var prevNode;
 	   		
 		angular.forEach(sequence, function(value, key) {	 		
 			color = CanvasDisplayService.getNodeColor(value);	
-			//debugger;
+			
 			if(sequenceType === 'Nucleotide'){
 
-				if (value.charAt(value.length-1) === 'R'){
+				if (CanvasDisplayService.isRiboseNode(value)){//chck for Ribose node first
 					riboseNode = CanvasDisplayService.createRibose(value, color, startXpos, startYpos);
 					$scope.chartViewModel.addNode(riboseNode);
 
@@ -75,11 +74,11 @@ app.controller('MainCtrl', ['$scope', '$window', 'HelmConversionService', 'Canva
 					}
 				}
 				else if(value !== 'P'){
-			 		monomerNode = CanvasDisplayService.createMonomer(value, color, riboseNode.x , riboseNode.y + connectionLength);
-			 		$scope.chartViewModel.addNode(monomerNode);
+			 		baseNode = CanvasDisplayService.createBase(value, color, riboseNode.x , riboseNode.y + connectionLength);
+			 		$scope.chartViewModel.addNode(baseNode);
 
-			 		if(riboseNode && monomerNode){//make vertical connection
-						$scope.addNewConnection(riboseNode, monomerNode, 'v');
+			 		if(riboseNode && baseNode){//make vertical connection
+						$scope.addNewConnection(riboseNode, baseNode, 'v');
 					}
 				}
 				else {
@@ -91,23 +90,21 @@ app.controller('MainCtrl', ['$scope', '$window', 'HelmConversionService', 'Canva
 					}
 				}
 
-				//increment the startPos for the next momomer in the sequence
+				//increment the startPos for the next basenode in the sequence
 				startXpos = riboseNode.x + monomerSpacing*2;
 			}
 			else {//Peptide
 
-				monomerNode = CanvasDisplayService.createMonomer(value, "lightblue", startXpos , startYpos);
-				$scope.chartViewModel.addNode(monomerNode);
+				baseNode = CanvasDisplayService.createBase(value, "lightblue", startXpos , startYpos);
+				$scope.chartViewModel.addNode(baseNode);
 				if (prevNode){                    
-    	 	    	$scope.addNewConnection(prevNode, monomerNode, 'h');//connect 2 nodes horizontally
+    	 	    	$scope.addNewConnection(prevNode, baseNode, 'h');//connect 2 nodes horizontally
             	}
 
-            	prevNode = monomerNode;
-            	startXpos = monomerNode.x + monomerSpacing;
-			}			
-		
-		});
-		
+            	prevNode = baseNode;
+            	startXpos = baseNode.x + monomerSpacing;
+			}		
+		});		
 	};
 
 

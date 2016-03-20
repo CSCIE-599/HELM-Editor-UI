@@ -53,7 +53,7 @@ angular.module('helmeditor2App')
 			ry = radiusY +10;
 		}
 
-		if(nodeType === 'n'){//nucleotide
+		if(nodeType === 'b'){//base node, A, T, G
 			sequenceVisibility = 'visible';
 		}
 
@@ -73,7 +73,8 @@ angular.module('helmeditor2App')
 			seqVisible:	sequenceVisibility,
 		};
 
-        if (nodeName.charAt(nodeName.length-1) !== 'R' && nodeName.indexOf('P') === -1){
+       	//increment nodeNum only for baseNode
+        if (!self.isRiboseNode(nodeName)  && nodeName.indexOf('P') === -1){
             nodeNum++;
             newNode.num = nodeNum;
             console.log("Created node " + nodeName + ", num: " + newNode.num);
@@ -88,19 +89,26 @@ angular.module('helmeditor2App')
 		console.log('adding ribose node ' + nodeName +' at: (' + xPos + ',' +yPos +')');
 	 	return self.createNode(nodeName,'lightgrey', false, xPos, yPos, 'r');
 
-	 }
+	 };
 
-	 self.createMonomer = function (nodeName,  nodeColor, xPos, yPos) {
+	 self.createBase = function (nodeName,  nodeColor, xPos, yPos) {
 		console.log('adding monomer node ' + nodeName +' at: (' + xPos + ',' +yPos +')');
-	 	return self.createNode(nodeName, nodeColor, true, xPos, yPos, 'n');
-	 }
+	 	return self.createNode(nodeName, nodeColor, true, xPos, yPos, 'b');
+	 };
 
 	 self.createPhosphate = function (nodeName,  nodeColor, xPos, yPos) {
 		console.log('adding phosphate node ' + nodeName +' at: (' + xPos + ',' +yPos +')');
 	 	return self.createNode(nodeName, nodeColor, false, xPos, yPos, 'p');
-	 }
+	 };
 
+	 self.isRiboseNode = function(node){
+	 	var riboseArr = ['R', 'dR', 'sR', 'mR', 'fR', 'LR', 'MOE'];
 
+	 	if(riboseArr.indexOf(node) !== -1){
+	 		return true;
+	 	}
+	 	return false;
+	 };
 
 	self.getNodeColor = function(nodeName){
 
