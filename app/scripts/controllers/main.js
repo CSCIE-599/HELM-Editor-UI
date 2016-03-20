@@ -31,13 +31,15 @@ app.controller('MainCtrl', ['$scope', '$window', 'HelmConversionService', 'Canva
 	//space between 2 monomers, like A and G
 	var monomerSpacing = 50;//100;
 
+	//length of a connection, between A and attacher node R
+	var connectionLength = 100;
+
 
 	// Setup the data-model for the chart.
 	var chartDataModel = {
 		nodes: [],
 		connections: []
 	};
-
 
 	 $scope.displayOnCanvas = function(notation){
 
@@ -49,58 +51,63 @@ app.controller('MainCtrl', ['$scope', '$window', 'HelmConversionService', 'Canva
 	//Parse the sequence, and generate the notation
 	$scope.generateGraph= function (sequenceType, sequence) {
 
-		var startXpos = 40;
-		var startYpos = 20;
+		var startXpos = 20;
+		var startYpos = 40;
 		var color;
-		var riboseType;
 
-		if(sequenceType === 'Nucleotide'){
-            var pNode = '';
-            var rNode = '';
+		                     
+        var riboseNode;
+	    var monomerNode;
+	    var phosphateNode; 
+	    var prevNode;
+	   		
+		angular.forEach(sequence, function(value, key) {	 		
+			color = CanvasDisplayService.getNodeColor(value);	
+			//debugger;
+			if(sequenceType === 'Nucleotide'){
 
-			angular.forEach(sequence, function(value, key) {
-				color = CanvasDisplayService.getNodeColor(value);
+				if (value.charAt(value.length-1) === 'R'){
+					riboseNode = CanvasDisplayService.createRibose(value, color, startXpos, startYpos);
+					$scope.chartViewModel.addNode(riboseNode);
 
-				 if(value.charAt(value.length-1) === 'R')
-                	riboseType = value;
-				
-                if (value === 'P' || value === 'sP'){
-                    pNode = $scope.addPhosphate(value, startXpos,startYpos,rNode);
-                }               
-               
-                else if (value.charAt(value.length-1) !== 'R'){//exclude any element that ends in 'R', like dR, sR, R etc
-                    rNode = $scope.addNucleicAcid(value, color, startXpos, startYpos, riboseType);
+					if(phosphateNode  &&  riboseNode){//make horizontal connection
+						$scope.addNewConnection(phosphateNode, riboseNode, 'h');
+					}
+				}
+				else if(value !== 'P'){
+			 		monomerNode = CanvasDisplayService.createMonomer(value, color, riboseNode.x , riboseNode.y + connectionLength);
+			 		$scope.chartViewModel.addNode(monomerNode);
 
-                    if (pNode){     //link previous P to R
-                        rNode.horizSource = pNode.id;
-                        $scope.addNewConnection(pNode, rNode);
-                    }
-                    pNode = '';
-                }
-				//increment the startPos for the next element in the sequence
-				startXpos = startXpos + monomerSpacing;
-			});
-		}
+			 		if(riboseNode && monomerNode){//make vertical connection
+						$scope.addNewConnection(riboseNode, monomerNode, 'v');
+					}
+				}
+				else {
+					phosphateNode = CanvasDisplayService.createPhosphate(value, color, riboseNode.x  + monomerSpacing, riboseNode.y);
+					$scope.chartViewModel.addNode(phosphateNode);
 
-		else if(sequenceType === 'Peptide'){
-            var xPos = startXpos;
-            var yPos = startYpos;
-            var prevNode;
+					if(riboseNode && phosphateNode){//make horizontal connection
+						$scope.addNewConnection(riboseNode, phosphateNode, 'h');
+					}
+				}
 
-			angular.forEach(sequence, function(value, key) {
+				//increment the startPos for the next momomer in the sequence
+				startXpos = riboseNode.x + monomerSpacing*2;
+			}
+			else {//Peptide
 
-        	 	var newNode = $scope.addNewNode(value, 'lightblue', true, xPos, yPos, 'n');
+				monomerNode = CanvasDisplayService.createMonomer(value, "lightblue", startXpos , startYpos);
+				$scope.chartViewModel.addNode(monomerNode);
+				if (prevNode){                    
+    	 	    	$scope.addNewConnection(prevNode, monomerNode, 'h');//connect 2 nodes horizontally
+            	}
 
-                //connect 2 nodes horizontally
-                if (prevNode){
-                    newNode.horizSource = prevNode.id;
-        	 	    $scope.addNewConnection(prevNode, newNode);
-                }
-
-                prevNode = newNode;
-                xPos = xPos + monomerSpacing;
-            });
-		}
+            	prevNode = monomerNode;
+            	startXpos = monomerNode.x + monomerSpacing;
+			}			
+		
+		});
+		
 	};
 
 
@@ -112,42 +119,10 @@ app.controller('MainCtrl', ['$scope', '$window', 'HelmConversionService', 'Canva
 		return node;
 	};
 
-
 	//add a connection between 2 nodes
-	$scope.addNewConnection = function(sourceNode, destNode){
-		$scope.chartViewModel.addConnection(sourceNode, destNode);
+	$scope.addNewConnection = function(sourceNode, destNode, type){
+		$scope.chartViewModel.addConnection(sourceNode, destNode, type);
 	};
-
-
-
-	//A simple nucleic acid has a ribose node, main monomer node and a connection
-	$scope.addNucleicAcid = function (nodeName,  nodeColor, xPos, yPos, riboseType) {
-
-		
-		var nucleicAcidNodes =  CanvasDisplayService.createNucleicAcidNodes(nodeName,  nodeColor, xPos, yPos, riboseType);
-		
-		$scope.chartViewModel.addNode(nucleicAcidNodes.ribose);
-		$scope.chartViewModel.addNode(nucleicAcidNodes.monomer);
-
-		//create the connection between ribose and monomer
-	 	$scope.addNewConnection(nucleicAcidNodes.ribose, nucleicAcidNodes.monomer);
-
-	 	return nucleicAcidNodes.ribose; 
-	 };
-
-
-	$scope.addPhosphate = function (sPorP, sourceNodeXpos, sourceNodeYpos, previousRNode) {
-		var pNode = $scope.addNewNode(sPorP,'lightgrey', false, sourceNodeXpos + monomerSpacing/2, sourceNodeYpos, 'p');
-		//link R to P
-        pNode.horizSource = previousRNode.id;
-        console.log('Connect r to p: ' + previousRNode.name + '.' + previousRNode.id + ' to ' + pNode.name + '.' + pNode.id );
-	 	$scope.addNewConnection(previousRNode, pNode);
-
-        return pNode;
-	};
-
-
-
 
 	// Create the view-model for the chart and attach to the scope.
 	$scope.chartViewModel = new helmnotation.ChartViewModel(chartDataModel);

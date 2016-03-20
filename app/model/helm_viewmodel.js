@@ -132,8 +132,9 @@ var helmnotation = {
 
 	
 	// View model for a connection.
-	helmnotation.ConnectionViewModel= function (connectionDataModel, sourceNode, destNode) {
+	helmnotation.ConnectionViewModel= function (connectionDataModel, sourceNode, destNode, type) {
 
+		//debugger;
 		this.data = connectionDataModel;
 		this.source = sourceNode;
 		this.dest = destNode;
@@ -144,15 +145,15 @@ var helmnotation = {
 		this._selected = false;
 
 		this.sourceCoordX = function () {
-			if (sourceNode.id === destNode.horizSource){ //if link is horizontal
-				//console.log('source ' + sourceNode.name + ' has horiz link to ' + destNode.name);
+			if (type === 'h'){ //if link is horizontal
 				return sourceNode.width + sourceNode.x;
 			}
-			return ((sourceNode.width/2)+sourceNode.x);
+			return (sourceNode.width/2 + sourceNode.x );
+			
 		};
 
 		this.sourceCoordY = function () {
-			if(sourceNode.id === destNode.horizSource){
+			if(type === 'h'){
 				return (sourceNode.y + (sourceNode.height/2));
 			}
 			return sourceNode.y + sourceNode.height;
@@ -166,18 +167,17 @@ var helmnotation = {
 		}
 
 		this.destCoordX = function () {
-			if (sourceNode.id === destNode.horizSource){
+			if (type === 'h'){
 				return destNode.x;
 			}
-			return destNode.transformx;
+			return destNode.transformx;			
 		};
 
-		this.destCoordY = function () {
-			if (sourceNode.id === destNode.horizSource){
-				//console.log('for destCoordY, link from ' + sourceNode.name + ' to ' + destNode.name);
+		this.destCoordY = function () {		
+			if (type === 'h'){
 				return (destNode.y + (destNode.height/2));
 			}
-			return (destNode.transformy-destNode.height/2)-connectionOffset;
+			return (destNode.transformy-destNode.height/2)-connectionOffset;			
 		};
 
 		this.destCoord = function () {
@@ -187,25 +187,6 @@ var helmnotation = {
 			};
 		}
 
-		// Select the connection.
-		this.select = function () {
-			this._selected = true;
-		};
-
-		// Deselect the connection.
-		this.deselect = function () {
-			this._selected = false;
-		};
-
-		// Toggle the selection state of the connection.
-		this.toggleSelected = function () {
-			this._selected = !this._selected;
-		};
-
-		// Returns true if the connection is selected.
-		this.selected = function () {
-			return this._selected;
-		};
 	};
 
 
@@ -253,7 +234,7 @@ var helmnotation = {
 
 
 		// Create a view model for a new connection.
-		this.addConnection = function (sourceNode, destNode) {
+		this.addConnection = function (sourceNode, destNode, type) {
 			var connectionsDataModel = this.data.connections;
 			var connectionsViewModel = this.connections;
 
@@ -269,7 +250,7 @@ var helmnotation = {
 			connectionsDataModel.push(connectionDataModel);
 
 			//push to connectionsviewmodel
-			var connectionViewModel = new helmnotation.ConnectionViewModel(connectionDataModel, sourceNode, destNode);
+			var connectionViewModel = new helmnotation.ConnectionViewModel(connectionDataModel, sourceNode, destNode, type);
 			connectionsViewModel.push(connectionViewModel);
 		};
 

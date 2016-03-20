@@ -80,35 +80,29 @@ angular.module('helmeditor2App')
         }
 
         nodeId++;
-
 		return newNode;
 	};
 
-	//A simple nucleic acid has a ribose node, main monomer node and a connection
-	self.createNucleicAcidNodes = function (nodeName,  nodeColor, xPos, yPos, riboseType) {
 
-		var sourceNodeXpos = xPos;
-		var sourceNodeYpos = yPos;
+	 self.createRibose = function (nodeName,  nodeColor, xPos, yPos) {
+		console.log('adding ribose node ' + nodeName +' at: (' + xPos + ',' +yPos +')');
+	 	return self.createNode(nodeName,'lightgrey', false, xPos, yPos, 'r');
 
-		var destNodeXpos = sourceNodeXpos;
-		var destNodeYpos = sourceNodeYpos + connectionLength;
+	 }
 
-		//R ribose node
-	 	var riboseNode = self.createNode(riboseType,'lightgrey', false, sourceNodeXpos, sourceNodeYpos, 'r');
+	 self.createMonomer = function (nodeName,  nodeColor, xPos, yPos) {
+		console.log('adding monomer node ' + nodeName +' at: (' + xPos + ',' +yPos +')');
+	 	return self.createNode(nodeName, nodeColor, true, xPos, yPos, 'n');
+	 }
 
-	 	//A,C, G, T, U
-	 	var monomerNode = self.createNode(nodeName, nodeColor, true, destNodeXpos, destNodeYpos, 'n');
-
-	 	return {
-       	ribose: riboseNode,
-       	monomer: monomerNode
-       };
-
-	 };
+	 self.createPhosphate = function (nodeName,  nodeColor, xPos, yPos) {
+		console.log('adding phosphate node ' + nodeName +' at: (' + xPos + ',' +yPos +')');
+	 	return self.createNode(nodeName, nodeColor, false, xPos, yPos, 'p');
+	 }
 
 
 
-	this.getNodeColor = function(nodeName){
+	self.getNodeColor = function(nodeName){
 
 		if(nodeName === 'A'){
 			return 'lightgreen';
