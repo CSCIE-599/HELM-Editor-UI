@@ -95,7 +95,7 @@ app.controller('MainCtrl', ['$scope', '$window', 'HelmConversionService', 'Canva
 	};
 
 
-	// create a new node and add to the chart.
+	// create a new node and add to the view.
 	$scope.addNewNode = function (nodeName, nodeColor, isRotate, xpos, ypos, nodeType) {
 
 		var node = CanvasDisplayService.createNode(nodeName, nodeColor, isRotate, xpos, ypos, nodeType);
@@ -109,17 +109,23 @@ app.controller('MainCtrl', ['$scope', '$window', 'HelmConversionService', 'Canva
 		$scope.canvasView.addConnection(conn);
 	}; 
 
-	$scope.reset= function(){
+	$scope.resetCanvas = function(){
+
+		console.log("RESETTING CANVAS DISPLAY");
 		var emptyData = {
 			nodes: [],
 			connections: []
 		};
 		CanvasDisplayService.setNodeNum(0);		
-		$scope.canvasView = new helmnotation.CanvasView(emptyData)
+		$scope.canvasView = new CanvasDisplayService.CanvasView(emptyData);
 
 	};
-	// Create the view-model for the chart and attach to the scope.
-	$scope.canvasView = new helmnotation.CanvasView(helmDataModel);
+
+	// Create the view for the canvas and attach to the scope.
+	$scope.canvasView = new CanvasDisplayService.CanvasView(helmDataModel);
+	
+	
+
 
 
     }]);
