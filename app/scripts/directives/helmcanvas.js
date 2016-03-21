@@ -13,7 +13,8 @@ angular.module('helmeditor2App')
        templateUrl: 'templates/helmcanvas_template.html',
        replace: true,
        scope: {
-         chart: '=chart',
+        // chart: '=chart',
+           graph: '=graph',
        },
     };
   });

@@ -2,8 +2,8 @@
   xmlns="http://www.w3.org/2000/svg"
   >
 
-<!-- loop thru all the nodes -->
-  <g ng-repeat="node in chart.nodes">
+<!-- loop thru all the nodes in the graph -->
+  <g ng-repeat="node in graph.nodes">
 
     <rect
       ng-attr-class="{{node.selected() && 'selected-node-rect' || (node == mouseOverNode && 'mouseover-node-rect' || 'node-rect')}}"
@@ -39,8 +39,8 @@
 
   </g>
 
-<!-- loop thru all the connections -->
-  <g ng-repeat="connection in chart.connections">
+<!-- loop thru all the connections in the graph -->
+  <g ng-repeat="connection in graph.connections">
       <path ng-attr-d="M{{connection.sourceCoordX()}}, {{connection.sourceCoordY()}}
                        L{{connection.destCoordX()}}, {{connection.destCoordY()}}"
          style="stroke:#660000; fill:none;">

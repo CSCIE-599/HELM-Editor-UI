@@ -3,13 +3,29 @@
 <table>
     <tr>
       <td rowspan="3"></td>
-      <td><label>Enter sequence</label></td> <td align="right">
-      <select ng-model="polymerType"
-        ng-options="option as option.label for option in polyTypes">
-      </select></td>
+      <td><label>Enter a HELM notation</label></td> 
+      <!--<td align="right">
+        <select ng-model="polymerType"
+          ng-options="option as option.label for option in polyTypes">
+        </select>
+      </td>-->
     </tr>
+
+<tr>
+      <td><i>
+        RNA1{R(A)P.R(T)P.R(G)}$$$$V2.0<br>
+        PEPTIDE1{A.T.G}$$$$V2.0<br>
+        RNA1{[dR](U)}$$$$<br>
+        RNA1{R(A)}$$$$<br>
+        RNA1{R(A)P.R(C)}$$$$<br>
+        PEPTIDE1{[Sta].[Aib].[Bux].[Cap].[Dpm]}$$$$<br>
+        RNA1{[RGNA]P.[3SS6]P.[MOE]P.[mR]}$$$$<br>
+        RNA1{[MOE]P.[mR]}$$$$<br><br></i>
+      </td>
+</tr>
+
     <tr>
-      <td colspan="2"><textarea ng-model="notation" id="input" name="Query" cols="80" rows="3"></textarea></td>
+      <td colspan="2"><textarea ng-model="notation" id="input" name="Query" cols="80" rows="3" ng-change = "reset()"></textarea></td>
     </tr>
     <tr><td align="right" colspan="2" >
           <button type="reset" ng-click="reset()">Reset</button>
@@ -24,8 +40,8 @@
         <div style="margin-left: 20px;">
 
         <!--This custom element defines the helm canvas.-->
-          <helm-canvas style="margin: 5px; width: 500px; height:300px;"
-              chart="chartViewModel" >
+          <helm-canvas style="margin: 5px; width: 500px; height:300px;" graph="canvasView" >
+
           </helm-canvas>
         </div>
 </div>

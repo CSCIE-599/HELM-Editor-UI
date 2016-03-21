@@ -10,46 +10,33 @@
 
 var app = angular.module('helmeditor2App');
 
-app.controller('MainCtrl', ['$scope', '$window', 'HelmConversionService', 'CanvasDisplayService', function ($scope, $window, HelmConversionService, CanvasDisplayService ) {
+app.controller('MainCtrl', ['$scope', '$window', 'HelmConversionService', 'CanvasDisplayService', function ($scope, $window, HelmConversionService, CanvasDisplayService) {
     this.awesomeThings = [
       'HTML5 Boilerplate',
       'AngularJS',
       'Karma'
     ];
 
-    /* Variables related to the prototype code in HTML */
-	$scope.polyTypes = [
-	  {	value: '', label:'--Select--' },
-	  { value: 'Nucleotide', label:'Nucleotide' },
-	  { value: 'Peptide', label:'Peptide' },
-      { value: 'HELMNotation', label:'HELM Notation'}
-
-	];
-
-	$scope.polymerType = $scope.polyTypes[0];
-
-	//space between 2 base nodes, like A and G
-	var monomerSpacing = 50;;
+   	//space between 2 base nodes, like A and G
+	var monomerSpacing = 50;
 
 	//length of a connection, between A and attacher node R
 	var connectionLength = 100;
 
-
-	// Setup the data-model for the chart.
-	var chartDataModel = {
+	// Setup the data-model with nodes and connections
+	var helmDataModel = {
 		nodes: [],
 		connections: []
 	};
 
 	 $scope.displayOnCanvas = function(notation){
-
     	var sequence = HelmConversionService.convertHelmNotationToSequence(notation);
     	$scope.generateGraph(sequence.sequenceType, sequence.sequenceArray);          	
     };
 
 
 	//Parse the sequence, and generate the notation
-	$scope.generateGraph= function (sequenceType, sequence) {
+	$scope.generateGraph = function (sequenceType, sequence) {
 
 		var startXpos = 20;
 		var startYpos = 40;
@@ -67,7 +54,7 @@ app.controller('MainCtrl', ['$scope', '$window', 'HelmConversionService', 'Canva
 
 				if (CanvasDisplayService.isRiboseNode(value)){//chck for Ribose node first
 					riboseNode = CanvasDisplayService.createRibose(value, color, startXpos, startYpos);
-					$scope.chartViewModel.addNode(riboseNode);
+					$scope.canvasView.addNode(riboseNode);
 
 					if(phosphateNode  &&  riboseNode){//make horizontal connection
 						$scope.addNewConnection(phosphateNode, riboseNode, 'h');
@@ -75,7 +62,7 @@ app.controller('MainCtrl', ['$scope', '$window', 'HelmConversionService', 'Canva
 				}
 				else if(value !== 'P'){
 			 		baseNode = CanvasDisplayService.createBase(value, color, riboseNode.x , riboseNode.y + connectionLength);
-			 		$scope.chartViewModel.addNode(baseNode);
+			 		$scope.canvasView.addNode(baseNode);
 
 			 		if(riboseNode && baseNode){//make vertical connection
 						$scope.addNewConnection(riboseNode, baseNode, 'v');
@@ -83,7 +70,7 @@ app.controller('MainCtrl', ['$scope', '$window', 'HelmConversionService', 'Canva
 				}
 				else {
 					phosphateNode = CanvasDisplayService.createPhosphate(value, color, riboseNode.x  + monomerSpacing, riboseNode.y);
-					$scope.chartViewModel.addNode(phosphateNode);
+					$scope.canvasView.addNode(phosphateNode);
 
 					if(riboseNode && phosphateNode){//make horizontal connection
 						$scope.addNewConnection(riboseNode, phosphateNode, 'h');
@@ -96,7 +83,7 @@ app.controller('MainCtrl', ['$scope', '$window', 'HelmConversionService', 'Canva
 			else {//Peptide
 
 				baseNode = CanvasDisplayService.createBase(value, "lightblue", startXpos , startYpos);
-				$scope.chartViewModel.addNode(baseNode);
+				$scope.canvasView.addNode(baseNode);
 				if (prevNode){                    
     	 	    	$scope.addNewConnection(prevNode, baseNode, 'h');//connect 2 nodes horizontally
             	}
@@ -112,16 +99,27 @@ app.controller('MainCtrl', ['$scope', '$window', 'HelmConversionService', 'Canva
 	$scope.addNewNode = function (nodeName, nodeColor, isRotate, xpos, ypos, nodeType) {
 
 		var node = CanvasDisplayService.createNode(nodeName, nodeColor, isRotate, xpos, ypos, nodeType);
-		$scope.chartViewModel.addNode(node);
+		$scope.canvasView.addNode(node);
 		return node;
 	};
 
 	//add a connection between 2 nodes
 	$scope.addNewConnection = function(sourceNode, destNode, type){
-		$scope.chartViewModel.addConnection(sourceNode, destNode, type);
-	};
+		var conn = CanvasDisplayService.createConnection(sourceNode, destNode, type);
+		$scope.canvasView.addConnection(conn);
+	}; 
 
+	$scope.reset= function(){
+		var emptyData = {
+			nodes: [],
+			connections: []
+		};
+		CanvasDisplayService.setNodeNum(0);		
+		$scope.canvasView = new helmnotation.CanvasView(emptyData)
+
+	};
 	// Create the view-model for the chart and attach to the scope.
-	$scope.chartViewModel = new helmnotation.ChartViewModel(chartDataModel);
+	$scope.canvasView = new helmnotation.CanvasView(helmDataModel);
+
 
     }]);

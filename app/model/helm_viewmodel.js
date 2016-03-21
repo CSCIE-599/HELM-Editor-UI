@@ -6,14 +6,10 @@ var helmnotation = {
 
 (function () {
 
-
-	// View model for a node.
-	helmnotation.NodeViewModel = function (nodeDataModel) {
+	// View for a node.
+	helmnotation.NodeView = function (nodeDataModel) {
 
 		this.data = nodeDataModel;
-
-		// Set to true when the node is selected.
-		this._selected = false;
 
 		//each node has unique id
 		this.id = function () {
@@ -76,12 +72,12 @@ var helmnotation = {
 			return this.data.horizDest || "";
 		}
 
-		//rotation of the node
+		//xpos of the node after rotation
 		this.transformx = function () {
 			return this.data.transformx;
 		};
 
-		//rotation of the node
+		//ypos of the node after rotation
 		this.transformy = function () {
 			return this.data.transformy;
 		};
@@ -89,27 +85,7 @@ var helmnotation = {
 		//rotation of the node
 		this.transformDegree = function () {
 			return this.data.transformDegree;
-		};
-
-		// Select the node.
-		this.select = function () {
-			this._selected = true;
-		};
-
-		// Deselect the node.
-		this.deselect = function () {
-			this._selected = false;
-		};
-
-		// Toggle the selection state of the node.
-		this.toggleSelected = function () {
-			this._selected = !this._selected;
-		};
-
-		// Returns true if the node is selected.
-		this.selected = function () {
-			return this._selected;
-		};
+		};		
 
 		//visibility of the sequence#
 		this.seqVisible = function () {
@@ -118,45 +94,29 @@ var helmnotation = {
 
 	};
 
-	// Wrap the nodes data-model in a view-model.
-	var createNodesViewModel = function (nodesDataModel) {
-		var nodesViewModel = [];
-
-		if (nodesDataModel) {
-			for (var i = 0; i < nodesDataModel.length; ++i) {
-				nodesViewModel.push(new helmnotation.NodeViewModel(nodesDataModel[i]));
-			}
-		}
-		return nodesViewModel;
-	};
-
-	
-	// View model for a connection.
-	helmnotation.ConnectionViewModel= function (connectionDataModel, sourceNode, destNode, type) {
-
-		//debugger;
+	// View for a connection.
+	helmnotation.ConnectionView= function (connectionDataModel) {
+		
 		this.data = connectionDataModel;
-		this.source = sourceNode;
-		this.dest = destNode;
+		this.source = connectionDataModel.source;
+		this.dest = connectionDataModel.dest;
+
+		this.type = connectionDataModel.type;//horizontal or vertical connection
 
 		var connectionOffset = 0;
 
-		// Set to true when the connection is selected.
-		this._selected = false;
-
 		this.sourceCoordX = function () {
-			if (type === 'h'){ //if link is horizontal
-				return sourceNode.width + sourceNode.x;
+			if (this.type === 'h'){ //if link is horizontal
+				return this.source.width + this.source.x;
 			}
-			return (sourceNode.width/2 + sourceNode.x );
-			
+			return (this.source.width/2 + this.source.x );			
 		};
 
 		this.sourceCoordY = function () {
-			if(type === 'h'){
-				return (sourceNode.y + (sourceNode.height/2));
+			if(this.type === 'h'){
+				return (this.source.y + (this.source.height/2));
 			}
-			return sourceNode.y + sourceNode.height;
+			return this.source.y + this.source.height;
 		};
 
 		this.sourceCoord = function () {
@@ -167,17 +127,17 @@ var helmnotation = {
 		}
 
 		this.destCoordX = function () {
-			if (type === 'h'){
-				return destNode.x;
+			if (this.type === 'h'){
+				return this.dest.x;
 			}
-			return destNode.transformx;			
+			return this.dest.transformx;			
 		};
 
 		this.destCoordY = function () {		
-			if (type === 'h'){
-				return (destNode.y + (destNode.height/2));
+			if (this.type === 'h'){
+				return (this.dest.y + (this.dest.height/2));
 			}
-			return (destNode.transformy-destNode.height/2)-connectionOffset;			
+			return (this.dest.transformy-this.dest.height/2)-connectionOffset;			
 		};
 
 		this.destCoord = function () {
@@ -185,73 +145,39 @@ var helmnotation = {
 				x: this.destCoordX(),
 				y: this.destCoordY()
 			};
-		}
-
+		}		
 	};
 
 
 	// View model for the chart.
-	helmnotation.ChartViewModel = function (chartDataModel) {
-
-		// Create a view model for connection from the data model.
-		this._createConnectionViewModel = function(connectionDataModel) {
-			return new helmnotation.ConnectionViewModel(connectionDataModel);
-		};
-
-		// Wrap the connections data-model in a view-model.
-		this._createConnectionsViewModel = function (connectionsDataModel) {
-
-			var connectionsViewModel = [];
-
-			if (connectionsDataModel) {
-				for (var i = 0; i < connectionsDataModel.length; ++i) {
-					connectionsViewModel.push(this._createConnectionViewModel(connectionsDataModel[i]));
-				}
-			}
-			return connectionsViewModel;
-		};		
-
+	helmnotation.CanvasView = function (dataModel) {
+		
 		// Reference to the underlying data.
-		this.data = chartDataModel;
+		this.data = dataModel;
 
-		// Create a view-model for nodes.
-		this.nodes = createNodesViewModel(this.data.nodes);
-
-		// Create a view-model for connections.
-		this.connections = this._createConnectionsViewModel(this.data.connections);
+		this.nodes = [];
+		this.connections = [];
 
 		// Add a node to the view model.
 		this.addNode = function (nodeDataModel) {
+			
 			if (!this.data.nodes) {
 				this.data.nodes = [];
 			}
 			// Update the data model.
 			this.data.nodes.push(nodeDataModel);
 
-			// Update the view model.
-			this.nodes.push(new helmnotation.NodeViewModel(nodeDataModel));
+			// Update the view
+			this.nodes.push(new helmnotation.NodeView(nodeDataModel));
 		};
 
-
-		// Create a view model for a new connection.
-		this.addConnection = function (sourceNode, destNode, type) {
-			var connectionsDataModel = this.data.connections;
-			var connectionsViewModel = this.connections;
-
-			var connectionDataModel = {
-				source: {
-					nodeID: sourceNode.id,
-				},
-				dest: {
-					nodeID: destNode.id,
-				},
-			};
+		// Add a connection to the canvas view.
+		this.addConnection = function (connectionDataModel) {
 			//push to connectionsdatamodel
-			connectionsDataModel.push(connectionDataModel);
+			this.data.connections.push(connectionDataModel);
 
-			//push to connectionsviewmodel
-			var connectionViewModel = new helmnotation.ConnectionViewModel(connectionDataModel, sourceNode, destNode, type);
-			connectionsViewModel.push(connectionViewModel);
+			// Update the view
+			this.connections.push(new helmnotation.ConnectionView(connectionDataModel));
 		};
 
 	};
