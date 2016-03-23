@@ -20,4 +20,4 @@ before_script:
 script:
   - echo "running tests"
   - grunt test
-  - grunt protractor-firefox
+  - grunt protractor:firefox
