@@ -57,19 +57,19 @@ Style for connections.
 	stroke: gray;
 	stroke-width: 4;
 	fill: transparent;
-}	
+}
 
 .mouseover-connection-line {
 	stroke: gray;
 	stroke-width: 6;
 	fill: transparent;
-}	
+}
 
 .selected-connection-line {
 	stroke: red;
 	stroke-width: 4;
 	fill: transparent;
-}	
+}
 
 .connection-endpoint {
 	fill: gray;
@@ -77,7 +77,7 @@ Style for connections.
 
 .selected-connection-endpoint {
 	fill: red;
-}	
+}
 
 .mouseover-connection-endpoint {
 	fill: gray;
@@ -95,7 +95,7 @@ Style for the connection being dragged out.
 	stroke: gray;
 	stroke-width: 3;
 	fill: transparent;
-}	
+}
 
 .dragging-connection-endpoint {
 	fill: gray;

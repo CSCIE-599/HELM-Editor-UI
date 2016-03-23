@@ -35,27 +35,26 @@ angular.module('helmeditor2App')
 	var radiusX = '4';
 	var radiusY = '4';
 
-	
+
 	self.createRibose = function (nodeName,  nodeColor, xPos, yPos) {
-		console.log('adding ribose node ' + nodeName +' at: (' + xPos + ',' +yPos +')');
-	 	return self.createNode(nodeName,'lightgrey', false, xPos, yPos, 'r');
+		//console.log('adding ribose node ' + nodeName +' at: (' + xPos + ',' +yPos +')');
+	 	return self.createNode(nodeName, 'Nucleotide', 'lightgrey', false, xPos, yPos, 'r');
 	};
 
 	self.createBase = function (nodeName,  nodeColor, xPos, yPos) {
-		console.log('adding base node ' + nodeName +' at: (' + xPos + ',' +yPos +')');
-	 	return self.createNode(nodeName, nodeColor, true, xPos, yPos, 'b');
+		//console.log('adding base node ' + nodeName +' at: (' + xPos + ',' +yPos +')');
+	 	return self.createNode(nodeName, 'Nucleotide', nodeColor, true, xPos, yPos, 'b');
 	};
 
 	self.createPhosphate = function (nodeName,  nodeColor, xPos, yPos) {
-		console.log('adding phosphate node ' + nodeName +' at: (' + xPos + ',' +yPos +')');
-	 	return self.createNode(nodeName, nodeColor, false, xPos, yPos, 'p');
+		//console.log('adding phosphate node ' + nodeName +' at: (' + xPos + ',' +yPos +')');
+	 	return self.createNode(nodeName, 'Nucleotide', nodeColor, false, xPos, yPos, 'p');
 	};
 
 	// create a new node
-	self.createNode = function (nodeName, nodeColor, isRotate, xpos, ypos, nodeType) {
+	self.createNode = function (nodeName, sequenceType, nodeColor, isRotate, xpos, ypos, nodeType) {
 
 		var rotateDegree = '0';
-		var sequenceVisibility = 'hidden';
 
 		var rx = radiusX;
 		var ry = radiusX;
@@ -69,12 +68,16 @@ angular.module('helmeditor2App')
 			ry = radiusY +10;
 		}
 
-		if(nodeType === 'b'){//base node, A, T, G
-			sequenceVisibility = 'visible';
-		}
+        if(sequenceType === 'Chem'){//CHEM nodes
+            nodeWidth = 50;
+        }
+        else {
+            nodeWidth = 25;
+        }
 
 		var newNode = {
 			name: nodeName,
+            seqType : sequenceType,  //Nucleotide, Peptide, or Chem
 			id: nodeId,
 			x: xpos,
 			y: ypos,
@@ -86,20 +89,23 @@ angular.module('helmeditor2App')
 			transformx:xpos+nodeHeight/2,
 			transformy:ypos+nodeWidth/2,
 			transformDegree:rotateDegree,
-			seqVisible:	sequenceVisibility,
+			seqVisible:	'hidden',
 		};
 
-		//increment nodeNum only for baseNode
-        if (!self.isRiboseNode(nodeName)  && nodeName.indexOf('P') === -1){
+		//number nodes if Peptide, or if Nucleotide and a base node
+        if ((sequenceType === "Peptide") || (sequenceType === "Nucleotide" && nodeType === 'b')){
+        //if (!self.isRiboseNode(nodeName)  && nodeName.indexOf('P') === -1){
             nodeNum++;
             newNode.num = nodeNum;
-            console.log("Created node " + nodeName + ", num: " + newNode.num);
+            newNode.seqVisible = 'visible';
         }
         nodeId++;
+
 		return newNode;
-	};	
+	};
 
 	self.createConnection = function(sourceNode, destNode, type){
+
 		var conn = {
 			type: type,
 			source: sourceNode,
@@ -109,12 +115,13 @@ angular.module('helmeditor2App')
 	};
 
 	self.isRiboseNode = function(node){
-	 	var riboseArr = ['R', 'dR', 'sR', 'mR', 'fR', 'LR', 'MOE', 'fMOE', 
-	 					 'mph', 'PONA','qR', 'RGNA', 'SGNA'	,'12ddR', '25R', 
-	 					 '4sR' , 'aFR', 'aR', 'eR', 'fR', 'hx', 'ILR', 'tR', 
-	 					 'UNA', '3A6','3FAM', '3ss6', '5A6','5cGT','5FAM', 
+	 	var riboseArr = ['R', 'dR', 'sR', 'mR', 'fR', 'LR', 'MOE', 'fMOE',
+	 					 'mph', 'PONA','qR', 'RGNA', 'SGNA'	,'12ddR', '25R',
+	 					 '4sR' , 'aFR', 'aR', 'eR', 'fR', 'hx', 'ILR', 'tR',
+	 					 'UNA', '3A6','3FAM', '3ss6', '5A6','5cGT','5FAM',
 	 					 '5FBC6', 'am12', 'am6'];
 
+        //TO-DO: make test case insensitive
 	 	if(riboseArr.indexOf(node) !== -1){
 	 		return true;
 	 	}
@@ -126,7 +133,7 @@ angular.module('helmeditor2App')
 		if(nodeName === 'A'){
 			return 'lightgreen';
 		}
-		else if(nodeName === 'C'){
+		else if(nodeName === 'C' || nodeName === '5meC'){
 			return 'red';
 		}
 		else if(nodeName === 'G'){
@@ -135,6 +142,7 @@ angular.module('helmeditor2App')
 		else if(nodeName === 'T' || nodeName === 'U'){
 			return 'cyan';
 		}
+        //TO-DO: remove 'else if' test, and return 'lightgrey' as default color (?)
         else if (nodeName === 'P' || nodeName === 'sP' || nodeName === 'R'){
             return 'lightgrey';
         }
@@ -144,15 +152,16 @@ angular.module('helmeditor2App')
 		return nodeNum;
 	};
 
+
 	self.setNodeNum = function(num){
 		nodeNum = num;
 	};
-	
+
 
 
 	// View model for the chart.
 	self.CanvasView = function (dataModel) {
-		
+
 		// Reference to the underlying data.
 		this.data = dataModel;
 
@@ -161,7 +170,7 @@ angular.module('helmeditor2App')
 
 		// Add a node to the view model.
 		this.addNode = function (nodeDataModel) {
-			
+
 			if (!this.data.nodes) {
 				this.data.nodes = [];
 			}
@@ -261,7 +270,7 @@ angular.module('helmeditor2App')
 		//rotation of the node
 		this.transformDegree = function () {
 			return this.data.transformDegree;
-		};		
+		};
 
 		//visibility of the sequence#
 		this.seqVisible = function () {
@@ -272,7 +281,7 @@ angular.module('helmeditor2App')
 
 	// View for a connection.
 	self.ConnectionView= function (connectionDataModel) {
-		
+
 		this.data = connectionDataModel;
 		this.source = connectionDataModel.source;
 		this.dest = connectionDataModel.dest;
@@ -285,7 +294,7 @@ angular.module('helmeditor2App')
 			if (this.type === 'h'){ //if link is horizontal
 				return this.source.width + this.source.x;
 			}
-			return (this.source.width/2 + this.source.x );			
+			return (this.source.width/2 + this.source.x );
 		};
 
 		this.sourceCoordY = function () {
@@ -306,14 +315,14 @@ angular.module('helmeditor2App')
 			if (this.type === 'h'){
 				return this.dest.x;
 			}
-			return this.dest.transformx;			
+			return this.dest.transformx;
 		};
 
-		this.destCoordY = function () {		
+		this.destCoordY = function () {
 			if (this.type === 'h'){
 				return (this.dest.y + (this.dest.height/2));
 			}
-			return (this.dest.transformy-this.dest.height/2)-connectionOffset;			
+			return (this.dest.transformy-this.dest.height/2)-connectionOffset;
 		};
 
 		this.destCoord = function () {
@@ -321,10 +330,10 @@ angular.module('helmeditor2App')
 				x: this.destCoordX(),
 				y: this.destCoordY()
 			};
-		};		
+		};
 	};
 
-	
+
 	/*this.testFunction = function(){
   		alert('in CanvasDisplayService');
   	};*/

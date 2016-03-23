@@ -9,32 +9,95 @@
  */
 
 angular.module('helmeditor2App')
-  .service('HelmConversionService', function () {
-  	
+    .service('HelmConversionService', function () {
+
+    var self = this;
+
 	//takes HELM notation,
-    //finds sequence type (nucleotide or peptide) and node letters (R, P, sP, A, C, G, T, etc.)
-    //
-    //TO-DO: parse requested connection source/destinations (text after '$')
-    //TO-DO: move this method to be a service
-  	this.convertHelmNotationToSequence = function(sequence){
+    //returns arrays of sequences and connections
+  	this.convertHelmNotationToSequence = function(helmNotation){
 
- 		console.log('the unparsed sequence is: ' + sequence);
-        var sequenceType;
-        if (sequence.indexOf('RNA') > -1){
-            sequenceType = 'Nucleotide';
-        }
-        else if (sequence.indexOf('PEPTIDE') > -1){
-            sequenceType = 'Peptide';
-        }
-        else {
-            //TO-DO: Handle this error in correct way.
-			$window.alert('HELM Notation has no Polymer Type');
+        var sequences = self.getSequences(helmNotation);
+        var connections = self.getConnections(helmNotation);
+
+        var processedSequences = [];
+        for (var i = 0; i < sequences.length; i++){
+            var monomerName = self.getName(sequences[i]);
+            processedSequences.push ({
+                name : monomerName,
+                sequences : self.getPolymers(monomerName, sequences[i]),
+            });
         }
 
-        var curlyBrace = sequence.indexOf('{');
-        sequence = sequence.substring(curlyBrace, sequence.length);
 
+        var processedConnections = [];
+        for (i = 0; i < connections.length; i++){
+            processedConnections.push ({
+                source : self.getSource(connections[i]),
+                dest : self.getDest(connections[i]),
+            });
+        }
+
+      	/*this.testFunction = function(){
+            alert('hello');
+      	}*/
+
+        return [ processedSequences, processedConnections ];
+    };
+
+    //return array of different sequences in HELM Notation
+    //sequences are delimited with '|'
+    self.getSequences = function(helmNotation){
+
+        var sequences = [];
+
+        while (helmNotation.indexOf('|') > -1){
+            sequences.push(helmNotation.substring(0, helmNotation.indexOf('|')));
+            helmNotation = helmNotation.substring(helmNotation.indexOf('|') + 1, helmNotation.length);
+        }
+
+        if (helmNotation.indexOf('|') === -1){
+            sequences.push(helmNotation.substring(0, helmNotation.indexOf('$')));
+        }
+
+        return sequences;
+    };
+
+    self.getConnections = function(helmNotation){
+
+        var connections = [];
+
+        helmNotation = helmNotation.substring(helmNotation.indexOf('$')+1, helmNotation.length);
+
+        while (helmNotation.indexOf('|') > -1){
+            connections.push(helmNotation.substring(0, helmNotation.indexOf('|')));
+            helmNotation = helmNotation.substring(helmNotation.indexOf('|') + 1, helmNotation.length);
+        }
+
+        if (helmNotation.indexOf('|') === -1){
+            connections.push(helmNotation.substring(0, helmNotation.indexOf('$')));
+        }
+
+        return connections;
+    };
+
+
+    self.getName = function(sequence){
+        return sequence.substring(0, sequence.indexOf('{'));
+    };
+
+    self.getPolymers = function(monomerName, sequence){
         var sequenceArray = [];
+
+        if (monomerName.toUpperCase().indexOf("CHEM") > -1){
+            sequenceArray.push(sequence.substring((sequence.indexOf('{') + 1), sequence.indexOf('}')));
+            return sequenceArray;
+        }
+
+        var sequencecopy = sequence;
+        sequence = sequencecopy.substring(sequence.indexOf('{'), sequencecopy.length);
+
+
         var inNonNaturalAminoAcid = false;
         var nonNaturalAminoAcid = '';      //multi-letter codes - inside '[]' in HELM
 
@@ -48,6 +111,7 @@ angular.module('helmeditor2App')
                 if (sequence[i] === ']'){
                     sequenceArray.push(nonNaturalAminoAcid);
                     inNonNaturalAminoAcid = false;
+                    nonNaturalAminoAcid = '';
                 }
 
                 if (/[a-zA-Z0-9]/.test(sequence[i])){  //if char is alphanumeric
@@ -66,19 +130,31 @@ angular.module('helmeditor2App')
             }
         }
 
-         console.log('Sequence generated succesfully: ' + sequenceArray);
+        return sequenceArray;
+    };
 
-        return {
-        	sequenceType: sequenceType,
-        	sequenceArray: sequenceArray
+    self.getSource = function(connection){
+
+        var afterFirstComma = connection.substring((connection.indexOf(',') + 1), connection.length);
+        var afterSecondComma = afterFirstComma.substring((afterFirstComma.indexOf(',') + 1), afterFirstComma.length);
+
+        var sourcePoint = {
+            name : connection.substring(0,connection.indexOf(',')),
+            nodeID : +(afterSecondComma.substring(0, afterSecondComma.indexOf(':'))),
+        };
+        return sourcePoint;
+    };
+
+    self.getDest = function(connection){
+
+        var afterFirstComma = connection.substring((connection.indexOf(',') + 1), connection.length);
+        var afterDash = connection.substring((connection.indexOf('-') + 1), connection.length);
+
+        var destPoint = {
+            name : afterFirstComma.substring(0, afterFirstComma.indexOf(',')),
+            nodeID : +(afterDash.substring(0, afterDash.indexOf(':'))),
         };
 
-      };
-
-
-  	/*this.testFunction = function(){
-        alert('hello');
-  	}*/    
-
-
-  });
+        return destPoint;
+    };
+});
