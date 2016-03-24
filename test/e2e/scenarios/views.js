@@ -5,7 +5,7 @@ describe('basic web views', function() {
     browser.get('#');
 
     var appName = element(by.css('.navbar-brand')).getText();
-    expect(appName).toEqual('HELM Editor 2.0-');
+    expect(appName).toEqual('HELM Editor 2.0');
   });
 
   /*
