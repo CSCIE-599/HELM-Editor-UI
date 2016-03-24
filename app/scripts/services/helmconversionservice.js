@@ -66,8 +66,20 @@ angular.module('helmeditor2App')
     self.getConnections = function(helmNotation){
 
         var connections = [];
+        var dollarSignsOnly = true;
 
         helmNotation = helmNotation.substring(helmNotation.indexOf('$')+1, helmNotation.length);
+
+        for (var i = 0; i < helmNotation.length; i++){
+            if (helmNotation[i] !== '$'){
+                dollarSignsOnly = false;
+                break;
+            }
+        }
+
+        if (dollarSignsOnly){
+            return connections;
+        }
 
         while (helmNotation.indexOf('|') > -1){
             connections.push(helmNotation.substring(0, helmNotation.indexOf('|')));
