@@ -39,6 +39,11 @@ angular
         controller: 'PrototypeCtrl',
         controllerAs: 'prototype'
       })
+      .when('/loadsequence', {
+        templateUrl: 'views/loadsequence.html',
+        controller: 'LoadsequenceCtrl',
+        controllerAs: 'loadsequence'
+      })
       .otherwise({
         redirectTo: '/'
       });

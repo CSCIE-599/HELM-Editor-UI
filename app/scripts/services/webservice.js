@@ -55,6 +55,9 @@ angular.module('helmeditor2App')
       },
       getFastaConvertPETIDE: function (inputSequence) {
         return $http.get(baseUrl + 'Fasta/Convert/PEPTIDE/' + inputSequence);
+      },
+      validateHelmNotation: function (inputSequence) {
+        return $http.get(baseUrl + 'Validation/' + inputSequence);
       }
     };
   });
