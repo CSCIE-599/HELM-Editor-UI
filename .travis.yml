@@ -14,7 +14,6 @@ before_script:
   - npm install -g bower
   - npm install
   - bower install
-  - sleep 5
 
 script:
   - echo "running tests"
