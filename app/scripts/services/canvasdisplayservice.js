@@ -157,6 +157,38 @@ angular.module('helmeditor2App')
 		nodeNum = num;
 	};
 
+	self.makeCycle = function(sequenceArr, centreX, centreY){
+
+		var color;
+		var sequence = ['F','R','R','Y','R','R'];//remove hardcoding and take the sequencArr instead
+		
+		var cycleNodesArray = [];
+		var r = 100;//radius
+		var xc = centreX;//center x pos of circle
+		var yc = centreY;//center y pos of circle
+
+		var degree = 360/sequence.length; //divide the circle, to allow equal separation between the nodes
+
+		var nodexpos;
+		var nodeypos;
+		
+		var i = 0;
+		angular.forEach(sequence, function(value, key) {
+			color = self.getNodeColor(value);
+			//debugger;
+			if(i < (360)){//when i has reached 360, the circle is complete
+				nodexpos = Math.sin(i * Math.PI / 180) * r + xc - 10;
+				nodeypos = Math.cos(i * Math.PI / 180) * r + yc - 10;
+				
+				var node = self.createNode(value, "Peptide", "lightblue", "true", nodexpos, nodeypos);
+				cycleNodesArray.push(node);				
+				i = i+degree;				
+			}
+				
+		});
+		return cycleNodesArray;		
+	};
+
 
 
 	// View model for the chart.
@@ -276,7 +308,7 @@ angular.module('helmeditor2App')
 		this.seqVisible = function () {
 			return this.data.seqVisible;
 		};
-
+		
 	};
 
 	// View for a connection.

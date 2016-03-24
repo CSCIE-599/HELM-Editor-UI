@@ -50,7 +50,7 @@ app.controller('MainCtrl', ['$scope', '$window', 'HelmConversionService', 'Canva
     };
 
 
-	//Parse the sequence, and generate the notation
+	//Parse the sequence, and generate the graph
 	$scope.generateGraph = function (sequenceName, sequence, count) {
 
 		var startXpos = 20;
@@ -64,6 +64,14 @@ app.controller('MainCtrl', ['$scope', '$window', 'HelmConversionService', 'Canva
 	    var prevNode;
         var chemNode;
 
+/*
+        var cyclicNodes = CanvasDisplayService.makeCycle(sequence, 250, 200);
+		
+			angular.forEach(cyclicNodes, function(value, key) {
+				$scope.canvasView.addNode(value);
+			});		
+		
+*/
 		angular.forEach(sequence, function(value, key) {
 			color = CanvasDisplayService.getNodeColor(value);
 
