@@ -14,6 +14,8 @@ before_script:
   - npm install -g bower
   - npm install
   - bower install
+  - nohup bash -c "./nodemodules/protractor/bin/webdriver-manager start --standalone 2>&1 &"
+  - sleep 5
 
 script:
   - echo "running tests"
