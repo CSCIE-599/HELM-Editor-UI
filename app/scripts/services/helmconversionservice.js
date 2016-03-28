@@ -13,12 +13,14 @@ angular.module('helmeditor2App')
 
     var self = this;
 
-	//takes HELM notation,
+    //takes HELM notation,
     //returns arrays of sequences and connections
-  	this.convertHelmNotationToSequence = function(helmNotation){
+    this.convertHelmNotationToSequence = function(helmNotation){
 
         var sequences = self.getSequences(helmNotation);
         var connections = self.getConnections(helmNotation);
+
+        //console.log("sequence:" + sequences);
 
         var processedSequences = [];
         for (var i = 0; i < sequences.length; i++){
@@ -38,9 +40,9 @@ angular.module('helmeditor2App')
             });
         }
 
-      	/*this.testFunction = function(){
+        /*this.testFunction = function(){
             alert('hello');
-      	}*/
+        }*/
 
         return [ processedSequences, processedConnections ];
     };
@@ -66,20 +68,8 @@ angular.module('helmeditor2App')
     self.getConnections = function(helmNotation){
 
         var connections = [];
-        var dollarSignsOnly = true;
 
         helmNotation = helmNotation.substring(helmNotation.indexOf('$')+1, helmNotation.length);
-
-        for (var i = 0; i < helmNotation.length; i++){
-            if (helmNotation[i] !== '$'){
-                dollarSignsOnly = false;
-                break;
-            }
-        }
-
-        if (dollarSignsOnly){
-            return connections;
-        }
 
         while (helmNotation.indexOf('|') > -1){
             connections.push(helmNotation.substring(0, helmNotation.indexOf('|')));

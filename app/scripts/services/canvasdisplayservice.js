@@ -38,28 +38,28 @@ angular.module('helmeditor2App')
 
 	self.createRibose = function (nodeName,  nodeColor, xPos, yPos) {
 		//console.log('adding ribose node ' + nodeName +' at: (' + xPos + ',' +yPos +')');
-	 	return self.createNode(nodeName, 'Nucleotide', 'lightgrey', false, xPos, yPos, 'r');
+	 	return self.createNode(nodeName, 'NUCLEOTIDE', 'lightgrey', 'false', xPos, yPos, 'r');
 	};
 
 	self.createBase = function (nodeName,  nodeColor, xPos, yPos) {
 		//console.log('adding base node ' + nodeName +' at: (' + xPos + ',' +yPos +')');
-	 	return self.createNode(nodeName, 'Nucleotide', nodeColor, true, xPos, yPos, 'b');
+	 	return self.createNode(nodeName, 'NUCLEOTIDE', nodeColor, 'true', xPos, yPos, 'b');
 	};
 
 	self.createPhosphate = function (nodeName,  nodeColor, xPos, yPos) {
 		//console.log('adding phosphate node ' + nodeName +' at: (' + xPos + ',' +yPos +')');
-	 	return self.createNode(nodeName, 'Nucleotide', nodeColor, false, xPos, yPos, 'p');
+	 	return self.createNode(nodeName, 'NUCLEOTIDE', nodeColor, 'false', xPos, yPos, 'p');
 	};
 
 	// create a new node
 	self.createNode = function (nodeName, sequenceType, nodeColor, isRotate, xpos, ypos, nodeType) {
-
+		console.log(sequenceType);
 		var rotateDegree = '0';
 
 		var rx = radiusX;
 		var ry = radiusX;
 
-		if(isRotate){
+		if(isRotate === 'true'){
 			rotateDegree = '45';
 		}
 
@@ -68,7 +68,7 @@ angular.module('helmeditor2App')
 			ry = radiusY +10;
 		}
 
-        if(sequenceType === 'Chem'){//CHEM nodes
+        if(sequenceType === 'CHEM'){//CHEM nodes
             nodeWidth = 50;
         }
         else {
@@ -93,7 +93,7 @@ angular.module('helmeditor2App')
 		};
 
 		//number nodes if Peptide, or if Nucleotide and a base node
-        if ((sequenceType === "Peptide") || (sequenceType === "Nucleotide" && nodeType === 'b')){
+        if ((sequenceType === "PEPTIDE") || (sequenceType === "NUCLEOTIDE" && nodeType === 'b')){
         //if (!self.isRiboseNode(nodeName)  && nodeName.indexOf('P') === -1){
             nodeNum++;
             newNode.num = nodeNum;
@@ -128,8 +128,16 @@ angular.module('helmeditor2App')
 	 	return false;
 	};
 
-	self.getNodeColor = function(nodeName){
 
+	self.isPhosphateNode = function(node){
+
+		if(node === 'P' || node === 'sP')
+			return true;
+
+		return false;
+	};
+
+	self.getNodeColor = function(nodeName){
 		if(nodeName === 'A'){
 			return 'lightgreen';
 		}
@@ -157,40 +165,54 @@ angular.module('helmeditor2App')
 		nodeNum = num;
 	};
 
-	self.makeCycle = function(sequenceArr, centreX, centreY){
+	self.makeCycle = function(sequenceArr, seqType, pos){
 
-		var color;
-		var sequence = sequenceArr; //['F','R','R','Y','R','R'];//remove hardcoding and take the sequencArr instead
-
+		var sequence = sequenceArr;
+		
 		var cycleNodesArray = [];
-		var r = 100;//radius
-		var xc = centreX;//center x pos of circle
-		var yc = centreY;//center y pos of circle
+		var r = 70;//radius
+		var xc = pos.x + r;//center x pos of circle
+		var yc = pos.y - r;//center y pos of circle
 
 		var degree = 360/sequence.length; //divide the circle, to allow equal separation between the nodes
 
 		var nodexpos;
-		var nodeypos;
+		var nodeypos ;
 
 		var i = 0;
 		angular.forEach(sequence, function(value, key) {
-			color = self.getNodeColor(value);
-			//debugger;
-			if(i < (360)){//when i has reached 360, the circle is complete
-				nodexpos = Math.sin(i * Math.PI / 180) * r + xc - 10;
-				nodeypos = Math.cos(i * Math.PI / 180) * r + yc - 10;
+		
+			if(i <= 360){//when i has reached 360, the circle is complete
+				nodexpos = Math.sin(i * Math.PI / 180) * r + xc;
+				nodeypos = Math.cos(i * Math.PI / 180) * r + yc;
+			
+				var node = self.createNode(value, seqType, "lightblue", "true", nodexpos, nodeypos);
 
-                //TO-DO: allow for different kinds of monomers
-				var node = self.createNode(value, "Peptide", "lightblue", "true", nodexpos, nodeypos);
-                //TO-DO: add links between nodes
-				cycleNodesArray.push(node);
-				i = i+degree;
+				cycleNodesArray.push(node);				
+				i = i+degree;				
 			}
-
+							
 		});
-		return cycleNodesArray;
+		return cycleNodesArray;		
 	};
 
+
+	//helper function to get a new pos to create a new row, increments y
+	self.getNewRowPos = function(pos, i){
+
+		if(!pos){
+			return {
+				x: 150,
+				y: 150
+			};
+		}
+		else {
+			return {
+				x: pos.x,
+				y: pos.y + (i * 150)
+			};
+		}
+	};
 
 
 	// View model for the chart.
@@ -311,6 +333,12 @@ angular.module('helmeditor2App')
 			return this.data.seqVisible;
 		};
 
+		this.position = function(){
+			return { x: this.x(),
+					 y: this.y()
+				   };
+		};
+		
 	};
 
 	// View for a connection.
@@ -325,17 +353,23 @@ angular.module('helmeditor2App')
 		var connectionOffset = 0;
 
 		this.sourceCoordX = function () {
-			if (this.type === 'h'){ //if link is horizontal
+			/*if (this.type === 'h'){ //if link is horizontal
 				return this.source.width + this.source.x;
 			}
-			return (this.source.width/2 + this.source.x );
+			*/
+			//return (this.source.width/2 + this.source.x );
+			return this.source.x + this.source.width/2;
+
 		};
 
 		this.sourceCoordY = function () {
+			/*
 			if(this.type === 'h'){
 				return (this.source.y + (this.source.height/2));
 			}
-			return this.source.y + this.source.height;
+			//return this.source.y + this.source.height;
+			*/
+			return this.source.y + this.source.height/2;
 		};
 
 		this.sourceCoord = function () {
@@ -346,17 +380,23 @@ angular.module('helmeditor2App')
 		};
 
 		this.destCoordX = function () {
-			if (this.type === 'h'){
+			/*if (this.type === 'h'){
 				return this.dest.x;
 			}
-			return this.dest.transformx;
+			//return this.dest.transformx;
+			*/
+			return this.dest.x + this.dest.width/2
+
 		};
 
 		this.destCoordY = function () {
+			/*
 			if (this.type === 'h'){
 				return (this.dest.y + (this.dest.height/2));
 			}
-			return (this.dest.transformy-this.dest.height/2)-connectionOffset;
+			//return (this.dest.transformy-this.dest.height/2)-connectionOffset;
+			*/
+			return this.dest.y + this.dest.height/2;
 		};
 
 		this.destCoord = function () {
@@ -368,9 +408,23 @@ angular.module('helmeditor2App')
 	};
 
 
-	/*this.testFunction = function(){
-  		alert('in CanvasDisplayService');
-  	};*/
+	self.Sequence = function(seqType, childrenArr, dir){
+		this.type = seqType;//PEPTIDE, RNA, CHEM
+		this.children = childrenArr;//array of ChildSequence
+	};
+
+	self.ChildSequence = function(childFlow, monomerArr){
+		this.flow = childFlow;//linear, cyclical
+		this.monomers = monomerArr;//array of monomers,e.g: [A,R]
+	};
+	
+
+	//represents a mini graph, like a graph of linear nodes or cyclic nodes
+	self.SubGraph = function(fir, las, nodesArr){
+		this.first = fir;
+		this.last = las;
+		this.nodes = nodesArr;
+	};
 
 
   });

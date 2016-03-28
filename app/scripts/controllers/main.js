@@ -31,43 +31,261 @@ app.controller('MainCtrl', ['$scope', '$window', 'HelmConversionService', 'Canva
 
 	 $scope.displayOnCanvas = function(notation){
 
-
     	var helmTranslation = HelmConversionService.convertHelmNotationToSequence(notation);
         var sequence = helmTranslation[0];   //each array element has the sequence name and its array of letters
         var connection = helmTranslation[1]; //each array element has a source.name, source.nodeID, dest.name, dest.nodeID
-
-        var graphedNodes = $scope.processSequences(sequence, connection);
-
-        $scope.makeRequestedConnections(connection, graphedNodes);
-    };
-
-    //separate cyclical from noncyclical sequences, process separately,
-    //return an array of all graphed nodes
-    $scope.processSequences = function(sequence, connection){
-        var startXpos = 20;
-        var startYpos = 40; //TO-DO: adjust positions of multiple sequences
-
-        var sequences = $scope.separateSequences(sequence, connection);
-
-        var cyclicalSequences = sequences[0];
-        var nonCyclicalSequences = sequences[1];
-
-        var graphedNodes = $scope.processCyclicalSequences(cyclicalSequences, connection);
-
-        //graph non-cyclical sequences
-        for (var i = 0; i < nonCyclicalSequences.length; i++){
+        
+        //not returning proper cyclical and noncyclical nodes now, so hardcoded.
+		var seq = $scope.separateSequences(sequence, connection);
+       
+        var pos; 
+       
+        //for each sequence, graph nodes and store nodes in array
+        var graphedNodes = [];
+        for (var i = 0; i < sequence.length; i++){
+			pos = CanvasDisplayService.getNewRowPos(pos, i);//add a new row for a every iteration
+            	
             graphedNodes.push({
-                name : nonCyclicalSequences[i].seq.name,
-                nodes : $scope.generateGraph(startXpos, startYpos, nonCyclicalSequences[i].seq.name, nonCyclicalSequences[i].seq.sequences, nonCyclicalSequences[i].num, false),
+            	name : sequence[i].name,
+                nodes : $scope.generateGraph(seq, pos),
+
             });
-
-            CanvasDisplayService.setNodeNum(0); //reset node numbering
+ 			CanvasDisplayService.setNodeNum(0); //reset node numbering
         }
-
-        return graphedNodes;
+        
+       $scope.makeRequestedConnections(connection, graphedNodes);
     };
 
-    //returns array of cyclical sequences and array of non-cyclical sequences
+    //Parse the sequence, and generate the graph
+	$scope.generateGraph = function (sequenceObj, pos) {
+
+		var seqType = sequenceObj.type;
+		var childrenArr = sequenceObj.children;
+		var childSeq;
+
+		var allLinearGraphs = [];
+		var allCyclicalGraphs = [];
+		
+		var currSubGraph;
+		var prevSubGraph;
+
+		var dir;
+
+		var isPrevNodeCyclic;
+
+		var allNodes = [];	
+		for(var i=0;i<childrenArr.length;i++){
+					
+			childSeq = childrenArr[i];		
+
+			if(childSeq.flow === 'linear'){
+				alert(dir);
+				isPrevNodeCyclic = 'false';
+				currSubGraph = $scope.makeLinearGraph(childSeq.monomers, dir, seqType,  pos);
+				allLinearGraphs.push(currSubGraph);
+
+			}			
+			else{
+				currSubGraph = $scope.makeCyclicalGraph(childSeq.monomers, seqType, pos);	
+				isPrevNodeCyclic = 'true';
+				allCyclicalGraphs.push(currSubGraph);	
+			}
+
+			if(prevSubGraph && currSubGraph){
+				$scope.addNewConnection(currSubGraph.first, prevSubGraph.last, 'h');//connect 2 nodes 
+			}
+
+			prevSubGraph = currSubGraph;
+			allNodes.push(currSubGraph.nodes);
+
+			
+			if(isPrevNodeCyclic === 'true'){
+				dir = 'reverse';
+				pos = {
+					x: prevSubGraph.last.x - monomerSpacing,
+					y: prevSubGraph.last.y 
+				};
+			}
+			else{
+				pos = {
+					x: prevSubGraph.last.x + monomerSpacing ,
+					y: prevSubGraph.last.y
+				};
+			} 					
+		}
+
+		return $scope.collapseNodes(allNodes);
+			
+	}
+
+
+	$scope.collapseNodes = function(allNodesArr){
+		
+		var nodes = [];
+
+		for(var i=0; i<allNodesArr.length;i++){
+			nodes = nodes.concat(allNodesArr[i]);
+
+		}
+
+		return nodes;
+
+	};
+
+	//makes a linear graph starting from the pos
+	$scope.makeLinearGraph = function(monomerArr, dir, seqType, pos){
+
+		var x = pos.x;
+		var y = pos.y; 
+		
+		var color;
+
+        var allNodes = [];
+        var riboseNode;
+	    var baseNode;
+	    var prevNode;
+	    var reverse;
+		var currNode;
+		var firstNode;
+
+		angular.forEach(monomerArr, function(value, key) {
+
+			color = CanvasDisplayService.getNodeColor(value);
+		
+			if(seqType.toUpperCase().indexOf('RNA') > -1) {//Nucleotide
+
+				if(CanvasDisplayService.isPhosphateNode(value)){//phosphate node
+					 currNode = CanvasDisplayService.createPhosphate(value, color, x, y);
+					 if(key === 0){//keep track of first node
+						firstNode = currNode;
+					 }
+					 allNodes.push(currNode);
+					 $scope.canvasView.addNode(currNode);
+
+					if(prevNode){
+						$scope.addNewConnection(prevNode, currNode, 'h');
+					}					
+				}
+				else if (CanvasDisplayService.isRiboseNode(value)){//ribose node
+					if(prevNode)
+						currNode = CanvasDisplayService.createRibose(value, color, prevNode.x + monomerSpacing , y);
+					else 
+						currNode = CanvasDisplayService.createRibose(value, color, x , y);
+
+					riboseNode = currNode;
+					if(key === 0){
+						firstNode = currNode;
+					 }
+					allNodes.push(currNode);
+					$scope.canvasView.addNode(currNode);
+
+					if(prevNode){
+						$scope.addNewConnection(prevNode, currNode, 'h');
+					}					
+				}
+
+				else {//base node
+
+					if(riboseNode){
+						baseNode = CanvasDisplayService.createBase(value, color, riboseNode.x , riboseNode.y + connectionLength);
+						if(key === 0){
+							firstNode = currNode;
+						 }
+						allNodes.push(baseNode);
+						$scope.canvasView.addNode(baseNode);
+					}
+
+					if (riboseNode && baseNode){//make vertical connection
+						$scope.addNewConnection(riboseNode, baseNode, 'v');
+					}
+				}	
+
+				if (currNode){
+
+					if(dir === 'reverse'){
+						x = currNode.x - monomerSpacing;					
+					}
+					else {
+						x = currNode.x + monomerSpacing;
+					}					
+					prevNode = currNode;
+				}
+
+			}
+			else if (seqType.toUpperCase().indexOf("PEPTIDE") > -1) {//Peptide
+				currNode = CanvasDisplayService.createNode(value, "PEPTIDE", "lightblue", "true", x , y);
+                allNodes.push(currNode);
+				$scope.canvasView.addNode(currNode);
+				if(key === 0){
+					firstNode = currNode;
+				 }
+				if (prevNode){
+    	 	    	$scope.addNewConnection(prevNode, currNode, 'h');//connect 2 nodes horizontally
+            	}
+            	prevNode = currNode;
+
+            	if(dir === 'reverse'){
+            		x = currNode.x - monomerSpacing;
+	            }
+	            else{
+
+					x = currNode.x + monomerSpacing;
+	            }
+			}
+            else if (seqType.toUpperCase().indexOf("CHEM") > -1) {//chem nodes
+                //TO-DO: figure out how to decipher where Chem node should be positioned on canvas
+                currNode = CanvasDisplayService.createNode(value, "CHEM", "purple", false, x , y);
+                allNodes.push(currNode);
+                if(key === 0){
+					firstNode = currNode;
+				 }
+                $scope.canvasView.addNode(currNode);
+            }
+
+		});
+
+		return new CanvasDisplayService.SubGraph(firstNode,currNode,allNodes);		
+	};
+
+
+
+	$scope.makeCyclicalGraph = function(monomerArr, seqType, pos){
+
+		var currNode;
+		var prevNode;
+
+
+		console.log(pos);
+		
+		var firstNode;
+		var cyclicalNodes = CanvasDisplayService.makeCycle(monomerArr, seqType, pos);
+		var allNodes = [];
+		
+		angular.forEach(cyclicalNodes, function(value, key) {
+			
+			currNode = value;
+
+			if(key === 0){
+				firstNode = value;//keep track of firstNode
+			}			
+			$scope.canvasView.addNode(value);
+			allNodes.push(value);
+						
+			if(prevNode && currNode){
+				$scope.addNewConnection(prevNode, currNode);
+			}
+			prevNode = currNode;
+		});	
+
+		if(firstNode && currNode){
+			$scope.addNewConnection(firstNode, currNode);
+		}		
+
+		return new CanvasDisplayService.SubGraph(firstNode,currNode,allNodes);	
+	};
+
+
+	  //returns array of cyclical sequences and array of non-cyclical sequences
     $scope.separateSequences = function(sequence, connection){
         var nonCyclicalSequences = [];
         var cyclicalSequences = [];
@@ -92,6 +310,8 @@ app.controller('MainCtrl', ['$scope', '$window', 'HelmConversionService', 'Canva
             }
         }
 
+
+
         //if no cyclical sequences
         if (cyclicalSequences.length === 0){
             for (k = 0; k < sequence.length; k++){
@@ -102,217 +322,24 @@ app.controller('MainCtrl', ['$scope', '$window', 'HelmConversionService', 'Canva
             }
         }
 
+           
+//hardcoding for now, remove when this method will return a SequenceObj
 
-        return [ cyclicalSequences, nonCyclicalSequences];
+//*****hardcoding begins*****
+
+        var child1 = new CanvasDisplayService.ChildSequence("linear", ['A','R']);
+		var child2 = new CanvasDisplayService.ChildSequence("cyclical", ['C','A','A','K','T','C']);
+		var child3 = new CanvasDisplayService.ChildSequence("linear", ['D','A']);
+				
+		var monomers = [child1, child2, child3]
+
+		var seqObj = new CanvasDisplayService.Sequence("PEPTIDE", monomers);
+//******hardcoding ends******
+
+        return seqObj;
+	
+       // return [ cyclicalSequences, nonCyclicalSequences];
     };
-
-    //TO-DO for entire method: modularize, make readable, make simpler, remove unnecessary comments, etc.
-    $scope.processCyclicalSequences = function(cyclicalSequences, connection){
-        //TO-DO: fix positioning, and don't hard code any of the x/y positioning
-        var startXpos = 20;
-        var numLinearNodes = 0;  //num nodes going right -used to find starting point for reverse direction
-        var numLinearParts = 0;  //num linear parts of this sequence - used to move second linear part down on y scale
-        var startYpos = 150;
-        var i, j, k, m, x;
-        var cyclicalNodes = []; //array of cyclical nodes we pass to makeCycle();
-        var graphedNodes = [];  //return this array, to use to make connections
-        var cyclicalPortion = [];
-        var nonCyclicalPortion = [];
-        var centreX = 80 + 20;
-        var centreY = 150;
-        var name, sequence;
-
-        for (i = 0; i < connection.length; i++){
-            if (connection[i].source.name === connection[i].dest.name){   //find cyclical connection
-                for (j = 0; j < cyclicalSequences.length; j++){
-                    if (connection[i].source.name === cyclicalSequences[j].seq.name){ //find the cyclical connection/sequence pair
-
-                        sequence = cyclicalSequences[j].seq.sequences;
-                        name = cyclicalSequences[j].seq.name;
-
-                        for (k = 0; k < sequence.length; k++){      //for each node in this sequence,
-
-                            //if node is between connection source node and connection dest node
-                            if (k >= connection[i].dest.nodeID - 1 && k <= connection[i].source.nodeID - 1){
-
-                                //graph previous non-cyclical portion of sequence
-                                if (nonCyclicalPortion.length > 0){
-                                    console.log("graphing non cyclical part - 1");
-                                    for (x = 0; x < nonCyclicalPortion.length; x++){
-                                        console.log(nonCyclicalPortion[x]);
-                                    }
-                                    graphedNodes.push ({
-                                        name : name,
-                                        nodes : $scope.generateGraph(startXpos, startYpos, name, nonCyclicalPortion, cyclicalSequences[j].num, false),
-                                    });
-                                    numLinearNodes = nonCyclicalPortion.length; //TO-DO: rework method to figure out positioning on canvas
-                                    numLinearParts++;
-                                    nonCyclicalPortion = [];
-                                }
-                                cyclicalPortion.push(sequence[k]);
-                            }
-                            else { // if in non-cyclical portion of sequence
-                                //graph previous cyclical portion
-                                if (cyclicalPortion.length >0){
-                                    console.log("graphing cyclical part - 2");
-                                    for (x = 0; x < cyclicalPortion.length; x++){
-                                        console.log(cyclicalPortion[x]);
-                                    }
-                                    cyclicalNodes = CanvasDisplayService.makeCycle(cyclicalPortion, centreX + (numLinearNodes * 40), centreY);
-
-                                    for (m = 0; m < cyclicalNodes.length; m++){
-                                        $scope.canvasView.addNode(cyclicalNodes[m]);
-                                    }
-                                    graphedNodes.push ({
-                                        name : name,
-                                        nodes : cyclicalNodes,
-                                    });
-                                    cyclicalPortion = [];
-                                }
-                                nonCyclicalPortion.push(sequence[k]);
-                            }
-                        }
-                    }
-
-                    //graph remaining non-cyclical portions
-                    //TO-DO: work on positioning and whether or not in reverse direction
-                    if (nonCyclicalPortion.length > 0){
-                        console.log("graphing non cyclical part - 3 - nodes are: ");
-                        for (x = 0; x < nonCyclicalPortion.length; x++){
-                            console.log(nonCyclicalPortion[x]);
-                        }
-                        graphedNodes.push ({
-                            name : name,
-                            nodes : $scope.generateGraph(startXpos + (numLinearNodes * 10), startYpos + (numLinearParts * 40), name, nonCyclicalPortion, cyclicalSequences[j].num, true),
-                        });
-                        numLinearNodes = 0;
-                        numLinearParts = 0;
-                        nonCyclicalPortion = [];
-                    }
-                    //graph remaining cyclical portions
-                    if (cyclicalPortion.length >0){
-                        console.log("graphing cyclical part - 4");
-                        for (x = 0; x < cyclicalPortion.length; x++){
-                            console.log(cyclicalPortion[x]);
-                        }
-                        cyclicalNodes = CanvasDisplayService.makeCycle(cyclicalPortion, centreX + (numLinearNodes * 40), centreY);
-                        for (m = 0; m < cyclicalNodes.length; m++){
-                            $scope.canvasView.addNode(cyclicalNodes[m]);
-                        }
-                        graphedNodes.push ({
-                            name : name,
-                            nodes : cyclicalNodes,
-                        });
-                        cyclicalPortion = [];
-                    }
-
-                    CanvasDisplayService.setNodeNum(0); //reset node numbering
-                }
-            }
-        }
-
-        return graphedNodes;
-    };
-
-
-	//Parse the sequence, and generate the graph
-	$scope.generateGraph = function (startX, startY, sequenceName, sequence, count, isReverseDirection) {
-
-		var startXpos = startX;
-		var startYpos = startY + ((count * 1) * 150); //TO-DO: adjust positions of multiple sequences
-		var color;
-
-        var allNodes = [];
-        var riboseNode;
-	    var baseNode;
-	    var phosphateNode;
-	    var prevNode;
-        var chemNode;
-
-/*
-        var cyclicNodes = CanvasDisplayService.makeCycle(sequence, 250, 200);
-
-			angular.forEach(cyclicNodes, function(value, key) {
-				$scope.canvasView.addNode(value);
-			});
-
-*/
-		angular.forEach(sequence, function(value, key) {
-			color = CanvasDisplayService.getNodeColor(value);
-
-			if(sequenceName.toUpperCase().indexOf('RNA') > -1) {//Nucleotide'){
-
-				if (CanvasDisplayService.isRiboseNode(value)){//chck for Ribose node first
-					riboseNode = CanvasDisplayService.createRibose(value, color, startXpos, startYpos);
-                    allNodes.push(riboseNode);
-					$scope.canvasView.addNode(riboseNode);
-
-					if(phosphateNode  &&  riboseNode){//make horizontal connection
-						$scope.addNewConnection(phosphateNode, riboseNode, 'h');
-					}
-				}
-				else if(value !== 'P' && value !== 'sP'){
-			 		baseNode = CanvasDisplayService.createBase(value, color, riboseNode.x , riboseNode.y + connectionLength);
-                    allNodes.push(baseNode);
-                    $scope.canvasView.addNode(baseNode);
-
-                    if (riboseNode && baseNode){//make vertical connection
-						$scope.addNewConnection(riboseNode, baseNode, 'v');
-					}
-
-				}
-				else {
-                    if (riboseNode){
-					    phosphateNode = CanvasDisplayService.createPhosphate(value, color, riboseNode.x  + monomerSpacing, riboseNode.y);
-                    }
-                    else {
-                        phosphateNode = CanvasDisplayService.createRibose(value, color, startXpos, startYpos);
-                    }
-                    allNodes.push(phosphateNode);
-                    $scope.canvasView.addNode(phosphateNode);
-
-					if(riboseNode && phosphateNode){//make horizontal connection
-						$scope.addNewConnection(riboseNode, phosphateNode, 'h');
-					}
-
-				}
-
-				//increment the startPos for the next basenode in the sequence
-                //TO-DO: Find a better way to do this
-                if (riboseNode){
-				    startXpos = riboseNode.x + monomerSpacing*2;
-                }
-                else {
-                    startXpos = phosphateNode.x + monomerSpacing;
-                }
-			}
-			else if (sequenceName.toUpperCase().indexOf("PEPTIDE") > -1) {//Peptide
-
-				baseNode = CanvasDisplayService.createNode(value, "Peptide", "lightblue", "true", startXpos , startYpos);
-                allNodes.push(baseNode);
-				$scope.canvasView.addNode(baseNode);
-				if (prevNode){
-    	 	    	$scope.addNewConnection(prevNode, baseNode, 'h');//connect 2 nodes horizontally
-            	}
-
-            	prevNode = baseNode;
-                if (isReverseDirection){
-                    startXpos = baseNode.x + monomerSpacing;
-                }
-                else {
-            	    startXpos = baseNode.x + monomerSpacing;
-                }
-			}
-            else if (sequenceName.toUpperCase().indexOf("CHEM") > -1) {
-                //TO-DO: figure out how to decipher where Chem node should be positioned on canvas
-                chemNode = CanvasDisplayService.createNode(value, "Chem", "white", false, startXpos , startYpos);
-                allNodes.push(chemNode);
-                $scope.canvasView.addNode(chemNode);
-            }
-		});
-
-        return allNodes;
-	};
 
     //Make the connections requested in HELM Notation.
     //
@@ -358,6 +385,8 @@ app.controller('MainCtrl', ['$scope', '$window', 'HelmConversionService', 'Canva
 	$scope.addNewConnection = function(sourceNode, destNode, type){
 		var conn = CanvasDisplayService.createConnection(sourceNode, destNode, type);
 		$scope.canvasView.addConnection(conn);
+
+		return conn;
 	};
 
 	$scope.resetCanvas = function(){
@@ -376,4 +405,4 @@ app.controller('MainCtrl', ['$scope', '$window', 'HelmConversionService', 'Canva
 	$scope.canvasView = new CanvasDisplayService.CanvasView(helmDataModel);
 
 
-}]);
+    }]);
