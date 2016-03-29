@@ -37,6 +37,7 @@ script:
   - grunt protractor-firefox
 
 after_success:
+  - echo "deploying"
   - grunt build
   - tar -czf dist.tgz dist
   - export SSHPASS=$DEPLOY_PASS
