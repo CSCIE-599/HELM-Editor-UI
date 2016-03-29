@@ -41,4 +41,4 @@ after_success:
   - grunt build
   - tar -czf dist.tgz dist
   - export SSHPASS=$DEPLOY_PASS
-  - sshpass -e scp -o dist.tgz $DEPLOY_USER@$DEPLOY_HOST:$DEPLOY_PATH
+  - sshpass -e scp dist.tgz $DEPLOY_USER@$DEPLOY_HOST:$DEPLOY_PATH
