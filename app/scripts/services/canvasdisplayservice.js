@@ -38,17 +38,17 @@ angular.module('helmeditor2App')
 
 	self.createRibose = function (nodeName,  nodeColor, xPos, yPos) {
 		//console.log('adding ribose node ' + nodeName +' at: (' + xPos + ',' +yPos +')');
-	 	return self.createNode(nodeName, 'NUCLEOTIDE', 'lightgrey', 'false', xPos, yPos, 'r');
+	 	return self.createNode(nodeName, 'NUCLEOTIDE', 'lightgrey', false, xPos, yPos, 'r');
 	};
 
 	self.createBase = function (nodeName,  nodeColor, xPos, yPos) {
 		//console.log('adding base node ' + nodeName +' at: (' + xPos + ',' +yPos +')');
-	 	return self.createNode(nodeName, 'NUCLEOTIDE', nodeColor, 'true', xPos, yPos, 'b');
+	 	return self.createNode(nodeName, 'NUCLEOTIDE', nodeColor, true, xPos, yPos, 'b');
 	};
 
 	self.createPhosphate = function (nodeName,  nodeColor, xPos, yPos) {
 		//console.log('adding phosphate node ' + nodeName +' at: (' + xPos + ',' +yPos +')');
-	 	return self.createNode(nodeName, 'NUCLEOTIDE', nodeColor, 'false', xPos, yPos, 'p');
+	 	return self.createNode(nodeName, 'NUCLEOTIDE', nodeColor, false, xPos, yPos, 'p');
 	};
 
 	// create a new node
@@ -59,7 +59,7 @@ angular.module('helmeditor2App')
 		var rx = radiusX;
 		var ry = radiusX;
 
-		if(isRotate === 'true'){
+		if(isRotate){
 			rotateDegree = '45';
 		}
 
@@ -150,11 +150,8 @@ angular.module('helmeditor2App')
 		else if(nodeName === 'T' || nodeName === 'U'){
 			return 'cyan';
 		}
-        //TO-DO: remove 'else if' test, and return 'lightgrey' as default color (?)
-        else if (nodeName === 'P' || nodeName === 'sP' || nodeName === 'R'){
-            return 'lightgrey';
-        }
-	};
+        else return 'lightgrey';
+    };
 
 	self.getNodeNum = function(){
 		return nodeNum;
@@ -165,14 +162,22 @@ angular.module('helmeditor2App')
 		nodeNum = num;
 	};
 
-	self.makeCycle = function(sequenceArr, seqType, pos){
+	self.makeCycle = function(sequenceArr, seqType, pos, dir){
 
 		var sequence = sequenceArr;
+		var xc;
+		var yc;
 		
 		var cycleNodesArray = [];
-		var r = 70;//radius
-		var xc = pos.x + r;//center x pos of circle
-		var yc = pos.y - r;//center y pos of circle
+		var r = 70;//radius - TO-DO: make radius relative on the length of sequenceArray
+		if(dir === 'reverse'){
+			xc = pos.x - monomerSpacing;//center x pos of circle
+		}
+		else {
+			xc = pos.x + monomerSpacing;//center x pos of circle
+		}
+
+		yc = pos.y - r;//center y pos of circle
 
 		var degree = 360/sequence.length; //divide the circle, to allow equal separation between the nodes
 
@@ -186,7 +191,7 @@ angular.module('helmeditor2App')
 				nodexpos = Math.sin(i * Math.PI / 180) * r + xc;
 				nodeypos = Math.cos(i * Math.PI / 180) * r + yc;
 			
-				var node = self.createNode(value, seqType, "lightblue", "true", nodexpos, nodeypos);
+				var node = self.createNode(value, seqType, "lightblue", true, nodexpos, nodeypos);
 
 				cycleNodesArray.push(node);				
 				i = i+degree;				
@@ -202,7 +207,7 @@ angular.module('helmeditor2App')
 
 		if(!pos){
 			return {
-				x: 150,
+				x: 150, //TO-DO make this relatibe to the length of sequence
 				y: 150
 			};
 		}
@@ -353,22 +358,10 @@ angular.module('helmeditor2App')
 		var connectionOffset = 0;
 
 		this.sourceCoordX = function () {
-			/*if (this.type === 'h'){ //if link is horizontal
-				return this.source.width + this.source.x;
-			}
-			*/
-			//return (this.source.width/2 + this.source.x );
 			return this.source.x + this.source.width/2;
-
 		};
 
 		this.sourceCoordY = function () {
-			/*
-			if(this.type === 'h'){
-				return (this.source.y + (this.source.height/2));
-			}
-			//return this.source.y + this.source.height;
-			*/
 			return this.source.y + this.source.height/2;
 		};
 
@@ -380,22 +373,10 @@ angular.module('helmeditor2App')
 		};
 
 		this.destCoordX = function () {
-			/*if (this.type === 'h'){
-				return this.dest.x;
-			}
-			//return this.dest.transformx;
-			*/
-			return this.dest.x + this.dest.width/2
-
+			return this.dest.x + this.dest.width/2;
 		};
 
 		this.destCoordY = function () {
-			/*
-			if (this.type === 'h'){
-				return (this.dest.y + (this.dest.height/2));
-			}
-			//return (this.dest.transformy-this.dest.height/2)-connectionOffset;
-			*/
 			return this.dest.y + this.dest.height/2;
 		};
 
