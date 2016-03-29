@@ -32,8 +32,8 @@ angular.module('helmeditor2App')
 	var monomerSpacing = 50;//100;
 
 	//regular node radius
-	var radiusX = '4';
-	var radiusY = '4';
+	var radiusX = '3';
+	var radiusY = '3';
 
 
 	self.createRibose = function (nodeName,  nodeColor, xPos, yPos) {
@@ -53,7 +53,7 @@ angular.module('helmeditor2App')
 
 	// create a new node
 	self.createNode = function (nodeName, sequenceType, nodeColor, isRotate, xpos, ypos, nodeType) {
-		console.log(sequenceType);
+		
 		var rotateDegree = '0';
 
 		var rx = radiusX;
@@ -104,10 +104,9 @@ angular.module('helmeditor2App')
 		return newNode;
 	};
 
-	self.createConnection = function(sourceNode, destNode, type){
+	self.createConnection = function(sourceNode, destNode){
 
 		var conn = {
-			type: type,
 			source: sourceNode,
 			dest: destNode
 		};
@@ -130,7 +129,6 @@ angular.module('helmeditor2App')
 
 
 	self.isPhosphateNode = function(node){
-
 		if(node === 'P' || node === 'sP')
 			return true;
 
@@ -162,22 +160,35 @@ angular.module('helmeditor2App')
 		nodeNum = num;
 	};
 
+	//helper function to combine arrays of nodes, into one big array
+	self.collapseNodes = function(allNodesArr){
+		
+		var nodes = [];
+
+		for(var i=0; i<allNodesArr.length;i++){
+			nodes = nodes.concat(allNodesArr[i]);
+		}
+		return nodes;
+	};
+
 	self.makeCycle = function(sequenceArr, seqType, pos, dir){
 
 		var sequence = sequenceArr;
+
+		//center point of the circle
 		var xc;
 		var yc;
 		
 		var cycleNodesArray = [];
 		var r = 70;//radius - TO-DO: make radius relative on the length of sequenceArray
 		if(dir === 'reverse'){
-			xc = pos.x - monomerSpacing;//center x pos of circle
+			xc = pos.x - r/2 ;//center x pos of circle
 		}
 		else {
-			xc = pos.x + monomerSpacing;//center x pos of circle
+			xc = pos.x + r/2;//center x pos of circle
 		}
 
-		yc = pos.y - r;//center y pos of circle
+		yc = pos.y - r;
 
 		var degree = 360/sequence.length; //divide the circle, to allow equal separation between the nodes
 
@@ -194,7 +205,7 @@ angular.module('helmeditor2App')
 				var node = self.createNode(value, seqType, "lightblue", true, nodexpos, nodeypos);
 
 				cycleNodesArray.push(node);				
-				i = i+degree;				
+				i = i + degree;				
 			}
 							
 		});
@@ -205,13 +216,13 @@ angular.module('helmeditor2App')
 	//helper function to get a new pos to create a new row, increments y
 	self.getNewRowPos = function(pos, i){
 
-		if(!pos){
+		if(!pos){//starting pos
 			return {
 				x: 150, //TO-DO make this relatibe to the length of sequence
 				y: 150
 			};
 		}
-		else {
+		else {//for new row, increment y
 			return {
 				x: pos.x,
 				y: pos.y + (i * 150)

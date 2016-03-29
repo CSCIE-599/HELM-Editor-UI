@@ -8,7 +8,6 @@
  *
  * Main module of the application.
  */
-//angular.module('app', ['flowChart', ])
 
 angular
   .module('helmeditor2App', [

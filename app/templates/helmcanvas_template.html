@@ -2,11 +2,25 @@
   xmlns="http://www.w3.org/2000/svg"
   width="1600" height="400">
 
+  <!-- loop thru all the connections in the graph -->
+
+
+  <!--connections are drawn first so the lines are not visible inside the nodes -->
+  <g ng-repeat="connection in graph.connections">
+      <path 
+      ng-attr-d="M{{connection.sourceCoordX()}}, {{connection.sourceCoordY()}}
+                       L{{connection.destCoordX()}}, {{connection.destCoordY()}}"
+      ng-attr-class="{{'path-style'}}"
+      >
+      </path>
+  </g>
+
+
 <!-- loop thru all the nodes in the graph -->
   <g ng-repeat="node in graph.nodes">
 
-    <rect
-      ng-attr-class="{{node.selected() && 'selected-node-rect' || (node == mouseOverNode && 'mouseover-node-rect' || 'node-rect')}}"
+    <rect ng-attr-class={{'node-rect'}}
+     
       ng-attr-width="{{node.width()}}"
       ng-attr-height="{{node.height()}}"
       ng-attr-fill="{{node.colour()}}"
@@ -14,7 +28,7 @@
       ng-attr-y="{{node.y()}}"
       ng-attr-rx="{{node.rx()}}"
       ng-attr-ry="{{node.ry()}}"
-      ng-attr-transform="rotate({{node.transformDegree()}}, {{node.transformx()}}, {{node.transformy()}})"
+      ng-attr-transform="rotate({{node.transformDegree()}}, {{node.transformx()}}, {{node.transformy()}})"      
     >
     </rect>
 
@@ -22,7 +36,7 @@
       ng-attr-x="{{(node.width()/2)+node.x()}}"
       ng-attr-y="{{(node.height()/2)+node.y()}}"
       text-anchor="middle"
-      alignment-baseline="middle"
+      alignment-baseline="middle"      
      >
       {{node.name()}}
     </text>
@@ -39,12 +53,5 @@
 
   </g>
 
-<!-- loop thru all the connections in the graph -->
-  <g ng-repeat="connection in graph.connections">
-      <path ng-attr-d="M{{connection.sourceCoordX()}}, {{connection.sourceCoordY()}}
-                       L{{connection.destCoordX()}}, {{connection.destCoordY()}}"
-         style="stroke:#660000; fill:none;">
-      </path>
-  </g>
 
 </svg>

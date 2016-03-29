@@ -21,7 +21,13 @@ Styles for nodes and connectors.
 
 .node-rect {
 	stroke: black;
-	stroke-width: 2;
+	stroke-width: 1;	
+}
+
+
+.path-style{
+	stroke:#660000; 
+	fill:none;
 }
 
 .mouseover-node-rect {
@@ -129,4 +135,11 @@ Drag selection rectangle.
 .md-button[disabled] {
   color : rgba(0, 0, 0, 0.26);
   background-color: transparent;
+}
+
+
+
+rect {
+
+	z-index: -1;
 }

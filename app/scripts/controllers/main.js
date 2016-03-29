@@ -36,7 +36,7 @@ app.controller('MainCtrl', ['$scope', 'HelmConversionService', 'CanvasDisplaySer
         var sequence = helmTranslation[0];   //each array element has the sequence name and its array of letters
         var connection = helmTranslation[1]; //each array element has a source.name, source.nodeID, dest.name, dest.nodeID
         
-        //not returning proper cyclical and noncyclical nodes now, so hardcoded.
+        //TO-DO : Not returning proper cyclical and noncyclical nodes now, so hardcoded.
 		var seq = $scope.separateSequences(sequence, connection);
        
         var pos; 
@@ -49,7 +49,6 @@ app.controller('MainCtrl', ['$scope', 'HelmConversionService', 'CanvasDisplaySer
             graphedNodes.push({
             	name : sequence[i].name,
                 nodes : $scope.generateGraph(seq, pos),
-
             });
  			CanvasDisplayService.setNodeNum(0); //reset node numbering
         }
@@ -109,21 +108,11 @@ app.controller('MainCtrl', ['$scope', 'HelmConversionService', 'CanvasDisplaySer
 				};
 			} 
 		}
-
-		return $scope.collapseNodes(allNodes);			
+		return CanvasDisplayService.collapseNodes(allNodes);			
 	}
 
 
-	//helper function to combine arrays of nodes, into one big array
-	$scope.collapseNodes = function(allNodesArr){
-		
-		var nodes = [];
-
-		for(var i=0; i<allNodesArr.length;i++){
-			nodes = nodes.concat(allNodesArr[i]);
-		}
-		return nodes;
-	};
+	
 
 	//makes a linear graph starting from the pos
 	//returns a Subgraph obj, thats already drawn on the canvas
@@ -320,7 +309,7 @@ app.controller('MainCtrl', ['$scope', 'HelmConversionService', 'CanvasDisplaySer
 	};
 
 
-	  //returns array of cyclical sequences and array of non-cyclical sequences
+	 //returns array of cyclical sequences and array of non-cyclical sequences
     $scope.separateSequences = function(sequence, connection){
         var nonCyclicalSequences = [];
         var cyclicalSequences = [];
@@ -361,14 +350,15 @@ app.controller('MainCtrl', ['$scope', 'HelmConversionService', 'CanvasDisplaySer
 
         var child1 = new CanvasDisplayService.ChildSequence("linear", ['A','R']);
 		var child2 = new CanvasDisplayService.ChildSequence("cyclical", ['C','A','A','K','T','C']);
-		var child3 = new CanvasDisplayService.ChildSequence("linear", ['D','A']);
-	
+		var child3 = new CanvasDisplayService.ChildSequence("linear", ['D','A']);	
 		var child4 = new CanvasDisplayService.ChildSequence("linear", ['O','T']);
+
 	//var child5 = new CanvasDisplayService.ChildSequence("cyclical", ['C','A','A','K','T','C']);
-	//var child6 = new CanvasDisplayService.ChildSequence("linear", ['R','A','P','R','A','P','R','G','P','R','C','P']);
+	//var child6 = new CanvasDisplayService.ChildSequence("linear", ['O','T']);
+	//var child7 = new CanvasDisplayService.ChildSequence("linear", ['P','R','A','P','R','A','P','R','G','P','R','C','P']);
 						
 		var monomers = [child1, child2, child3, child4];
-		//var monomers = [child6];
+		
 
 		//var seqObj = new CanvasDisplayService.Sequence("RNA", monomers);
 		var seqObj = new CanvasDisplayService.Sequence("PEPTIDE", monomers);
@@ -420,13 +410,14 @@ app.controller('MainCtrl', ['$scope', 'HelmConversionService', 'CanvasDisplaySer
 	};
 
 	//add a connection between 2 nodes
-	$scope.addNewConnection = function(sourceNode, destNode, type){
-		var conn = CanvasDisplayService.createConnection(sourceNode, destNode, type);
+	$scope.addNewConnection = function(sourceNode, destNode){
+		var conn = CanvasDisplayService.createConnection(sourceNode, destNode);
 		$scope.canvasView.addConnection(conn);
 
 		return conn;
 	};
 
+	//reset the canvas display 
 	$scope.resetCanvas = function(){
 
 		console.log("RESETTING CANVAS DISPLAY");
