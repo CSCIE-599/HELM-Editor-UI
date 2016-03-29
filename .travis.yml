@@ -9,7 +9,7 @@ cache:
 before_script:
   - export DISPLAY=:99.0
   - sh -e /etc/init.d/xvfb start
-  - sleep 3 # give xvfb some time to star
+  - sleep 3 # give xvfb some time to start
   - npm install -g grunt-cli
   - npm install -g bower
   - npm install
@@ -21,3 +21,6 @@ script:
   - echo "running tests"
   - grunt test
   - grunt protractor-firefox
+
+after_success:
+  - grunt build
