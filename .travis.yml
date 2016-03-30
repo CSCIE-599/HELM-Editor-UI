@@ -42,4 +42,4 @@ after_success:
   - ls
   - $DEPLOY_DEST
   - export SSHPASS=$DEPLOY_PASS
-  - sshpass -e scp dist.tgz $DEPLOY_DEST
+  - sshpass -p $DEPLOY_PASS scp dist.tgz $DEPLOY_DEST
