@@ -37,8 +37,7 @@ script:
 after_success:
   - echo "deploying"
   - grunt build
-  - pwd
-  - pwd | echo
+  - ls
   - tar -czf dist.tgz dist
   - export SSHPASS=$DEPLOY_PASS
-  - sshpass -e scp -o stricthostchecking=no dist.tgz $DEPLOY_DEST
+  - sshpass -e scp dist.tgz $DEPLOY_DEST
