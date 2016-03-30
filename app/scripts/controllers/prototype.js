@@ -30,14 +30,25 @@ angular.module('helmeditor2App')
         window.alert('Invalid input');
         return;
       }
-      webservice.getHelmNotation(polymerType.value, inputSequence)
-        .success(function (response) {
-          $scope.result = response.HELMNotation;
-        })
-        .error(function (response) {
-          $scope.result = 'Invalid sequence';
-          console.log(response);
-        });
+      if (polymerType.value === 'PEPTIDE') {
+        webservice.getHelmNotationPeptide(inputSequence)
+          .success(function (response) {
+            $scope.result = response.HELMNotation;
+          })
+          .error(function (response) {
+            $scope.result = 'Invalid sequence';
+            console.log(response);
+          });
+      } else if (polymerType.value === 'RNA') {
+        webservice.getHelmNotationRna(inputSequence)
+          .success(function (response) {
+            $scope.result = response.HELMNotation;
+          })
+          .error(function (response) {
+            $scope.result = 'Invalid sequence';
+            console.log(response);
+          });
+      }
     };  
 
   	/* Event processing prototype - invoke factory function to get HELM image */ 
@@ -46,7 +57,7 @@ angular.module('helmeditor2App')
         window.alert('Invalid input');
         return;
     	}
-      $scope.imageUrl = webservice.getHelmImage(inputSequence);
+      $scope.imageUrl = webservice.getHelmImageUrl(inputSequence);
       $http.get($scope.imageUrl)
         .error(function (response) {
           window.alert(response);
