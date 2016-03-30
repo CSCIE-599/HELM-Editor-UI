@@ -414,6 +414,10 @@ module.exports = function (grunt) {
         'copy:styles',
         'imagemin',
         'svgmin'
+      ],
+      protractorTest: [
+        'protractor:chrome',
+        'protractor:firefox'
       ]
     },
 
@@ -430,9 +434,36 @@ module.exports = function (grunt) {
         configFile: 'test/karma.conf.js',
         singleRun: false
       }
+    },
+
+    protractor: {
+      options: {
+        configFile: 'test/e2e/protractor.conf.js', // protractor config file
+        keepAlive: false, // if false, the grunt process stops when the test fails.
+        noColor: false, // if true, protractor will not use colors in its output.
+        args: {
+          // Arguments passed to the command
+        }
+      },
+      chrome: {
+        options: {
+          args: {
+            browser: 'chrome'
+          }
+        }
+      },
+      firefox: {
+        options: {
+          args: {
+            browser: 'firefox'
+          }
+        }
+      }
     }
   });
 
+  // load the protractor task
+  grunt.loadNpmTasks('grunt-protractor-runner'); 
 
   grunt.registerTask('serve', 'Compile then start a connect web server', function (target) {
     if (target === 'dist') {
@@ -490,6 +521,30 @@ module.exports = function (grunt) {
     'usemin',
     'htmlmin'
   ]);
+
+  grunt.registerTask('protractor-chrome', [
+    'clean:server',
+    'wiredep',
+    'concurrent:test',
+    'postcss',
+    'connect:test',
+    'protractor:chrome'
+  ]);
+  grunt.registerTask('protractor-firefox', [
+    'clean:server',
+    'wiredep',
+    'concurrent:test',
+    'postcss',
+    'connect:test',
+    'protractor:firefox'
+  ]);
+  grunt.registerTask('protractor-all', [
+    'clean:server',
+    'wiredep',
+    'concurrent:test',
+    'postcss',
+    'connect:test',
+    'concurrent:protractorTest']);
 
   grunt.registerTask('default', [
     'newer:jshint',
