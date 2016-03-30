@@ -41,4 +41,4 @@ after_success:
   - tar -czf dist.tgz dist
   - ls
   - export SSHPASS=$DEPLOY_PASS
-  - sshpass -e scp dist.tgz $DEPLOY_DEST
+  - sshpass -e 'scp dist.tgz $DEPLOY_DEST'
