@@ -8,7 +8,7 @@
  * Controller of the helmeditor2App
  */
 angular.module('helmeditor2App')
-  .controller('PrototypeCtrl', ['$scope', '$http', 'webservice', function ($scope, $http, webservice) {
+  .controller('PrototypeCtrl', ['$scope', '$http', 'webService', function ($scope, $http, webService) {
     this.awesomeThings = [
       'HTML5 Boilerplate',
       'AngularJS',
@@ -31,7 +31,7 @@ angular.module('helmeditor2App')
         return;
       }
       if (polymerType.value === 'PEPTIDE') {
-        webservice.getHelmNotationPeptide(inputSequence)
+        webService.getHelmNotationPeptide(inputSequence)
           .success(function (response) {
             $scope.result = response.HELMNotation;
           })
@@ -40,7 +40,7 @@ angular.module('helmeditor2App')
             console.log(response);
           });
       } else if (polymerType.value === 'RNA') {
-        webservice.getHelmNotationRna(inputSequence)
+        webService.getHelmNotationRna(inputSequence)
           .success(function (response) {
             $scope.result = response.HELMNotation;
           })
@@ -57,7 +57,7 @@ angular.module('helmeditor2App')
         window.alert('Invalid input');
         return;
     	}
-      $scope.imageUrl = webservice.getHelmImageUrl(inputSequence);
+      $scope.imageUrl = webService.getHelmImageUrl(inputSequence);
       $http.get($scope.imageUrl)
         .error(function (response) {
           window.alert(response);

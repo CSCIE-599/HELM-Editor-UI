@@ -1,14 +1,14 @@
 'use strict';
 
-describe('Service: webservice', function () {
+describe('Service: helmeditor2App.webService', function () {
 
   // load the service's module
-  beforeEach(module('helmeditor2App'));
+  beforeEach(module('helmeditor2App.webService'));
 
   // instantiate service
-  var webservice;
-  beforeEach(inject(function (_webservice_) {
-    webservice = _webservice_;
+  var webService;
+  beforeEach(inject(function (_webService_) {
+    webService = _webService_;
   }));
 
   // Set up the httpbackend
@@ -28,34 +28,34 @@ describe('Service: webservice', function () {
   var helmSequence = 'RNA1{R(A)}$$$$V2.0';
     
   it('should return the base url', function () {
-    baseUrl = webservice.getBaseUrl();
+    baseUrl = webService.getBaseUrl();
     expect(baseUrl).not.toBe('');
   });
 
   it('should return the Monomer Image URL with no showRgroups', function () {
-    result = webservice.getMonomerImageUrl('A', 'RNA', '');
+    result = webService.getMonomerImageUrl('A', 'RNA', '');
     expect(result).toBe(baseUrl + 'Image/Monomer?monomerId=A&polymerType=RNA');
   });
 
   it('should return the Monomer Image URL with showRgroups true', function () {
-    result = webservice.getMonomerImageUrl('A', 'RNA', true);
+    result = webService.getMonomerImageUrl('A', 'RNA', true);
     expect(result).toBe(baseUrl + 'Image/Monomer?monomerId=A&polymerType=RNA&showRgroups=true');
   });
 
   it('should return the Monomer Image URL with showRgroups false', function () {
-    result = webservice.getMonomerImageUrl('A', 'RNA', false);
+    result = webService.getMonomerImageUrl('A', 'RNA', false);
     expect(result).toBe(baseUrl + 'Image/Monomer?monomerId=A&polymerType=RNA&showRgroups=false');
   });
 
   it('should return the Helm Image URL', function () {
-    result = webservice.getHelmImageUrl(helmSequence);
+    result = webService.getHelmImageUrl(helmSequence);
     expect(result).toBe(baseUrl + 'Image/HELM/' + helmSequence);
   });
 
   it('should return a mock data for getHelmNotationRna', function() {
     $httpBackend.expect('GET', baseUrl + 'Sequence/RNA/' + inputSequence)
       .respond('mock data');
-    webservice.getHelmNotationRna(inputSequence).success(function(data) {
+    webService.getHelmNotationRna(inputSequence).success(function(data) {
       result = data;            
     });
     $httpBackend.flush();
@@ -65,7 +65,7 @@ describe('Service: webservice', function () {
   it('should return a mock data for getHelmNotationPeptide', function() {
     $httpBackend.expect('GET', baseUrl + 'Sequence/PEPTIDE/' + inputSequence)
       .respond('mock data');
-    webservice.getHelmNotationPeptide(inputSequence).success(function(data) {
+    webService.getHelmNotationPeptide(inputSequence).success(function(data) {
       result = data;            
     });
     $httpBackend.flush();
@@ -75,7 +75,7 @@ describe('Service: webservice', function () {
   it('should return a mock data for validateHelmNotation', function() {
     $httpBackend.expect('GET', baseUrl + 'Validation/' + inputSequence)
       .respond('mock data');
-    webservice.validateHelmNotation(inputSequence).success(function(data) {
+    webService.validateHelmNotation(inputSequence).success(function(data) {
       result = data;            
     });
     $httpBackend.flush();
@@ -85,7 +85,7 @@ describe('Service: webservice', function () {
   it('should return a mock data for getMolecularWeight', function() {
     $httpBackend.expect('GET', baseUrl + 'Calculation/MolecularWeight/' + inputSequence)
       .respond('mock data');
-    webservice.getMolecularWeight(inputSequence).success(function(data) {
+    webService.getMolecularWeight(inputSequence).success(function(data) {
       result = data;            
     });
     $httpBackend.flush();
@@ -95,7 +95,7 @@ describe('Service: webservice', function () {
   it('should return a mock data for getMolecularFormula', function() {
     $httpBackend.expect('GET', baseUrl + 'Calculation/ExtinctionCoefficient/' + inputSequence)
       .respond('mock data');
-    webservice.getExtinctionCoefficient(inputSequence).success(function(data) {
+    webService.getExtinctionCoefficient(inputSequence).success(function(data) {
       result = data;            
     });
     $httpBackend.flush();
@@ -105,7 +105,7 @@ describe('Service: webservice', function () {
   it('should return a mock data for getConversionCanonical', function() {
     $httpBackend.expect('GET', baseUrl + 'Conversion/Canonical/' + inputSequence)
       .respond('mock data');
-    webservice.getConversionCanonical(inputSequence).success(function(data) {
+    webService.getConversionCanonical(inputSequence).success(function(data) {
       result = data;            
     });
     $httpBackend.flush();
@@ -115,7 +115,7 @@ describe('Service: webservice', function () {
   it('should return a mock data for getConversionStandard', function() {
     $httpBackend.expect('GET', baseUrl + 'Conversion/Standard/' + inputSequence)
       .respond('mock data');
-    webservice.getConversionStandard(inputSequence).success(function(data) {
+    webService.getConversionStandard(inputSequence).success(function(data) {
       result = data;            
     });
     $httpBackend.flush();
@@ -125,7 +125,7 @@ describe('Service: webservice', function () {
   it('should return a mock data for getConversionJson', function() {
     $httpBackend.expect('GET', baseUrl + 'Conversion/JSON/' + inputSequence)
       .respond('mock data');
-    webservice.getConversionJson(inputSequence).success(function(data) {
+    webService.getConversionJson(inputSequence).success(function(data) {
       result = data;            
     });
     $httpBackend.flush();
@@ -135,7 +135,7 @@ describe('Service: webservice', function () {
   it('should return a mock data for getFastaProduce', function() {
     $httpBackend.expect('GET', baseUrl + 'Fasta/Produce/' + inputSequence)
       .respond('mock data');
-    webservice.getFastaProduce(inputSequence).success(function(data) {
+    webService.getFastaProduce(inputSequence).success(function(data) {
       result = data;            
     });
     $httpBackend.flush();
@@ -146,7 +146,7 @@ describe('Service: webservice', function () {
     helmSequence = 'RNA1{R(A)}$$$$V2.0';
     $httpBackend.expect('GET', baseUrl + 'Fasta/Convert/RNA/' + helmSequence)
       .respond('mock data');
-    webservice.getFastaConvertRna(helmSequence).success(function(data) {
+    webService.getFastaConvertRna(helmSequence).success(function(data) {
       result = data;            
     });
     $httpBackend.flush();
@@ -157,7 +157,7 @@ describe('Service: webservice', function () {
     helmSequence = 'PEPTIDE1{A}$$$$V2.0';
     $httpBackend.expect('GET', baseUrl + 'Fasta/Convert/PEPTIDE/' + helmSequence)
       .respond('mock data');
-    webservice.getFastaConvertPeptide(helmSequence).success(function(data) {
+    webService.getFastaConvertPeptide(helmSequence).success(function(data) {
       result = data;            
     });
     $httpBackend.flush();
@@ -168,7 +168,7 @@ describe('Service: webservice', function () {
     helmSequence = 'RNA1{R(A)}$$$$V2.0';
     $httpBackend.expect('GET', baseUrl + 'Fasta/Read?RNA=' + helmSequence)
       .respond('mock data');
-    webservice.getFastaReadRna(helmSequence).success(function(data) {
+    webService.getFastaReadRna(helmSequence).success(function(data) {
       result = data;            
     });
     $httpBackend.flush();
@@ -179,7 +179,7 @@ describe('Service: webservice', function () {
     helmSequence = 'PEPTIDE1{A}$$$$V2.0';
     $httpBackend.expect('GET', baseUrl + 'Fasta/Read?PEPTIDE=' + helmSequence)
       .respond('mock data');
-    webservice.getFastaReadPeptide(helmSequence).success(function(data) {
+    webService.getFastaReadPeptide(helmSequence).success(function(data) {
       result = data;            
     });
     $httpBackend.flush();

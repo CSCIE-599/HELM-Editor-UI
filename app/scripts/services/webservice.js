@@ -2,13 +2,13 @@
 
 /**
  * @ngdoc service
- * @name helmeditor2App.webservice
+ * @name webService
  * @description
- * # webservice
+ * # WebService
  * Factory in the helmeditor2App.
  */
-angular.module('helmeditor2App')
-  .factory('webservice', function ($http) {
+angular.module('helmeditor2App.webService', [])
+  .factory('webService', function ($http) {
       var wsConfig = {
         // The URL of a running HELM2Webservice
         baseUrl: 'http://104.236.250.11:8080/WebService/service/',

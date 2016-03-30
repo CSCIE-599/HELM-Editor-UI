@@ -15,7 +15,8 @@ angular
     'ngResource',
     'ngRoute',
     'ngSanitize',
-    'ngTouch'
+    'ngTouch',
+    'helmeditor2App.webService'
   ])
   .config(function ($routeProvider) {
     $routeProvider
