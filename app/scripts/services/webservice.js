@@ -9,52 +9,87 @@
  */
 angular.module('helmeditor2App')
   .factory('webservice', function ($http) {
-    
-    var baseUrl = 'http://104.236.250.11:8080/WebService/service/';
-    
+      var wsConfig = {
+        // The URL of a running HELM2Webservice
+        baseUrl: 'http://104.236.250.11:8080/WebService/service/',
+        
+        // HELM2Webservice API specific URL extensions
+        getMonomerImageUrl: 'Image/Monomer?',
+        getHelmImageUrl: 'Image/HELM/',
+        getHelmNotationPeptide: 'Sequence/PEPTIDE/',
+        getHelmNotationRna: 'Sequence/RNA/',
+        validateHelmNotation: 'Validation/',
+        getMolecularWeight: 'Calculation/MolecularWeight/',
+        getMolecularFormula: 'Calculation/MolecularFormula/',
+        getExtinctionCoefficient: 'Calculation/ExtinctionCoefficient/',
+        getConversionCanonical: 'Conversion/Canonical/',
+        getConversionStandard: 'Conversion/Standard/',
+        getConversionJson: 'Conversion/JSON/',
+        getFastaProduce: 'Fasta/Produce/',
+        getFastaConvertPeptide: 'Fasta/Convert/PEPTIDE/',
+        getFastaConvertRna: 'Fasta/Convert/RNA/',
+        getFastaReadPeptide: 'Fasta/Read?PEPTIDE=',
+        getFastaReadRna: 'Fasta/Read?RNA=' 
+      };
     return {
-      getMonomerImage: function (monomerId, polymerType, showRgroups) {
-        var fullUrl = baseUrl + 'Image/Monomer/' + 
-          'monomerId=' + monomerId + 
-          '/polymerType=' + polymerType + 
-          '/showRgroups=' + showRgroups;
+      getBaseUrl: function () {
+        return wsConfig.baseUrl;
+      }, 
+      getFullUrl: function (api, inputSequence) {
+        return wsConfig.baseUrl + api + inputSequence;
+      }, 
+      getMonomerImageUrl: function (monomerId, polymerType, showRgroups) {
+        var fullUrl = wsConfig.baseUrl + wsConfig.getMonomerImageUrl + 
+                      'monomerId=' + monomerId + '&polymerType=' + polymerType;
+        if (angular.isDefined(showRgroups) && showRgroups !== '') {
+          fullUrl = fullUrl + '&showRgroups=' + showRgroups;
+        }
         return fullUrl;
       }, 
-      getHelmImage: function (inputSequence) {
-        return baseUrl + 'Image/HELM/' + inputSequence;
+      getHelmImageUrl: function (inputSequence) {
+        return this.getFullUrl(wsConfig.getHelmImageUrl, inputSequence);
       },   
-      getHelmNotation: function (polymerType, inputSequence) {
-        return $http.get(baseUrl + 'Sequence/' + polymerType + '/' + inputSequence);
-      },      
+      getHelmNotationPeptide: function (inputSequence) {
+        return $http.get(this.getFullUrl(wsConfig.getHelmNotationPeptide, inputSequence));
+      },
+      getHelmNotationRna: function (inputSequence) {
+        return $http.get(this.getFullUrl(wsConfig.getHelmNotationRna, inputSequence));
+      },
+      validateHelmNotation: function (inputSequence) {
+        return $http.get(this.getFullUrl(wsConfig.validateHelmNotation, inputSequence));
+      },
       getMolecularWeight: function (inputSequence) {
-       return $http.get(baseUrl + 'Calculation/MolecularWeight/' + inputSequence);
+       return $http.get(this.getFullUrl(wsConfig.getMolecularWeight, inputSequence));
       },
       getMolecularFormula: function (inputSequence) {
-        return $http.get(baseUrl + 'Calculation/MolecularFormula/' + inputSequence);
+        return $http.get(this.getFullUrl(wsConfig.getMolecularFormula, inputSequence));
       },
       getExtinctionCoefficient: function (inputSequence) {
-        return $http.get(baseUrl + 'Calculation/ExtinctionCoefficient/' + inputSequence);
+        return $http.get(this.getFullUrl(wsConfig.getExtinctionCoefficient, inputSequence));
       },
       getConversionCanonical: function (inputSequence) {
-        return $http.get(baseUrl + 'Conversion/Canonical/' + inputSequence);
+        return $http.get(this.getFullUrl(wsConfig.getConversionCanonical, inputSequence));
       },
       getConversionStandard: function (inputSequence) {
-        return $http.get(baseUrl + 'Conversion/Standard/' + inputSequence);
+        return $http.get(this.getFullUrl(wsConfig.getConversionStandard, inputSequence));
       },
       getConversionJson: function (inputSequence) {
-        return $http.get(baseUrl + 'Conversion/JSON/' + inputSequence);
+        return $http.get(this.getFullUrl(wsConfig.getConversionJson, inputSequence));
       },
       getFastaProduce: function (inputSequence) {
-        return $http.get(baseUrl + 'Fasta/Produce/' + inputSequence);
+        return $http.get(this.getFullUrl(wsConfig.getFastaProduce, inputSequence));
       },
-      getFastaRead: function (peptide, rna) {
-        return $http.get(baseUrl + 'Fasta/Read/', {params:{'PEPTIDE': peptide, 'RNA': rna}});
-      },     
-      getFastaConvertRNA: function (inputSequence) {
-        return $http.get(baseUrl + 'Fasta/Convert/RNA' + inputSequence);
+      getFastaConvertPeptide: function (inputSequence) {
+        return $http.get(this.getFullUrl(wsConfig.getFastaConvertPeptide, inputSequence));
       },
-      getFastaConvertPETIDE: function (inputSequence) {
-        return $http.get(baseUrl + 'Fasta/Convert/PEPTIDE/' + inputSequence);
+      getFastaConvertRna: function (inputSequence) {
+        return $http.get(this.getFullUrl(wsConfig.getFastaConvertRna, inputSequence));
+      },
+      getFastaReadPeptide: function (inputSequence) {
+        return $http.get(this.getFullUrl(wsConfig.getFastaReadPeptide, inputSequence));
+      },
+      getFastaReadRna: function (inputSequence) {
+        return $http.get(this.getFullUrl(wsConfig.getFastaReadRna, inputSequence));
       }
     };
   });
