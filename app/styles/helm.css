@@ -21,12 +21,12 @@ Styles for nodes and connectors.
 
 .node-rect {
 	stroke: black;
-	stroke-width: 1;	
+	stroke-width: 1;
 }
 
 
 .path-style{
-	stroke:#660000; 
+	stroke:#660000;
 	fill:none;
 }
 
@@ -138,8 +138,6 @@ Drag selection rectangle.
 }
 
 
-
 rect {
-
 	z-index: -1;
 }

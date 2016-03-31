@@ -25,12 +25,6 @@ angular.module('helmeditor2App')
 	//node width
 	var nodeWidth = 25;
 
-	//length of a connection, between A and attacher node R
-	var connectionLength = 100;
-
-	//space between 2 monomers, like A and G
-	var monomerSpacing = 50;//100;
-
 	//regular node radius
 	var radiusX = '3';
 	var radiusY = '3';
@@ -51,9 +45,12 @@ angular.module('helmeditor2App')
 	 	return self.createNode(nodeName, 'NUCLEOTIDE', nodeColor, false, xPos, yPos, 'p');
 	};
 
+
+
+
 	// create a new node
 	self.createNode = function (nodeName, sequenceType, nodeColor, isRotate, xpos, ypos, nodeType) {
-		
+
 		var rotateDegree = '0';
 
 		var rx = radiusX;
@@ -110,6 +107,7 @@ angular.module('helmeditor2App')
 			source: sourceNode,
 			dest: destNode
 		};
+
 		return conn;
 	};
 
@@ -129,9 +127,9 @@ angular.module('helmeditor2App')
 
 
 	self.isPhosphateNode = function(node){
-		if(node === 'P' || node === 'sP')
+		if(node === 'P' || node === 'sP'){
 			return true;
-
+        }
 		return false;
 	};
 
@@ -148,7 +146,7 @@ angular.module('helmeditor2App')
 		else if(nodeName === 'T' || nodeName === 'U'){
 			return 'cyan';
 		}
-        else return 'lightgrey';
+        return 'lightgrey';
     };
 
 	self.getNodeNum = function(){
@@ -162,7 +160,7 @@ angular.module('helmeditor2App')
 
 	//helper function to combine arrays of nodes, into one big array
 	self.collapseNodes = function(allNodesArr){
-		
+
 		var nodes = [];
 
 		for(var i=0; i<allNodesArr.length;i++){
@@ -171,45 +169,45 @@ angular.module('helmeditor2App')
 		return nodes;
 	};
 
-	self.makeCycle = function(sequenceArr, seqType, pos, dir){
+	self.makeCycle = function(sequence, seqType, pos, dir){
 
-		var sequence = sequenceArr;
-
-		//center point of the circle
-		var xc;
-		var yc;
-		
 		var cycleNodesArray = [];
-		var r = 70;//radius - TO-DO: make radius relative on the length of sequenceArray
-		if(dir === 'reverse'){
-			xc = pos.x - r/2 ;//center x pos of circle
+		var r = (sequence.length * 10) + 10;//radius
+
+        //center points of the circle
+		var yc = pos.y + r/2;
+        var xc;
+
+        if(dir === 'reverse'){
+			xc = pos.x - r; //center x pos of circle
 		}
 		else {
-			xc = pos.x + r/2;//center x pos of circle
+			xc = pos.x + r; //center x pos of circle
 		}
-
-		yc = pos.y - r;
 
 		var degree = 360/sequence.length; //divide the circle, to allow equal separation between the nodes
 
 		var nodexpos;
-		var nodeypos ;
+		var nodeypos;
 
-		var i = 0;
+        var startDegrees = 130; //TO-DO: start position is hard-coded for Cyclic Peptide
+		var i = startDegrees;
 		angular.forEach(sequence, function(value, key) {
-		
-			if(i <= 360){//when i has reached 360, the circle is complete
-				nodexpos = Math.sin(i * Math.PI / 180) * r + xc;
-				nodeypos = Math.cos(i * Math.PI / 180) * r + yc;
-			
+
+			if(i <= 360+startDegrees){//when i has reached 360, the circle is complete
+
+				nodexpos = Math.sin(-i * Math.PI / 180) * r + xc; //making 'i' negative creates clockwise placement
+				nodeypos = Math.cos(-i * Math.PI / 180) * r + yc;
+
 				var node = self.createNode(value, seqType, "lightblue", true, nodexpos, nodeypos);
 
-				cycleNodesArray.push(node);				
-				i = i + degree;				
+				cycleNodesArray.push(node);
+				i = i + degree;
+
 			}
-							
 		});
-		return cycleNodesArray;		
+
+		return cycleNodesArray;
 	};
 
 
@@ -218,8 +216,8 @@ angular.module('helmeditor2App')
 
 		if(!pos){//starting pos
 			return {
-				x: 150, //TO-DO make this relatibe to the length of sequence
-				y: 150
+				x: 100, //TO-DO make this relatibe to the length of sequence
+				y: 100
 			};
 		}
 		else {//for new row, increment y
@@ -354,7 +352,7 @@ angular.module('helmeditor2App')
 					 y: this.y()
 				   };
 		};
-		
+
 	};
 
 	// View for a connection.
@@ -365,8 +363,6 @@ angular.module('helmeditor2App')
 		this.dest = connectionDataModel.dest;
 
 		this.type = connectionDataModel.type;//horizontal or vertical connection
-
-		var connectionOffset = 0;
 
 		this.sourceCoordX = function () {
 			return this.source.x + this.source.width/2;
@@ -401,7 +397,7 @@ angular.module('helmeditor2App')
 
 
 	self.Sequence = function(seqType, childrenArr, dir){
-		this.type = seqType;//PEPTIDE, RNA, CHEM
+		this.type = seqType;//PEPTIDE, NUCLEOTIDE, CHEM
 		this.children = childrenArr;//array of ChildSequence
 	};
 
@@ -409,7 +405,7 @@ angular.module('helmeditor2App')
 		this.flow = childFlow;//linear, cyclical
 		this.monomers = monomerArr;//array of monomers,e.g: [A,R]
 	};
-	
+
 
 	//represents a mini graph, like a graph of linear nodes or cyclic nodes
 	self.SubGraph = function(fir, las, nodesArr){

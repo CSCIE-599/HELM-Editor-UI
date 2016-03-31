@@ -17,26 +17,26 @@ angular.module('helmeditor2App')
     //returns arrays of sequences and connections
     this.convertHelmNotationToSequence = function(helmNotation){
 
-        var sequences = self.getSequences(helmNotation);
-        var connections = self.getConnections(helmNotation);
+        var sequenceArray = self.getSequences(helmNotation);     //monomer names and letters
+        var connectionArray = self.getConnections(helmNotation); //connections requested between sequences
 
-        //console.log("sequence:" + sequences);
-
+        //make sequence array - each elem has a name (eg, 'RNA1') and a sequence (letters)
         var processedSequences = [];
-        for (var i = 0; i < sequences.length; i++){
-            var monomerName = self.getName(sequences[i]);
+        for (var i = 0; i < sequenceArray.length; i++){
+            var monomerName = self.getName(sequenceArray[i]);
             processedSequences.push ({
                 name : monomerName,
-                sequences : self.getPolymers(monomerName, sequences[i]),
+                sequence : self.getPolymers(monomerName, sequenceArray[i]),
             });
         }
 
-
+        //make a connections array - each elem has a source and a dest, and
+        //each source and dest has a name (eg, 'RNA1') and a nodeID (eg, '24')
         var processedConnections = [];
-        for (i = 0; i < connections.length; i++){
+        for (i = 0; i < connectionArray.length; i++){
             processedConnections.push ({
-                source : self.getSource(connections[i]),
-                dest : self.getDest(connections[i]),
+                source : self.getSource(connectionArray[i]),
+                dest : self.getDest(connectionArray[i]),
             });
         }
 
@@ -47,24 +47,24 @@ angular.module('helmeditor2App')
         return [ processedSequences, processedConnections ];
     };
 
-    //return array of different sequences in HELM Notation
-    //sequences are delimited with '|'
+    //from HELM Notation, returns an array of sequences (monomer name and letters)
+    //the list of sequences ends in '$', and sequences are delimited with '|'
     self.getSequences = function(helmNotation){
 
         var sequences = [];
+        helmNotation = helmNotation.substring(0, helmNotation.indexOf('$'));
 
         while (helmNotation.indexOf('|') > -1){
             sequences.push(helmNotation.substring(0, helmNotation.indexOf('|')));
             helmNotation = helmNotation.substring(helmNotation.indexOf('|') + 1, helmNotation.length);
         }
 
-        if (helmNotation.indexOf('|') === -1){
-            sequences.push(helmNotation.substring(0, helmNotation.indexOf('$')));
-        }
+        sequences.push(helmNotation);
 
         return sequences;
     };
 
+    //from HELM Notation, returns the array of connections (after the first '$')
     self.getConnections = function(helmNotation){
 
         var connections = [];
@@ -84,10 +84,12 @@ angular.module('helmeditor2App')
     };
 
 
+    //from a HELM sequence, returns the sequence name (eg, 'RNA1')
     self.getName = function(sequence){
         return sequence.substring(0, sequence.indexOf('{'));
     };
 
+    //from a HELM sequence, returns the monomer letters (all letters but the name)
     self.getPolymers = function(monomerName, sequence){
         var sequenceArray = [];
 
@@ -135,6 +137,8 @@ angular.module('helmeditor2App')
         return sequenceArray;
     };
 
+    //from a connection listed in HELM Notation, returns the source portion
+    //the returned source object has a name and nodeID (number)
     self.getSource = function(connection){
 
         var afterFirstComma = connection.substring((connection.indexOf(',') + 1), connection.length);
@@ -147,6 +151,8 @@ angular.module('helmeditor2App')
         return sourcePoint;
     };
 
+    //from a connection listed in HELM Notation, returns the destination portion
+    //the returned dest object has a name and nodeID (number)
     self.getDest = function(connection){
 
         var afterFirstComma = connection.substring((connection.indexOf(',') + 1), connection.length);
