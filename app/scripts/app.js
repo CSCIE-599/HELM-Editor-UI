@@ -8,9 +8,10 @@
  *
  * Main module of the application.
  */
+
 angular
   .module('helmeditor2App', [
-    'ngAnimate',
+    'ngAnimate', 
     'ngCookies',
     'ngResource',
     'ngRoute',

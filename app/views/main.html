@@ -1,1 +1,54 @@
 <p>This is the main HELM editor view.</p>
+
+<table>
+    <tr>
+      <td rowspan="3"></td>
+      <td><label>Enter a HELM notation</label></td>
+    </tr>
+
+    <tr>
+      <td>
+      <i>
+        Example HELM Sequences:<br>
+        RNA1{R(A)P.[mR](U)[sP].R(G)P.R([5meC])P.[dR](T)P.[dR](T)}$$$$
+        <br><br>
+        RNA1{[am6]P.R(C)P.R(U)P.R(U)P.R(G)P.R(A)P.R(G)P.R(G)}|PEPTIDE1{A.C.G.K.E.D.K.R}|CHEM1{SMCC}$PEPTIDE1,CHEM1,2:R3-1:R2|RNA1,CHEM1,1:R1-1:R1$$$
+        <br><br>
+        RNA1{R(A)P.R(A)P.R(G)P.R(G)P.R(C)P.R(U)P.R(A)P.R(A)P}|RNA2{R(A)P.R(A)P.R(G)P.R(G)P.R(C)P.R(U)P.R(A)P.R(A)P}|CHEM1{sDBL}$RNA2,CHEM1,24:R2-1:R3|RNA1,CHEM1,24:R2-1:R2$$$
+        <br><br>
+        RNA1{P.R(A)P.R(G)P.R(C)P.R(U)P.R(T)P.R(T)P.R(T)P.R(T)}|CHEM1{SS3}$RNA1,CHEM1,1:R1-1:R1$$$
+        <br><br>
+        Cyclic Peptide:<br>
+        PEPTIDE1{A.R.C.A.A.K.T.C.D.A}$PEPTIDE1,PEPTIDE1,8:R3-3:R3$$$<br>
+        PEPTIDE1{R.Y.F.L.W.V.F.P.L}$PEPTIDE1,PEPTIDE1,9:R2-1:R1$$$<br>
+        PEPTIDE1{T.R.L}|PEPTIDE2{R.Y.R}$PEPTIDE1,PEPTIDE1,3:R2-1:R1|PEPTIDE2,PEPTIDE2,3:R2-1:R1$$$<br><br>
+        
+    </i>
+      </td>
+    </tr>
+
+    <tr>
+      <td colspan="2"><textarea ng-model="notation" id="input" name="Query" cols="80" rows="3" ng-change = "resetCanvas()"></textarea></td>
+    </tr>
+    <tr><td align="left" colspan="2" >
+          <button type="reset" ng-click="resetCanvas()">Reset</button>
+          <button ng-click="displayOnCanvas(notation)">Load</button>
+
+          <!--  <button ng-click="generateGraph()">Load</button> -->
+        </td>
+    </tr>
+</table>
+<br><br>
+<!--
+<div style="width: 80%; height:80%;overflow: auto;">
+        <div style="margin-left: 20px;">-->
+        <!--This custom element defines the helm canvas.-->
+    <!--    <helm-canvas style="margin: 5px; width: 800px; height:300px;" graph="canvasView" >
+        </helm-canvas>
+    </div>
+</div>-->
+
+
+<div class="container" style="overflow-x:visible;overflow-y:scroll;">
+    <helm-canvas graph="canvasView">
+</div>
