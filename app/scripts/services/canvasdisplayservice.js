@@ -190,7 +190,7 @@ angular.module('helmeditor2App')
 		var nodexpos;
 		var nodeypos;
 
-        var startDegrees = 130; //TO-DO: start position is hard-coded for Cyclic Peptide
+        var startDegrees = degree *2; //TO-DO: start position is hard-coded for Cyclic Peptide
 		var i = startDegrees;
 		angular.forEach(sequence, function(value, key) {
 
@@ -208,6 +208,7 @@ angular.module('helmeditor2App')
 		});
 
 		return cycleNodesArray;
+
 	};
 
 

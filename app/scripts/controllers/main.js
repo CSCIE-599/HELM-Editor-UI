@@ -17,7 +17,7 @@ app.controller('MainCtrl', ['$scope', 'HelmConversionService', 'CanvasDisplaySer
       'Karma'
     ];
 
-   	//space between 2 base nodes, like A and G
+   	//space between 2 adjacent horizontal nodes
 	var monomerSpacing = 50;
 
 	//length of a connection, between A and attacher node R
@@ -274,48 +274,100 @@ app.controller('MainCtrl', ['$scope', 'HelmConversionService', 'CanvasDisplaySer
     };
 
 
-    //makes a cyclic peptide, with two stems on the left and a circle on the right
-    $scope.makeCyclicPeptide = function(sequence, dir, seqType, pos, seqName, connectionArray, sequenceArray){
-
-        var graphedNodes = [];  //array of all nodes created and graphed
+ //makes a cyclic peptide, with two stems on the left and a circle on the right
+    $scope.separateSequences = function(sequence, seqName, connectionArray){
+    
+      	var graphedNodes = [];  //array of all nodes created and graphed
         var currSubGraph;
         var prevSubGraph;
-
+        
         //get the start and end points of cycle
+        
         var connectionPoints = $scope.getCyclicalSourceDest(seqName, connectionArray);
         var sourceId = connectionPoints[0];
         var destId = connectionPoints[1];
 
-        //draw first stem
-        prevSubGraph = $scope.makeLinearGraph(sequence.slice(0, destId), dir, seqType, pos, seqName, connectionArray, sequenceArray);
-        graphedNodes.push(prevSubGraph.nodes);
+        var cycleStartId =  connectionPoints[1];
+        var cycleEndId = connectionPoints[0];
+        var slicedSeqArr = [];
+        var beforeArr = [];
+        var afterArr = [];
+        var cycle = [];
 
-        pos = {
-            x: prevSubGraph.last.x + monomerSpacing,
-            y: prevSubGraph.last.y
-        };
+        for(var i=0;i<sequence.length;i++){
+        	if(i < cycleStartId){
+				beforeArr.push(sequence[i]);
+        	}
+        	else if(i>= cycleStartId && i<=cycleEndId ){
+				cycle.push(sequence[i]);
+        	}
+        	else if(i>cycleEndId){
+        		afterArr.push(sequence[i]);
+        	}
+        }
 
-        //draw circle
-        currSubGraph = $scope.makeCyclicalGraph(sequence.slice(destId, sourceId+1), seqType, pos, dir);
-        graphedNodes.push(currSubGraph.nodes);
+        if(beforeArr.length !== 0){
+	        slicedSeqArr.push(new CanvasDisplayService.ChildSequence("linear", beforeArr));
+	    }
 
-        //connect first stem to circle
-        $scope.addNewConnection(prevSubGraph.last, currSubGraph.first);
-        prevSubGraph = currSubGraph;
+	    if(cycle.length !== 0){
+        	slicedSeqArr.push(new CanvasDisplayService.ChildSequence("cyclic",cycle));
+    	}
 
-        //draw second stem
-        pos = {
-            x: prevSubGraph.last.x - monomerSpacing,
-            y: prevSubGraph.last.y
-        };
-        currSubGraph = $scope.makeLinearGraph(sequence.slice(sourceId+1, sequence.length), 'reverse', seqType, pos, seqName, connectionArray, sequenceArray);
-        graphedNodes.push(currSubGraph.nodes);
-
-        //connect circle to second stem
-        $scope.addNewConnection(prevSubGraph.last, currSubGraph.first);
-
-        return graphedNodes;
+        if(afterArr.length !== 0){
+        	slicedSeqArr.push(new CanvasDisplayService.ChildSequence("linear", afterArr));
+    	}
+        return slicedSeqArr;
+               
     };
+
+
+   //makes a cyclic peptide after determining if there are any linear and cyclic combo
+	$scope.makeCyclicPeptide = function(sequence, dir, seqType, pos, seqName, connectionArray, sequenceArray){
+
+		var graphedNodes = [];  //array of all nodes created and graphed
+	    var currSubGraph;
+	    var prevSubGraph;
+	  
+	  //separate the sequence into linear and cyclical slices
+		var slicedSequenceArr =  $scope.separateSequences(sequence, seqName, connectionArray);
+
+		for(var i=0;i<slicedSequenceArr.length;i++){
+	    	
+	    	var slice = slicedSequenceArr[i];
+
+	    	if(slice.flow === 'linear'){
+	    		
+	    		currSubGraph = $scope.makeLinearGraph(slice.monomers, dir, seqType, pos, seqName, connectionArray, sequenceArray);
+	    		graphedNodes.push(currSubGraph.nodes); 
+	    	}
+	    	else  {
+	    		currSubGraph = $scope.makeCyclicalGraph(slice.monomers, seqType, pos, dir);
+	    		graphedNodes.push(currSubGraph.nodes);
+	    		dir = 'reverse';
+			}
+
+			if(prevSubGraph && currSubGraph){
+				$scope.addNewConnection(prevSubGraph.last, currSubGraph.first);
+			}
+
+			prevSubGraph = currSubGraph;
+			
+			if(dir === 'reverse'){
+				pos = {
+	        		x: prevSubGraph.last.x - monomerSpacing,
+	        		y: prevSubGraph.last.y
+	    		};
+			}
+			else {
+				pos = {
+	        		x: prevSubGraph.last.x + monomerSpacing,
+	        		y: prevSubGraph.last.y
+	    		};
+			}    		
+	    }
+	        return graphedNodes;
+	}
 
 	//helper function for drawing the cycle portion of a cyclical graph
 	$scope.makeCyclicalGraph = function(monomerArr, seqType, pos, dir){
