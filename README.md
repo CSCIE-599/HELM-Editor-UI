@@ -26,17 +26,17 @@ The following steps must be done in order to set up your development environment
     $ npm -v  
     3.8.0
     ```
-3. If desired (Yeoman was used to create the scaffolding), install Yeoman (yeoman.io)
+3. If desired (Yeoman was used to create the scaffolding), install Yeoman (yeoman.io), and the generators we need
 
     ```
-    $ sudo npm install -g yo
+    $ sudo npm install -g yo generator-karma generator-angular generator-protractor
     ```
 4. Install bower
 
     ```
     $ sudo npm install -g bower
     ```
-5. Install grun
+5. Install grunt
 
     ```
     $ sudo npm install -g grunt-cli
@@ -51,6 +51,12 @@ The following steps must be done in order to set up your development environment
     ```
     $ bower install
     ```
+8. Install Selenium (for e2e tests)
+
+    ```
+    $ node ./node_modules/protractor/bin/webdriver-manager update
+    ```
+    Note this can take a little while
 8. Grunt targets
 
     ```
@@ -59,7 +65,26 @@ The following steps must be done in order to set up your development environment
     $ grunt serve - build app and run server locally to test manually
     $ grunt test - run Karma unit tests one time
     $ grunt test-continuous - run Karma continuously, testing with every file that's saved
+    $ grunt protractor-chrome - run Protractor tests only on Chrome
+    $ grunt protractor-firefox - run Protractor tests only on Firefox
+    $ grunt protractor-all - run Protractor tests on Firefox and Chrome, simultaneously
     ```
+
+### A note on Yeoman
+
+Yeoman was used to generate the scaffolding for the application, which is how all of the folders and files have been created. It is highly suggested that for modifications and additions to components of the application (views, controllers, factories, etc) you use Yeoman. For instance, the following commands might be useful (they should all be run from within the root folder of the application):
+
+  - Create a new view:
+
+    ```
+    $ yo angular:view <view name>
+    ```
+  - Create a new factory:
+
+    ```
+    $ yo angular:factory <factory name>
+    ```
+  - Full information on the angular generator can be found here: [Yeoman generator:angular](https://github.com/yeoman/generator-angular)
 
 ## Resources
 
