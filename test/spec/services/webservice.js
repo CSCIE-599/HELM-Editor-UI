@@ -5,18 +5,14 @@ describe('Service: helmeditor2App.webService', function () {
   // load the service's module
   beforeEach(module('helmeditor2App.webService'));
 
-  // instantiate service
-  var webService;
-  beforeEach(inject(function (_webService_) {
+  // instantiate service and the backend
+  var webService, $httpBackend;
+  beforeEach(inject(function (_webService_, _$httpBackend_) {
     webService = _webService_;
+    $httpBackend = _$httpBackend_;
   }));
 
-  // Set up the httpbackend
-  var $httpBackend;
-  beforeEach(inject(function($injector) {
-     $httpBackend = $injector.get('$httpBackend');
-  }));
-
+  // after each test, make sure to validate that there are no outstanding requests
   afterEach(function() {
     $httpBackend.verifyNoOutstandingExpectation();
     $httpBackend.verifyNoOutstandingRequest();
@@ -52,137 +48,145 @@ describe('Service: helmeditor2App.webService', function () {
     expect(result).toBe(baseUrl + 'Image/HELM/' + helmSequence);
   });
 
-  it('should return a mock data for getHelmNotationRna', function() {
+  it('should return a HELM string for getHelmNotationRna for a valid sequence', function() {
     $httpBackend.expect('GET', baseUrl + 'Sequence/RNA/' + inputSequence)
-      .respond('mock data');
-    webService.getHelmNotationRna(inputSequence).success(function(data) {
-      result = data;            
+      .respond({HELMNotation: helmSequence});
+    webService.getHelmNotationRna(inputSequence).then(function(response) {
+      expect(response).toBe(helmSequence);
     });
     $httpBackend.flush();
-    expect(result).toContain('mock data'); 
   });
 
-  it('should return a mock data for getHelmNotationPeptide', function() {
+  it('should return a HELM string for getHelmNotationPeptide for a valid sequence', function() {
     $httpBackend.expect('GET', baseUrl + 'Sequence/PEPTIDE/' + inputSequence)
-      .respond('mock data');
-    webService.getHelmNotationPeptide(inputSequence).success(function(data) {
-      result = data;            
+      .respond({HELMNotation: helmSequence});
+    webService.getHelmNotationPeptide(inputSequence).then(function(response) {
+      expect(response).toBe(helmSequence);
     });
     $httpBackend.flush();
-    expect(result).toContain('mock data'); 
   });
 
-  it('should return a mock data for validateHelmNotation', function() {
+  it('should return true for validation of a valid HELM string', function() {
     $httpBackend.expect('GET', baseUrl + 'Validation/' + inputSequence)
-      .respond('mock data');
-    webService.validateHelmNotation(inputSequence).success(function(data) {
-      result = data;            
+      .respond({
+        Validation: 'valid',
+        HELMNotation: inputSequence
+      });
+    webService.validateHelmNotation(inputSequence).then(function(valid) {
+      expect(valid).toBe(true);            
     });
     $httpBackend.flush();
-    expect(result).toContain('mock data'); 
+  });
+
+  it('should return false for validation of an invalid HELM string', function() {
+    $httpBackend.expect('GET', baseUrl + 'Validation/' + inputSequence)
+      .respond("HELMNotation is not valid");
+    webService.validateHelmNotation(inputSequence).then(function(valid) {
+      expect(valid).toBe(false);            
+    });
+    $httpBackend.flush();
   });
  
-  it('should return a mock data for getMolecularWeight', function() {
+  it('should return a valid molecular weight for getMolecularWeight for a valid HELM String', function() {
     $httpBackend.expect('GET', baseUrl + 'Calculation/MolecularWeight/' + inputSequence)
-      .respond('mock data');
-    webService.getMolecularWeight(inputSequence).success(function(data) {
-      result = data;            
+      .respond({MolecularWeight: 267.2413});
+    webService.getMolecularWeight(inputSequence).then(function(response) {
+      expect(response).toEqual(267.2413);           
     });
     $httpBackend.flush();
-    expect(result).toContain('mock data'); 
   });
  
-  it('should return a mock data for getMolecularFormula', function() {
+  it('should return a valid molecular formula for getMolecularFormula for a valid HELM string', function() {
+    $httpBackend.expect('GET', baseUrl + 'Calculation/MolecularFormula/' + inputSequence)
+      .respond({MolecularFormula: 'C10H13N5O4'});
+    webService.getMolecularFormula(inputSequence).then(function(response) {
+      expect(response).toBe('C10H13N5O4');
+    });
+    $httpBackend.flush();
+  });
+
+  it('should return an extinction coefficient for getExtinctionCoefficient for a valid HELM sequence', function() {
     $httpBackend.expect('GET', baseUrl + 'Calculation/ExtinctionCoefficient/' + inputSequence)
-      .respond('mock data');
-    webService.getExtinctionCoefficient(inputSequence).success(function(data) {
-      result = data;            
+      .respond({ExtinctionCoefficient: 15.34});
+    webService.getExtinctionCoefficient(inputSequence).then(function(response) {
+      expect(response).toBe(15.34);
     });
     $httpBackend.flush();
-    expect(result).toContain('mock data'); 
   });
 
-  it('should return a mock data for getConversionCanonical', function() {
+  it('should return a Canonical HELM string for getConversionCanonical for a valid HELM string', function() {
     $httpBackend.expect('GET', baseUrl + 'Conversion/Canonical/' + inputSequence)
-      .respond('mock data');
-    webService.getConversionCanonical(inputSequence).success(function(data) {
-      result = data;            
+      .respond({CanonicalHELM: 'RNA1{R(A)}$$$$V2.0'});
+    webService.getConversionCanonical(inputSequence).then(function(response) {
+      expect(response).toBe('RNA1{R(A)}$$$$V2.0');
     });
     $httpBackend.flush();
-    expect(result).toContain('mock data'); 
   });
 
-  it('should return a mock data for getConversionStandard', function() {
+  it('should return a standard HELM string for getConversionStandard for a valid HELM input', function() {
     $httpBackend.expect('GET', baseUrl + 'Conversion/Standard/' + inputSequence)
-      .respond('mock data');
-    webService.getConversionStandard(inputSequence).success(function(data) {
-      result = data;            
+      .respond({StandardHELM: 'RNA1{R(A)}$$$$V2.0'});
+    webService.getConversionStandard(inputSequence).then(function(response) {
+      expect(response).toBe('RNA1{R(A)}$$$$V2.0');
     });
     $httpBackend.flush();
-    expect(result).toContain('mock data'); 
   });
 
-  it('should return a mock data for getConversionJson', function() {
+  it('should return a JSON string for getConversionJson for a valid HELM input', function() {
     $httpBackend.expect('GET', baseUrl + 'Conversion/JSON/' + inputSequence)
-      .respond('mock data');
-    webService.getConversionJson(inputSequence).success(function(data) {
-      result = data;            
+      .respond({JSON: "{\n \"string\": \"value\"}"});
+    webService.getConversionJson(inputSequence).then(function(response) {
+      expect(response).toBe("{\n \"string\": \"value\"}");
     });
     $httpBackend.flush();
-    expect(result).toContain('mock data'); 
   });
 
-  it('should return a mock data for getFastaProduce', function() {
+  it('should return FASTA string for getFastaProduce for a valid HELM input', function() {
     $httpBackend.expect('GET', baseUrl + 'Fasta/Produce/' + inputSequence)
-      .respond('mock data');
-    webService.getFastaProduce(inputSequence).success(function(data) {
-      result = data;            
+      .respond({FastaFile: '>RNA1 A '});
+    webService.getFastaProduce(inputSequence).then(function(response) {
+      expect(response).toBe('>RNA1 A ');
     });
     $httpBackend.flush();
-    expect(result).toContain('mock data'); 
   });
 
-  it('should return a mock data for getFastaConvertRna', function() {
+  it('should return a FASTA string for getFastaConvertRna for a valid HELM input', function() {
     helmSequence = 'RNA1{R(A)}$$$$V2.0';
     $httpBackend.expect('GET', baseUrl + 'Fasta/Convert/RNA/' + helmSequence)
-      .respond('mock data');
-    webService.getFastaConvertRna(helmSequence).success(function(data) {
-      result = data;            
+      .respond({Sequence: 'A'});
+    webService.getFastaConvertRna(helmSequence).then(function(response) {
+      expect(response).toBe('A');
     });
     $httpBackend.flush();
-    expect(result).toContain('mock data'); 
   });
 
-  it('should return a mock data for getFastaConvertPeptide', function() {
+  it('should return a FASTA sequence for getFastaConvertPeptide for a valid HELM input', function() {
     helmSequence = 'PEPTIDE1{A}$$$$V2.0';
     $httpBackend.expect('GET', baseUrl + 'Fasta/Convert/PEPTIDE/' + helmSequence)
-      .respond('mock data');
-    webService.getFastaConvertPeptide(helmSequence).success(function(data) {
-      result = data;            
+      .respond({Sequence: 'A'});
+    webService.getFastaConvertPeptide(helmSequence).then(function(response) {
+      expect(response).toBe('A');
     });
     $httpBackend.flush();
-    expect(result).toContain('mock data'); 
   });
 
-  it('should return a mock data for getFastaReadRna', function() {
+  it('should return a HELM string for getFastaReadRna for a valid input', function() {
     helmSequence = 'RNA1{R(A)}$$$$V2.0';
-    $httpBackend.expect('GET', baseUrl + 'Fasta/Read?RNA=' + helmSequence)
-      .respond('mock data');
-    webService.getFastaReadRna(helmSequence).success(function(data) {
-      result = data;            
+    $httpBackend.expect('GET', baseUrl + 'Fasta/Read?RNA=' + 'A')
+      .respond({HELMNotation: helmSequence});
+    webService.getFastaReadRna('A').then(function(response) {
+      expect(response).toBe(helmSequence);
     });
     $httpBackend.flush();
-    expect(result).toContain('mock data'); 
   });
 
-  it('should return a mock data for getFastaReadPeptide', function() {
+  it('should return a HELM string for getFastaReadPeptide for a valid input', function() {
     helmSequence = 'PEPTIDE1{A}$$$$V2.0';
-    $httpBackend.expect('GET', baseUrl + 'Fasta/Read?PEPTIDE=' + helmSequence)
-      .respond('mock data');
-    webService.getFastaReadPeptide(helmSequence).success(function(data) {
-      result = data;            
+    $httpBackend.expect('GET', baseUrl + 'Fasta/Read?PEPTIDE=' + 'A')
+      .respond({HELMNotation: helmSequence});
+    webService.getFastaReadPeptide('A').then(function(response) {
+      expect(response).toBe(helmSequence);
     });
     $httpBackend.flush();
-    expect(result).toContain('mock data'); 
-   });
+  });
 });

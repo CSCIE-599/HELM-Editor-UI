@@ -26,28 +26,36 @@ angular.module('helmeditor2App')
 
   	/* Event processing prototype - invoke factory function to get HELM notation */   
   	$scope.getHelmNotation = function (polymerType, inputSequence) {
+      // check to make sure we have a sequence
       if (!angular.isDefined(inputSequence)) {
         window.alert('Invalid input');
         return;
       }
+      // make the webService calls appropriately
       if (polymerType.value === 'PEPTIDE') {
-        webService.getHelmNotationPeptide(inputSequence)
-          .success(function (response) {
-            $scope.result = response.HELMNotation;
-          })
-          .error(function (response) {
-            $scope.result = 'Invalid sequence';
-            console.log(response);
-          });
+        webService.getHelmNotationPeptide(inputSequence).then(
+          // on success, just update the model
+          function (response) {
+            $scope.result = response;
+          },
+          // on failure, update the model with an error message
+          function (error) {
+            console.log(error);
+            $scope.result = 'Error retrieving HELM Notation - check the Helm2WebService';
+          }
+        );
       } else if (polymerType.value === 'RNA') {
-        webService.getHelmNotationRna(inputSequence)
-          .success(function (response) {
-            $scope.result = response.HELMNotation;
-          })
-          .error(function (response) {
-            $scope.result = 'Invalid sequence';
-            console.log(response);
-          });
+        webService.getHelmNotationRna(inputSequence).then(
+          // on success, just update the model
+          function (response) {
+            $scope.result = response;
+          },
+          // on failure, update the model with an error message
+          function (error) {
+            console.log(error);
+            $scope.result = 'Error retrieving HELM Notation - check the Helm2WebService';
+          }
+        );
       }
     };  
 
