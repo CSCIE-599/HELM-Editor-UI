@@ -47,25 +47,34 @@ angular.module('helmeditor2App')
   	};
   	/* Invoke factory function to get HELM notation */   
   	$scope.getHelmNotation = function (polymerType, inputSequence) {
-
-      webService.getHelmNotation(polymerType.value, inputSequence)
-        .success(function (response) {
-          $scope.result = response.HELMNotation;
-        })
-        .error(function (response) {
-          $scope.result = 'Invalid sequence';
-          console.log(response);
-        });
+      var successCallback = function (response) {
+        $scope.result = response;
       };
+      var errorCallback = function(reason) {
+        $scope.result = reason;
+        console.log(reason);
+      };
+
+      switch(polymerType.value) {
+        case 'PEPTIDE':
+          webService.getHelmNotationPeptide(inputSequence).then(successCallback, errorCallback);
+          break;
+        case 'RNA':
+          webService.getHelmNotationRna(inputSequence).then(successCallback, errorCallback);
+      }
+    };
+
     $scope.validateHelmNotation = function (inputSequence) {
-       webService.validateHelmNotation(inputSequence)
-      	.success(function (response) {
-            $scope.result = response.HELMNotation;
-          })
-          .error(function (response) {
-            console.log(response);
-          });
-        };
+      var successCallback = function (response) {
+        $scope.result = response;
+      };
+      var errorCallback = function(reason) {
+        $scope.result = reason;
+        console.log(reason);
+      };
+      
+      webService.validateHelmNotation(inputSequence).then(successCallback, errorCallback);
+    };
 }]);
 
 /* Modal toggle - based on tutorial by Adam Albrecht 
