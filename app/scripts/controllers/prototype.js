@@ -8,7 +8,7 @@
  * Controller of the helmeditor2App
  */
 angular.module('helmeditor2App')
-  .controller('PrototypeCtrl', ['$scope', '$http', 'webservice', function ($scope, $http, webservice) {
+  .controller('PrototypeCtrl', ['$scope', '$http', 'webService', function ($scope, $http, webService) {
     this.awesomeThings = [
       'HTML5 Boilerplate',
       'AngularJS',
@@ -26,18 +26,37 @@ angular.module('helmeditor2App')
 
   	/* Event processing prototype - invoke factory function to get HELM notation */   
   	$scope.getHelmNotation = function (polymerType, inputSequence) {
+      // check to make sure we have a sequence
       if (!angular.isDefined(inputSequence)) {
         window.alert('Invalid input');
         return;
       }
-      webservice.getHelmNotation(polymerType.value, inputSequence)
-        .success(function (response) {
-          $scope.result = response.HELMNotation;
-        })
-        .error(function (response) {
-          $scope.result = 'Invalid sequence';
-          console.log(response);
-        });
+      // make the webService calls appropriately
+      if (polymerType.value === 'PEPTIDE') {
+        webService.getHelmNotationPeptide(inputSequence).then(
+          // on success, just update the model
+          function (response) {
+            $scope.result = response;
+          },
+          // on failure, update the model with an error message
+          function (error) {
+            console.log(error);
+            $scope.result = 'Error retrieving HELM Notation - check the Helm2WebService';
+          }
+        );
+      } else if (polymerType.value === 'RNA') {
+        webService.getHelmNotationRna(inputSequence).then(
+          // on success, just update the model
+          function (response) {
+            $scope.result = response;
+          },
+          // on failure, update the model with an error message
+          function (error) {
+            console.log(error);
+            $scope.result = 'Error retrieving HELM Notation - check the Helm2WebService';
+          }
+        );
+      }
     };  
 
   	/* Event processing prototype - invoke factory function to get HELM image */ 
@@ -46,7 +65,7 @@ angular.module('helmeditor2App')
         window.alert('Invalid input');
         return;
     	}
-      $scope.imageUrl = webservice.getHelmImage(inputSequence);
+      $scope.imageUrl = webService.getHelmImageUrl(inputSequence);
       $http.get($scope.imageUrl)
         .error(function (response) {
           window.alert(response);

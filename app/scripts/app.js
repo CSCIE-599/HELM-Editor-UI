@@ -8,14 +8,16 @@
  *
  * Main module of the application.
  */
+
 angular
   .module('helmeditor2App', [
-    'ngAnimate',
+    'ngAnimate', 
     'ngCookies',
     'ngResource',
     'ngRoute',
     'ngSanitize',
-    'ngTouch'
+    'ngTouch',
+    'helmeditor2App.webService'
   ])
   .config(function ($routeProvider) {
     $routeProvider
@@ -38,6 +40,16 @@ angular
         templateUrl: 'views/prototype.html',
         controller: 'PrototypeCtrl',
         controllerAs: 'prototype'
+      })
+      .when('/loadsequence', {
+        templateUrl: 'views/loadsequence.html',
+        controller: 'LoadsequenceCtrl',
+        controllerAs: 'loadsequence'
+      })
+      .when('/helmcanvas', {
+        templateUrl: 'views/helmcanvas.html',
+        controller: 'HelmcanvasCtrl',
+        controllerAs: 'helmcanvas'
       })
       .otherwise({
         redirectTo: '/'
