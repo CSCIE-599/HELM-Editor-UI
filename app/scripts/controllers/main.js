@@ -10,7 +10,7 @@
 
 var app = angular.module('helmeditor2App');
 
-app.controller('MainCtrl', function ($scope) {
+app.controller('MainCtrl', function () {
     this.awesomeThings = [
       'HTML5 Boilerplate',
       'AngularJS',
