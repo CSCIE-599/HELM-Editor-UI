@@ -46,6 +46,11 @@ angular
         controller: 'LoadsequenceCtrl',
         controllerAs: 'loadsequence'
       })
+      .when('/helmcanvas', {
+        templateUrl: 'views/helmcanvas.html',
+        controller: 'HelmcanvasCtrl',
+        controllerAs: 'helmcanvas'
+      })
       .otherwise({
         redirectTo: '/'
       });
