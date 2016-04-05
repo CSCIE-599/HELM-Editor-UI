@@ -194,7 +194,7 @@ app.controller('MainCtrl', ['$scope', 'HelmConversionService', 'CanvasDisplaySer
 
 		angular.forEach(monomerArr, function(value, key) {
 
-			currNode = CanvasDisplayService.createNode(value, "PEPTIDE", "lightblue", true, x , y);
+			currNode = CanvasDisplayService.createNode(value, 'PEPTIDE', 'lightblue', true, x , y);
 			allNodes.push(currNode);
 			$scope.canvasView.addNode(currNode);
 			if(key === 0){
@@ -227,7 +227,7 @@ app.controller('MainCtrl', ['$scope', 'HelmConversionService', 'CanvasDisplaySer
         var y = 190;  //TO-DO: this is hard coded to be slightly below the previous, first sequence
 
 		var allNodes = [];
-        var currNode = CanvasDisplayService.createNode(monomerArr[0], "CHEM", "purple", false, x , y);
+        var currNode = CanvasDisplayService.createNode(monomerArr[0], 'CHEM', 'purple', false, x , y);
         allNodes.push(currNode);
         var firstNode = currNode;
         $scope.canvasView.addNode(currNode);
@@ -274,19 +274,11 @@ app.controller('MainCtrl', ['$scope', 'HelmConversionService', 'CanvasDisplaySer
     };
 
 
- //makes a cyclic peptide, with two stems on the left and a circle on the right
+	//makes a cyclic peptide, with two stems on the left and a circle on the right
     $scope.separateSequences = function(sequence, seqName, connectionArray){
-    
-      	var graphedNodes = [];  //array of all nodes created and graphed
-        var currSubGraph;
-        var prevSubGraph;
-        
+            
         //get the start and end points of cycle
-        
         var connectionPoints = $scope.getCyclicalSourceDest(seqName, connectionArray);
-        var sourceId = connectionPoints[0];
-        var destId = connectionPoints[1];
-
         var cycleStartId =  connectionPoints[1];
         var cycleEndId = connectionPoints[0];
         var slicedSeqArr = [];
@@ -307,15 +299,15 @@ app.controller('MainCtrl', ['$scope', 'HelmConversionService', 'CanvasDisplaySer
         }
 
         if(beforeArr.length !== 0){
-	        slicedSeqArr.push(new CanvasDisplayService.ChildSequence("linear", beforeArr));
+	        slicedSeqArr.push(new CanvasDisplayService.ChildSequence('linear', beforeArr));
 	    }
 
 	    if(cycle.length !== 0){
-        	slicedSeqArr.push(new CanvasDisplayService.ChildSequence("cyclic",cycle));
+        	slicedSeqArr.push(new CanvasDisplayService.ChildSequence('cyclic',cycle));
     	}
 
         if(afterArr.length !== 0){
-        	slicedSeqArr.push(new CanvasDisplayService.ChildSequence("linear", afterArr));
+        	slicedSeqArr.push(new CanvasDisplayService.ChildSequence('linear', afterArr));
     	}
         return slicedSeqArr;
                
@@ -367,7 +359,7 @@ app.controller('MainCtrl', ['$scope', 'HelmConversionService', 'CanvasDisplaySer
 			}    		
 	    }
 	        return graphedNodes;
-	}
+	};
 
 	//helper function for drawing the cycle portion of a cyclical graph
 	$scope.makeCyclicalGraph = function(monomerArr, seqType, pos, dir){
@@ -415,7 +407,7 @@ app.controller('MainCtrl', ['$scope', 'HelmConversionService', 'CanvasDisplaySer
     $scope.makeRequestedConnections = function(connectionArray, graphedNodesArray){
 
         var j, k;
-        var nodes,source, dest = "";
+        var nodes,source, dest = '';
         for (j = 0; j < connectionArray.length; j++){
             if (connectionArray[j].source.name === connectionArray[j].dest.name){
                 continue; //skip cyclical connections, which are drawn in 'makeCyclicalGraph()'
@@ -432,12 +424,12 @@ app.controller('MainCtrl', ['$scope', 'HelmConversionService', 'CanvasDisplaySer
                     dest = nodes[(connectionArray[j].dest.nodeID) -1];
                 }
                 //if found source and dest nodes, add link
-                if (source !== "" && dest !== ""){
+                if (source !== '' && dest !== ''){
                     $scope.addNewConnection(source, dest);
-                    source = "";
-                    dest = "";
+                    source = '';
+                    dest = '';
                 }
-                nodes = "";
+                nodes = '';
             }
         }
     };
@@ -473,14 +465,14 @@ app.controller('MainCtrl', ['$scope', 'HelmConversionService', 'CanvasDisplaySer
 
     //helper function returns type of sequence
     $scope.getType = function(sequenceName){
-        if (sequenceName.toUpperCase().indexOf("RNA") > -1){
-            return "NUCLEOTIDE";
+        if (sequenceName.toUpperCase().indexOf('RNA') > -1){
+            return 'NUCLEOTIDE';
         }
-        if (sequenceName.toUpperCase().indexOf("PEPTIDE") > -1){
-            return "PEPTIDE";
+        if (sequenceName.toUpperCase().indexOf('PEPTIDE') > -1){
+            return 'PEPTIDE';
         }
-        if (sequenceName.toUpperCase().indexOf("CHEM") > -1){
-            return "CHEM";
+        if (sequenceName.toUpperCase().indexOf('CHEM') > -1){
+            return 'CHEM';
         }
     };
 
