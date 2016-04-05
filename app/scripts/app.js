@@ -8,14 +8,16 @@
  *
  * Main module of the application.
  */
+
 angular
   .module('helmeditor2App', [
-    'ngAnimate',
+    'ngAnimate', 
     'ngCookies',
     'ngResource',
     'ngRoute',
     'ngSanitize',
-    'ngTouch'
+    'ngTouch',
+    'helmeditor2App.webService'
   ])
   .config(function ($routeProvider) {
     $routeProvider

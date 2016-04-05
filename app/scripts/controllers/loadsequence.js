@@ -9,8 +9,8 @@
  */
 
 angular.module('helmeditor2App')
-  .controller('LoadsequenceCtrl', ['$scope', '$http', 'webservice', 
-  	function ($scope, $http, webservice) {
+  .controller('LoadsequenceCtrl', ['$scope', '$http', 'webService', 
+  	function ($scope, $http, webService) {
     this.awesomeThings = [
       'HTML5 Boilerplate',
       'AngularJS',
@@ -37,16 +37,18 @@ angular.module('helmeditor2App')
         return;
       }
       /* TODO: Check that input is valid type? */
-      if (polymerType.value == 'HELM')
+      if (polymerType.value === 'HELM') {
       	$scope.validateHelmNotation(inputSequence);
-      else
+      }
+      else {
       	$scope.getHelmNotation(polymerType, inputSequence);
+      }
       $scope.toggleModal();
   	};
   	/* Invoke factory function to get HELM notation */   
   	$scope.getHelmNotation = function (polymerType, inputSequence) {
 
-      webservice.getHelmNotation(polymerType.value, inputSequence)
+      webService.getHelmNotation(polymerType.value, inputSequence)
         .success(function (response) {
           $scope.result = response.HELMNotation;
         })
@@ -56,14 +58,14 @@ angular.module('helmeditor2App')
         });
       };
     $scope.validateHelmNotation = function (inputSequence) {
-       webservice.validateHelmNotation(inputSequence)
-    	.success(function (response) {
-          $scope.result = response.HELMNotation;
-        })
-        .error(function (response) {
-          console.log(response);
-        });
-    }
+       webService.validateHelmNotation(inputSequence)
+      	.success(function (response) {
+            $scope.result = response.HELMNotation;
+          })
+          .error(function (response) {
+            console.log(response);
+          });
+        };
 }]);
 
 /* Modal toggle - based on tutorial by Adam Albrecht 
@@ -79,10 +81,12 @@ angular.module('helmeditor2App')
     transclude: true, // we want to insert custom content inside the directive
     link: function(scope, element, attrs) {
       scope.dialogStyle = {};
-      if (attrs.width)
+      if (attrs.width) {
         scope.dialogStyle.width = attrs.width;
-      if (attrs.height)
+      }
+      if (attrs.height) {
         scope.dialogStyle.height = attrs.height;
+      }
       scope.hideModal = function() {
         scope.show = false;
       };

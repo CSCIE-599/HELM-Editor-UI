@@ -7,7 +7,7 @@
 
 body {
   padding: 0;
-}
+ }
 
 /* Everything but the jumbotron gets side spacing for mobile first views */
 .header,
@@ -64,6 +64,7 @@ body {
   .container {
     max-width: 730px;
   }
+}
 
   /* Remove the padding we set earlier */
   .header,
@@ -80,8 +81,36 @@ body {
   .jumbotron {
     border-bottom: 0;
   }
+
+.stdNucleotideBtnA {
+  color : green;
 }
 
+.stdNucleotideBtnC {
+  color : red;
+
+}
+
+.stdNucleotideBtnG {
+  color : orange;
+
+}
+
+.stdNucleotideBtnU, .stdNucleotideBtnT {
+  color : cyan;
+}
+
+.stdNucleotideBtnA, .stdNucleotideBtnC, .stdNucleotideBtnG, .stdNucleotideBtnU, .stdNucleotideBtnT{
+  font-weight: bolder;
+  font-size: 1.5em;
+  background-color: Transparent;
+  background-repeat:no-repeat;
+  border: none;
+  cursor:pointer;
+  overflow: hidden;
+  outline:none;
+
+}
 
 /* For the load sequence modal dialogue box 
  * Taken from tutorial by Adam Albrecht (will probably tweak for consistent app layout) */
