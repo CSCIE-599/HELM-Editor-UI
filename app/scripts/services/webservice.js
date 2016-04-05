@@ -84,7 +84,7 @@ angular.module('helmeditor2App.webService', [])
       // returns a promise that resolves with a boolean true or false
       // true -> valid
       validateHelmNotation: function (inputSequence) {
-        return getHttpUrl(this.getFullUrl(wsConfig.validateHelmNotationPath, inputSequence)).then(function(response) {
+        return getHttpUrl(this.getFullUrl(wsConfig.validateHelmNotationPath, encodeURIComponent(inputSequence))).then(function(response) {
           return (response.data.Validation === 'valid');
         });
       },
