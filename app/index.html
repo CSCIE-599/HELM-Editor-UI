@@ -37,15 +37,14 @@
 
           </div>
 
-          <div class="collapse navbar-collapse" id="js-navbar-collapse">
-
+          <div class="collapse navbar-collapse" id="js-navbar-collapse" ng-controller="HeaderCtrl as header">
             <ul class="nav navbar-nav">
-              <li class="active"><a href="#/">HELM Editor</a></li>
-              <li><a ng-href="#/habe">Antibody Editor</a></li>
-              <li><a ng-href="#/about">About</a></li>
-              <li><a ng-href="#/prototype">Prototype</a></li>
-              <li><a ng-href="#/loadsequence">Load</a></li>
-              <li><a ng-href="#/helmcanvas">HELM Editor (Standalone)</a></li>
+              <li ng-class="{ active: header.isActive('/') }"><a href="#/">HELM Editor</a></li>
+              <li ng-class="{ active: header.isActive('/habe') }"><a ng-href="#/habe">Antibody Editor</a></li>
+              <li ng-class="{ active: header.isActive('/about') }"><a ng-href="#/about">About</a></li>
+              <li ng-class="{ active: header.isActive('/prototype') }"><a ng-href="#/prototype">Prototype</a></li>
+              <li ng-class="{ active: header.isActive('/loadsequence') }"><a ng-href="#/loadsequence">Load</a></li>
+              <li ng-class="{ active: header.isActive('/helmcanvas') }"><a ng-href="#/helmcanvas">HELM Editor (Standalone)</a></li>
             </ul>
           </div>
         </div>
@@ -96,6 +95,7 @@
     <script src="scripts/controllers/prototype.js"></script>
     <script src="scripts/controllers/loadsequence.js"></script>
     <script src="scripts/controllers/helmcanvas.js"></script>
+    <script src="scripts/controllers/header.js"></script>
     <script src="scripts/directives/helmcanvas.js"></script>
     <script src="scripts/directives/modaldialog.js"></script>
     <script src="scripts/services/helmconversionservice.js"></script>
