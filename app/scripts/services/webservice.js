@@ -31,6 +31,15 @@ angular.module('helmeditor2App.webService', [])
       getFastaReadPeptidePath: 'Fasta/Read?PEPTIDE=',
       getFastaReadRnaPath: 'Fasta/Read?RNA=' 
     };
+
+    var updatedTransformResponse = function (value, headers) {
+      try {
+        return $http.defaults.transformResponse[0](value, headers);
+      } catch (e) { // deal with the fact that content-type is application/json but the content may not be
+        return value;
+      }
+    };
+
     return {
       getBaseUrl: function () {
         return wsConfig.baseUrl;
@@ -51,8 +60,11 @@ angular.module('helmeditor2App.webService', [])
       },   
       // returns a promise that resolves with the HELMNotation as a string if valid, or null if unknown response
       getHelmNotationPeptide: function (inputSequence) {
-        return $http.get(this.getFullUrl(wsConfig.getHelmNotationPeptidePath, inputSequence))
-          .then(function(response) {
+        return $http({
+          url: this.getFullUrl(wsConfig.getHelmNotationPeptidePath, inputSequence),
+          method: 'GET',
+          transformResponse: updatedTransformResponse
+        }).then(function(response) {
             return response.data.HELMNotation ? response.data.HELMNotation : null;
           });
       },

@@ -47,12 +47,12 @@ angular.module('helmeditor2App')
   	};
   	/* Invoke factory function to get HELM notation */   
   	$scope.getHelmNotation = function (polymerType, inputSequence) {
-      var successCallback = function (response) {
-        $scope.result = response;
+      var successCallback = function (helmNotation) {
+        $scope.result = helmNotation;
       };
-      var errorCallback = function(reason) {
-        $scope.result = reason;
-        console.log(reason);
+      var errorCallback = function(response) {
+        $scope.result = response.data;
+        console.log(response.data);
       };
 
       switch(polymerType.value) {
@@ -65,12 +65,12 @@ angular.module('helmeditor2App')
     };
 
     $scope.validateHelmNotation = function (inputSequence) {
-      var successCallback = function (response) {
-        $scope.result = response;
+      var successCallback = function (helmNotation) {
+        $scope.result = helmNotation;
       };
-      var errorCallback = function(reason) {
-        $scope.result = reason;
-        console.log(reason);
+      var errorCallback = function(response) {
+        $scope.result = response.data;
+        console.log(response.data);
       };
       
       webService.validateHelmNotation(inputSequence).then(successCallback, errorCallback);
