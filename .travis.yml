@@ -19,5 +19,5 @@ before_script:
 
 script:
   - echo "running tests"
-  - grunt test
-  - grunt protractor-firefox
+  - grunt # build and run unit tests
+  - grunt protractor-firefox # run e2e tests
