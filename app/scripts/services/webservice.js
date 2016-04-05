@@ -104,7 +104,7 @@ angular.module('helmeditor2App.webService', [])
         return $http.get(this.getFullUrl(wsConfig.getConversionStandardPath, inputSequence))
           .then(function(response) {
             return response.data.StandardHELM ? response.data.StandardHELM : null;
-          });;
+          });
       },
       // returns a promise that resolves with the JSON notation if valid, or null if unknown response
       // NOTE - this one does not work with the current hosted version
@@ -140,14 +140,14 @@ angular.module('helmeditor2App.webService', [])
         return $http.get(this.getFullUrl(wsConfig.getFastaReadPeptidePath, inputSequence))
           .then(function(response) {
             return response.data.HELMNotation ? response.data.HELMNotation : null;
-          });;
+          });
       },
       // returns a promise that resolves with the HELM Notation if valid, or null if unknown response
       getFastaReadRna: function (inputSequence) {
         return $http.get(this.getFullUrl(wsConfig.getFastaReadRnaPath, inputSequence))
           .then(function(response) {
             return response.data.HELMNotation ? response.data.HELMNotation : null;
-          });;;
+          });
       }
     };
   });

@@ -93,7 +93,7 @@ angular.module('helmeditor2App')
     self.getPolymers = function(monomerName, sequence){
         var sequenceArray = [];
 
-        if (monomerName.toUpperCase().indexOf("CHEM") > -1){
+        if (monomerName.toUpperCase().indexOf('CHEM') > -1){
             sequenceArray.push(sequence.substring((sequence.indexOf('{') + 1), sequence.indexOf('}')));
             return sequenceArray;
         }
