@@ -31,6 +31,26 @@ angular.module('helmeditor2App.webService', [])
       getFastaReadPeptidePath: 'Fasta/Read?PEPTIDE=',
       getFastaReadRnaPath: 'Fasta/Read?RNA=' 
     };
+
+    // helper function to try to transform the response. Necessary becasue HELM2WebService currently responds
+    // with application/json as the content-type when an error message is returned
+    var updatedTransformResponse = function (value, headers) {
+      try {
+        return $http.defaults.transformResponse[0](value, headers);
+      } catch (e) { // deal with the fact that content-type is application/json but the content may not be
+        return value;
+      }
+    };
+
+    // helper function to make the actual HTTP request
+    var getHttpUrl = function (url) {
+      return $http({
+        url: url,
+        method: 'GET',
+        transformResponse: updatedTransformResponse
+      });
+    };
+
     return {
       getBaseUrl: function () {
         return wsConfig.baseUrl;
@@ -51,103 +71,89 @@ angular.module('helmeditor2App.webService', [])
       },   
       // returns a promise that resolves with the HELMNotation as a string if valid, or null if unknown response
       getHelmNotationPeptide: function (inputSequence) {
-        return $http.get(this.getFullUrl(wsConfig.getHelmNotationPeptidePath, inputSequence))
-          .then(function(response) {
-            return response.data.HELMNotation ? response.data.HELMNotation : null;
-          });
+        return getHttpUrl(this.getFullUrl(wsConfig.getHelmNotationPeptidePath, inputSequence)).then(function(response) {
+          return response.data.HELMNotation ? response.data.HELMNotation : null;
+        });
       },
       // returns a promise that resolves with the HELMNotation as a string if valid, or null if unknown response
       getHelmNotationRna: function (inputSequence) {
-        return $http.get(this.getFullUrl(wsConfig.getHelmNotationRnaPath, inputSequence))
-          .then(function(response) {
-            return response.data.HELMNotation ? response.data.HELMNotation : null;
-          });
+        return getHttpUrl(this.getFullUrl(wsConfig.getHelmNotationRnaPath, inputSequence)).then(function(response) {
+          return response.data.HELMNotation ? response.data.HELMNotation : null;
+        });
       },
       // returns a promise that resolves with a boolean true or false
       // true -> valid
       validateHelmNotation: function (inputSequence) {
-        return $http.get(this.getFullUrl(wsConfig.validateHelmNotationPath, inputSequence))
-          .then(function(response) {
-            return (response.data.Validation === 'valid');
-          });
+        return getHttpUrl(this.getFullUrl(wsConfig.validateHelmNotationPath, inputSequence)).then(function(response) {
+          return (response.data.Validation === 'valid');
+        });
       },
       // returns a promise that resolves with the molecular weight if valid, or null if unknown response
       getMolecularWeight: function (inputSequence) {
-        return $http.get(this.getFullUrl(wsConfig.getMolecularWeightPath, inputSequence))
-          .then(function(response) {
-            return response.data.MolecularWeight ? response.data.MolecularWeight : null;
-          });
+        return getHttpUrl(this.getFullUrl(wsConfig.getMolecularWeightPath, inputSequence)).then(function(response) {
+          return response.data.MolecularWeight ? response.data.MolecularWeight : null;
+        });
       },
       // returns a promise that resolves with the molecular formula if valid, or null if unknown response
       getMolecularFormula: function (inputSequence) {
-        return $http.get(this.getFullUrl(wsConfig.getMolecularFormulaPath, inputSequence))
-          .then(function(response) {
-            return response.data.MolecularFormula ? response.data.MolecularFormula : null;
-          });
+        return getHttpUrl(this.getFullUrl(wsConfig.getMolecularFormulaPath, inputSequence)).then(function(response) {
+          return response.data.MolecularFormula ? response.data.MolecularFormula : null;
+        });
       },
       // returns a promise that resolves with the extinction coefficient if valid, or null if unknown response
       getExtinctionCoefficient: function (inputSequence) {
-        return $http.get(this.getFullUrl(wsConfig.getExtinctionCoefficientPath, inputSequence))
-          .then(function(response) {
-            return response.data.ExtinctionCoefficient ? response.data.ExtinctionCoefficient : null;
-          });
+        return getHttpUrl(this.getFullUrl(wsConfig.getExtinctionCoefficientPath, inputSequence)).then(function(response) {
+          return response.data.ExtinctionCoefficient ? response.data.ExtinctionCoefficient : null;
+        });
       },
       // returns a promise that resolves with the canonical HELM notation if valid, or null if unknown response
       getConversionCanonical: function (inputSequence) {
-        return $http.get(this.getFullUrl(wsConfig.getConversionCanonicalPath, inputSequence))
-          .then(function(response) {
-            return response.data.CanonicalHELM ? response.data.CanonicalHELM : null;
-          });
+        return getHttpUrl(this.getFullUrl(wsConfig.getConversionCanonicalPath, inputSequence)).then(function(response) {
+          return response.data.CanonicalHELM ? response.data.CanonicalHELM : null;
+        });
       },
       // returns a promise that resolves with the standard HELM notation if valid, or null if unknown response
       getConversionStandard: function (inputSequence) {
-        return $http.get(this.getFullUrl(wsConfig.getConversionStandardPath, inputSequence))
-          .then(function(response) {
-            return response.data.StandardHELM ? response.data.StandardHELM : null;
-          });
+        return getHttpUrl(this.getFullUrl(wsConfig.getConversionStandardPath, inputSequence)).then(function(response) {
+          return response.data.StandardHELM ? response.data.StandardHELM : null;
+        });
       },
       // returns a promise that resolves with the JSON notation if valid, or null if unknown response
       // NOTE - this one does not work with the current hosted version
       getConversionJson: function (inputSequence) {
-        return $http.get(this.getFullUrl(wsConfig.getConversionJsonPath, inputSequence))
-          .then(function(response) {
-            return response.data.JSON ? response.data.JSON : null;
-          });
+        return getHttpUrl(this.getFullUrl(wsConfig.getConversionJsonPath, inputSequence)).then(function(response) {
+          return response.data.JSON ? response.data.JSON : null;
+        });
       },
       // returns a promise that resolves with the FASTA output if valid, or null if unknown response
       getFastaProduce: function (inputSequence) {
-        return $http.get(this.getFullUrl(wsConfig.getFastaProducePath, inputSequence)).
-          then(function(response) {
-            return response.data.FastaFile ? response.data.FastaFile : null;
-          });
+        return getHttpUrl(this.getFullUrl(wsConfig.getFastaProducePath, inputSequence)).then(function(response) {
+          return response.data.FastaFile ? response.data.FastaFile : null;
+        });
       },
       // returns a promise that resolves with the peptide natural analog sequence if valid, or null if unknown response
       getFastaConvertPeptide: function (inputSequence) {
-        return $http.get(this.getFullUrl(wsConfig.getFastaConvertPeptidePath, inputSequence))
-          .then(function(response) {
-            return response.data.Sequence ? response.data.Sequence : null;
-          });
+        return getHttpUrl(this.getFullUrl(wsConfig.getFastaConvertPeptidePath, inputSequence)).then(function(response) {
+          return response.data.Sequence ? response.data.Sequence : null;
+        });
       },
       // returns a promise that resolves with the RNA natural analog sequence if valid, or null if unknown response
       getFastaConvertRna: function (inputSequence) {
-        return $http.get(this.getFullUrl(wsConfig.getFastaConvertRnaPath, inputSequence))
-          .then(function(response) {
-            return response.data.Sequence ? response.data.Sequence : null;
-          });
+        return getHttpUrl(this.getFullUrl(wsConfig.getFastaConvertRnaPath, inputSequence)).then(function(response) {
+          return response.data.Sequence ? response.data.Sequence : null;
+        });
       },
       // returns a promise that resolves with the HELM Notation if valid, or null if unknown response
       getFastaReadPeptide: function (inputSequence) {
-        return $http.get(this.getFullUrl(wsConfig.getFastaReadPeptidePath, inputSequence))
-          .then(function(response) {
-            return response.data.HELMNotation ? response.data.HELMNotation : null;
-          });
+        return getHttpUrl(this.getFullUrl(wsConfig.getFastaReadPeptidePath, inputSequence)).then(function(response) {
+          return response.data.HELMNotation ? response.data.HELMNotation : null;
+        });
       },
       // returns a promise that resolves with the HELM Notation if valid, or null if unknown response
       getFastaReadRna: function (inputSequence) {
-        return $http.get(this.getFullUrl(wsConfig.getFastaReadRnaPath, inputSequence))
-          .then(function(response) {
-            return response.data.HELMNotation ? response.data.HELMNotation : null;
-          });
+        return getHttpUrl(this.getFullUrl(wsConfig.getFastaReadRnaPath, inputSequence)).then(function(response) {
+          return response.data.HELMNotation ? response.data.HELMNotation : null;
+        });
       }
     };
   });
