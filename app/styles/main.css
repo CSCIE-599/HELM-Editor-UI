@@ -5,9 +5,13 @@
   padding: 0.2em 0;
 }
 
+html {
+  height: 100%;
+}
+
 body {
   padding: 0;
- }
+}
 
 /* Everything but the jumbotron gets side spacing for mobile first views */
 .header,
@@ -19,7 +23,6 @@ body {
 
 /* Custom page header */
 .header {
-  border-bottom: 1px solid #e5e5e5;
   margin-bottom: 10px;
 }
 /* Make the masthead heading the same height as the navigation */
@@ -156,4 +159,45 @@ body {
   display: inline-block;
   font-weight: bold;
   font-family: 'arial', 'sans-serif';
+}
+
+/* CSS for the layout of the main page overall */
+.content {
+  height: 100%;
+}
+
+.controls {
+  padding: 10px 0px;
+}
+
+.row {
+  margin: 0px;
+}
+
+.left-controls {
+  background-color: #eff;
+}
+
+.right-controls {
+  background-color: #eef;
+}
+
+.full-height {
+  height: calc(100vh - 150px);
+}
+
+.library-column {
+  background-color: #fef;
+  height: 100%;
+  border-right: 2px solid #333;
+}
+
+.canvas-column {
+  background-color: #ffe;
+  height: 100%;
+}
+
+input {
+  margin-top: 5px;
+  margin-bottom: 5px;
 }

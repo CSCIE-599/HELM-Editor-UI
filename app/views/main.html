@@ -1,1 +1,54 @@
-<p>This is the main HELM editor view.</p>
+<div ng-controller='MainCtrl as main'>
+  <!-- layout of main page -->
+  <div class='outer'>
+    <div class='row controls'>
+      <!-- left controls -->
+      <div class='col-md-6 left-controls'>
+        <button class='btn' ng-click='main.toggleModal()'>Load</button>
+      </div>
+      <!-- right controls -->
+      <div class='col-md-6 right-controls'>
+        <input class='pull-right' name='lookup' id='lookup'>
+      </div>
+    </div>
+    <div class='row full-height'>
+      <div class='col-md-3 library-column'>
+        <p>Monomer Library</p>
+      </div>
+      <div class='col-md-9 canvas-column'>
+        <p>Placeholder</p>
+        <span>{{main.result}}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- modal dialog form -->
+  <modal-dialog show='main.modalShown'>
+    <div class="header">Load Sequence</div>
+    <div>
+      <p>New | <!--TODO: Load file functionality--><a>Load Files</a></p>
+    </div>
+    <form>
+      <table>
+        <tr>
+          <td rowspan="3"></td>
+          <td><label>Please choose:</label></td> 
+          <td align="right">
+            <select ng-model="polymerType" ng-options="option as option.label for option in main.polyTypes"></select>
+          </td>
+        </tr>
+        <tr>
+          <td colspan="2">
+            <textarea ng-model="inputSequence" id="input" name="Query" cols="80" rows="3"></textarea>
+          </td>
+        </tr>
+        <tr>
+          <td align="right" colspan="2">
+            <a ng-click='main.toggleModal()'>Cancel</a>
+            <button ng-click="main.processInput(polymerType, inputSequence)">Load</button>
+          </td>
+        </tr>
+      </table>
+    </form>
+  </modal-dialog>
+</div>
