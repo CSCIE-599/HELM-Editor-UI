@@ -10,7 +10,7 @@ angular.module('helmeditor2App')
   .directive('helmCanvas', function () {
     return {
       restrict: 'E',
-       templateUrl: 'templates/helmcanvas_template.html',
+       templateUrl: 'templates/helmcanvas.html',
        replace: true,
        scope: {
            graph: '=graph',
