@@ -41,5 +41,5 @@ describe('Controller: AboutCtrl', function () {
     var resource = AboutCtrl.resources[0];
     expect(resource.name).not.toBeNull();
     expect(resource.link).not.toBeNull();
-  })
+  });
 });
