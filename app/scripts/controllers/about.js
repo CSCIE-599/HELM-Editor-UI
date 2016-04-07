@@ -12,7 +12,7 @@ angular.module('helmeditor2App')
     var self = this;
 
     self.title = 'HELM Editor 2.0 Project';
-    self.description = 'This project is an undertaking by students in CSCI-E 599 to port the HELM Editor UI, which is currently written in Java Swing to HTML5 and Javascript.'
+    self.description = 'This project is an undertaking by students in CSCI-E 599 to port the HELM Editor UI, which is currently written in Java Swing to HTML5 and Javascript.';
     self.githubUrl = 'https://github.com/CSCIE-599/HELM-Editor-UI';
     self.team = [
       {
@@ -61,5 +61,5 @@ angular.module('helmeditor2App')
         name: 'HELM 2.0 Toolkit initial implementation',
         link: 'https://github.com/MarkusWeisser'
       }
-    ]
+    ];
   });
