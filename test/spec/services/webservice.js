@@ -80,7 +80,7 @@ describe('Service: helmeditor2App.webService', function () {
 
   it('should return false for validation of an invalid HELM string', function() {
     $httpBackend.expect('GET', baseUrl + 'Validation/' + inputSequence)
-      .respond("HELMNotation is not valid");
+      .respond('HELMNotation is not valid');
     webService.validateHelmNotation(inputSequence).then(function(valid) {
       expect(valid).toBe(false);            
     });
@@ -134,9 +134,9 @@ describe('Service: helmeditor2App.webService', function () {
 
   it('should return a JSON string for getConversionJson for a valid HELM input', function() {
     $httpBackend.expect('GET', baseUrl + 'Conversion/JSON/' + inputSequence)
-      .respond({JSON: "{\n \"string\": \"value\"}"});
+      .respond({JSON: '{\n \'string\': \'value\'}'});
     webService.getConversionJson(inputSequence).then(function(response) {
-      expect(response).toBe("{\n \"string\": \"value\"}");
+      expect(response).toBe('{\n \'string\': \'value\'}');
     });
     $httpBackend.flush();
   });

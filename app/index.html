@@ -12,8 +12,8 @@
     <!-- endbower -->
     <!-- endbuild -->
     <!-- build:css(.tmp) styles/main.css -->
-    <link rel="stylesheet" href="styles/main.css">
-      <link rel="stylesheet" href="styles/helm.css">
+    <link rel="stylesheet" href="styles/main.css" />
+    <link rel="stylesheet" href="styles/helm.css" />
     <!-- endbuild -->
   </head>
   <body ng-app="helmeditor2App">
@@ -23,7 +23,7 @@
 
     <!-- Add your site or application content here -->
     <div class="header">
-      <div class="navbar navbar-default" role="navigation">
+      <div class="navbar navbar-default navbar-fixed-top" role="navigation">
         <a class="navbar-brand" href="#/">HELM Editor 2.0</a>
         <div class="container">
           <div class="navbar-header">
@@ -37,24 +37,22 @@
 
           </div>
 
-          <div class="collapse navbar-collapse" id="js-navbar-collapse">
-
+          <div class="collapse navbar-collapse" id="js-navbar-collapse" ng-controller="HeaderCtrl as header">
             <ul class="nav navbar-nav">
-              <li class="active"><a href="#/">HELM Editor</a></li>
-              <li><a ng-href="#/habe">Antibody Editor</a></li>
-              <li><a ng-href="#/about">About</a></li>
-              <li><a ng-href="#/prototype">Prototype</a></li>
+              <li ng-class="{ active: header.isActive('/') }"><a href="#/">HELM Editor</a></li>
+              <li ng-class="{ active: header.isActive('/habe') }"><a ng-href="#/habe">Antibody Editor</a></li>
+              <li ng-class="{ active: header.isActive('/about') }"><a ng-href="#/about">About</a></li>
             </ul>
           </div>
         </div>
       </div>
     </div>
 
-    <div class="container">
+    <div class="content">
       <div ng-view=""></div>
     </div>
 
-    <div class="footer">
+    <div class="navbar navbar-fixed-bottom footer">
       <div class="container">
         <p>From the HELM Editor Team</p>
       </div>
@@ -94,18 +92,20 @@
     <script src="scripts/controllers/habe.js"></script>
     <script src="scripts/controllers/library.js"></script>
     <script src="scripts/controllers/prototype.js"></script>
+    <script src="scripts/controllers/loadsequence.js"></script>
+    <script src="scripts/controllers/helmcanvas.js"></script>
+    <script src="scripts/controllers/header.js"></script>
     <script src="scripts/directives/helmcanvas.js"></script>
+    <script src="scripts/directives/modaldialog.js"></script>
     <script src="scripts/services/helmconversionservice.js"></script>
     <script src="scripts/services/canvasdisplayservice.js"></script>
     <script src="scripts/services/monomerlibraryservice.js"></script>
     <script src="scripts/services/webservice.js"></script>
-    <!-- endbuild -->
-
     <!--helm specific scripts-->
     <!--<script src="services/mouse_capture_service.js" type="text/javascript"></script>
     <script src="services/dragging_service.js" type="text/javascript"></script>-->
     <!--<script src="model/helm_viewmodel.js" type="text/javascript"></script>-->
     <script src="common/svg_class.js" type="text/javascript"></script>
-
+    <!-- endbuild -->
 </body>
 </html>

@@ -36,11 +36,6 @@ angular
         controller: 'AboutCtrl',
         controllerAs: 'about'
       })
-      .when('/prototype', {
-        templateUrl: 'views/prototype.html',
-        controller: 'PrototypeCtrl',
-        controllerAs: 'prototype'
-      })
       .otherwise({
         redirectTo: '/'
       });

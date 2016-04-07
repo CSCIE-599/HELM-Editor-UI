@@ -9,7 +9,7 @@
  */
 angular.module('helmeditor2App')
   .service('CanvasDisplayService', function () {
-    // AngularJS will instantiate a singleton by calling "new" on this function
+    // AngularJS will instantiate a singleton by calling 'new' on this function
 
 	var self = this;
 
@@ -90,7 +90,7 @@ angular.module('helmeditor2App')
 		};
 
 		//number nodes if Peptide, or if Nucleotide and a base node
-        if ((sequenceType === "PEPTIDE") || (sequenceType === "NUCLEOTIDE" && nodeType === 'b')){
+        if ((sequenceType === 'PEPTIDE') || (sequenceType === 'NUCLEOTIDE' && nodeType === 'b')){
         //if (!self.isRiboseNode(nodeName)  && nodeName.indexOf('P') === -1){
             nodeNum++;
             newNode.num = nodeNum;
@@ -192,14 +192,14 @@ angular.module('helmeditor2App')
 
         var startDegrees = degree *2; //TO-DO: start position is hard-coded for Cyclic Peptide
 		var i = startDegrees;
-		angular.forEach(sequence, function(value, key) {
 
+		angular.forEach(sequence, function(value) {
 			if(i <= 360+startDegrees){//when i has reached 360, the circle is complete
 
 				nodexpos = Math.sin(-i * Math.PI / 180) * r + xc; //making 'i' negative creates clockwise placement
 				nodeypos = Math.cos(-i * Math.PI / 180) * r + yc;
 
-				var node = self.createNode(value, seqType, "lightblue", true, nodexpos, nodeypos);
+				var node = self.createNode(value, seqType, 'lightblue', true, nodexpos, nodeypos);
 
 				cycleNodesArray.push(node);
 				i = i + degree;
@@ -274,12 +274,12 @@ angular.module('helmeditor2App')
 
 		//used to display the sequence# next to the monomer
 		this.num = function () {
-			return this.data.num || "";
+			return this.data.num || '';
 		};
 
 		// Name of the node.
 		this.name = function () {
-			return this.data.name || "";
+			return this.data.name || '';
 		};
 
 		//color of the node
@@ -325,7 +325,7 @@ angular.module('helmeditor2App')
 
 		// id of node from which this node links horizontally
 		this.horizSource = function(){
-			return this.data.horizDest || "";
+			return this.data.horizDest || '';
 		};
 
 		//xpos of the node after rotation
@@ -400,6 +400,8 @@ angular.module('helmeditor2App')
 	self.Sequence = function(seqType, childrenArr, dir){
 		this.type = seqType;//PEPTIDE, NUCLEOTIDE, CHEM
 		this.children = childrenArr;//array of ChildSequence
+		// store dir for now
+		this.dir = dir;
 	};
 
 	self.ChildSequence = function(childFlow, monomerArr){
