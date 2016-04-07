@@ -9,9 +9,8 @@
  */
 angular.module('helmeditor2App')
   .controller('HabeCtrl', function () {
-    this.awesomeThings = [
-      'HTML5 Boilerplate',
-      'AngularJS',
-      'Karma'
-    ];
+    var self = this;
+
+    self.title = 'HELM Antibody Editor';
+    self.description = 'This editor is currently under development, sorry!';
   });
