@@ -50,6 +50,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 		main.getHelmNotation = function (polymerType, inputSequence) {
 	    var successCallback = function (helmNotation) {
 	      main.result = helmNotation;
+	      $scope.resetCanvas();
 	      $scope.displayOnCanvas(helmNotation);
 	    };
 	    var errorCallback = function(response) {
@@ -70,6 +71,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 	    var successCallback = function (valid) {
 	      if (valid) {
 	      	main.result = inputSequence;
+	      	$scope.resetCanvas();
 	      	$scope.displayOnCanvas(inputSequence);	
 	      }
 	      else {

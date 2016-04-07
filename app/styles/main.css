@@ -214,7 +214,8 @@ svg {
 }
 
 .canvas-row {
-  height: 50%;
+  /*height: 50%;*/
+  height: 100%;
 }
 
 .canvas-row-top {
