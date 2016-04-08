@@ -28,7 +28,7 @@ angular.module('helmeditor2App')
         github: 'https://github.com/thankam'
       },
       {
-        name: 'Sarah Leinecke',
+        name: 'Sarah Leinicke',
         github: 'https://github.com/SarahL88'
       },
       {
