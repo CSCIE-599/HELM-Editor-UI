@@ -33,8 +33,16 @@ module.exports = function(config) {
       // endbower
       'app/scripts/**/*.js',
       'test/mock/**/*.js',
-      'test/spec/**/*.js'
+      'test/spec/**/*.js',
+
+      // include the directive templates
+      'app/templates/*.html'
     ],
+
+    // set the preprocessor
+    preprocessors: {
+      'app/templates/*.html': ['ng-html2js']
+    },
 
     // list of files / patterns to exclude
     exclude: [
@@ -58,7 +66,8 @@ module.exports = function(config) {
     // Which plugins to enable
     plugins: [
       'karma-phantomjs-launcher',
-      'karma-jasmine'
+      'karma-jasmine',
+      'karma-ng-html2js-preprocessor'
     ],
 
     // Continuous Integration mode
@@ -77,5 +86,21 @@ module.exports = function(config) {
     // },
     // URL root prevent conflicts with the site root
     // urlRoot: '_karma_'
+
+    ngHtml2JsPreprocessor: {
+      // strip this from the file path
+      stripPrefix: 'app/',
+      // stripSuffix: '.ext',
+      // // prepend this to the
+      // prependPrefix: 'served/',
+
+      // - setting this option will create only a single module that contains templates
+      //   from all the files, so you can load them all with module('foo')
+      // - you may provide a function(htmlPath, originalPath) instead of a string
+      //   if you'd like to generate modules dynamically
+      //   htmlPath is a originalPath stripped and/or prepended
+      //   with all provided suffixes and prefixes
+      moduleName: 'testDirectives'
+    }
   });
 };
