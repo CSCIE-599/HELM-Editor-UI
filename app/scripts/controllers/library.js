@@ -24,8 +24,9 @@ angular.module('helmeditor2App')
     // used by the list getters
     var groupOptListBuilder = function(list, parent){
       var options = list;
-      for (monomer in parent.MonomerGroup){
-        options += "<option value=\"" + monomer._name + "\">" + monomer._name + "\n";
+      for(var i = 0; i < parent.MonomerGroup.length; i++){
+        options += "<option value=\"" + parent.MonomerGroup[i]._name + 
+                   "\">" + parent.MonomerGroup[i]._name + "\n";
       }
       return options;
     };
@@ -33,34 +34,27 @@ angular.module('helmeditor2App')
     // Grabs a Select List for the 3 polymer groups in the database
     // Will be used as the basic entry into querying the database.
     var getPolymerSelectList = function(){
-      var polymerOptionList = function(){
-        var list = "Make a selection:\n" +
-                   "<select ng-model=\"polymer\">\n";
-
-        for (pol in categorizedDBInfo.Polymer){
-          list += "<option value=\"" + pol._name + "\">" + pol._name + "\n";
-        }
-        list += "</select>\n";
-        return list;
-      };
-      return polymerOptionList;
+      var list = "Make a selection:\n" + "<select ng-model=\"polymer\">\n";
+      var polymers = categorizedDBInfo.Polymer;
+      for (var i = 0; i < polymers.length; i++){
+        list += "<option value=\"" + polymers[i]._name + "\">" + 
+                polymers[i]._name + "\n";
+      }
+      list += "</select>\n";
+      return list;
     };
     // Carries out the selection of the polymer group, displaying the select 
     // list for the monomer groups
-    var getPolymerSelection = function(polymer){
-      var list = "Select a " + polymer + ":\n" +
+    var getPolymerSelection = function(polymerId){
+      var list = "Select a " + polymerId + ":\n" +
                  "<select ng-model=\"polymerSelection\">\n";
 
-      var getter = getPolymer(polymer);
+      var getter = MonomerLibraryService.getPolymer(polymerId);
       if(!getter.returnSuccess){
         return "";
       }
-      for (pol in categorizedDBInfo.Polymer){
-        if (pol._name.matches(polymer)){
-          list = groupOptListBuilder(list, pol);
-          break;
-        }
-      }
+      var polymer = getter.result;
+      list = groupOptListBuilder(list, polymer);
       list += "</select>\n";
       return list;
     };
@@ -69,14 +63,13 @@ angular.module('helmeditor2App')
     // This function takes in values from the form and provides strings to 
     // display in the view. 
     var selectedInfo = function(polymerId,groupId){
-      var getter = getMonomerGroup(polymerId,groupId);
+      var getter = MonomerLibraryService.getMonomerGroup(polymerId,groupId);
       if(!getter.returnSuccess){
         return "";
       }
-
       var group = getter.result;
       var optionList = "";
-      if(group.hasOwnProperty("MonomerGroup")){
+      if(group.MonomerGroup != undefined){
         //
         optionList = ["Select a group:\n",
                       "<select ng-model=\""+group._name+"\">\n"];
@@ -85,9 +78,9 @@ angular.module('helmeditor2App')
       }
 
       var nameList = "";
-      if(group.hasOwnProperty("Monomer")){
-        for(monomer in group.Monomer){
-          nameList += "<p>"+monomer._name+"</p>\n";
+      if(group.Monomer != undefined){
+        for(var i = 0; i < group.Monomer.length; i++){
+          nameList += "<p>"+group.Monomer[i]._name+"</p>\n";
         }
       }
       
@@ -95,12 +88,7 @@ angular.module('helmeditor2App')
       return result;
     };
 
-    self.getCategorizedDB = categorizedDBInfo;
-    self.getEncodedDB = encodedDBInfo;
-    self.getPolymer = getPolymer;
     self.getPolymerSelectList = getPolymerSelectList;
     self.getPolymerSelection = getPolymerSelection;
-    self.getMonomerGroup = getMonomerGroup;
-    self.getMonomer = getMonomer;
     self.selectedInfo = selectedInfo;
   });
