@@ -8,31 +8,23 @@
  * Service in the helmeditor2App.
  */
 angular.module('helmeditor2App')
-  .service('MonomerLibraryService', ['$http', function ($http) {
+  .service('MonomerLibraryService', ['$http', 'x2js', function ($http, x2js) {
     // AngularJS will instantiate a singleton by calling "new" on this function
     
     var self = this;
-    console.log(this);
     var init = false;
 
     // Hierarchy of monomer types, retrievable through the monomer library. See
     // milestone 1 documentation for reference
     var categorizedDB = $http.get("DefaultMonomerCategorizationTemplate.xml", {
         transformResponse: function (info) {
-            var x2js = new X2JS();
-            var jsonInfo = x2js.xml_str2json(info);
-            var returnObj = JSON.parse();
-            console.log(returnObj);
-            return returnObj;
+            return (x2js.xml_str2json(info));
         }
     });
 
     var encodedDB = $http.get("MonomerDBGZEncoded.xml", {
         transformResponse: function (info) {
-            var x2js = new X2JS();
-            var jsonInfo = x2js.xml_str2json(info);
-            var returnObj = JSON.parse();
-            return returnObj;
+            return x2js.xml_str2json(info);
         }
     });
     // for each monomer in the parent group, it finds the corresponding monomer 
