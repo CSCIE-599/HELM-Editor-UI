@@ -12,7 +12,7 @@ angular.module('helmeditor2App')
     // AngularJS will instantiate a singleton by calling "new" on this function
     
     var self = this;
-
+    console.log(this);
     var init = false;
 
     // Hierarchy of monomer types, retrievable through the monomer library. See
@@ -22,6 +22,7 @@ angular.module('helmeditor2App')
             var x2js = new X2JS();
             var jsonInfo = x2js.xml_str2json(info);
             var returnObj = JSON.parse();
+            console.log(returnObj);
             return returnObj;
         }
     });
