@@ -17,7 +17,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 		/* Toggle modal dialogue display */
 		main.modalShown = false;
 		main.toggleModal = function() {
-	    this.modalShown = !main.modalShown;
+	    main.modalShown = !main.modalShown;
 		};
 
 		/* Variables for loadsequence view */
