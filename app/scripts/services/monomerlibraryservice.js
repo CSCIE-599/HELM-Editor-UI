@@ -9,33 +9,37 @@
  */
 angular.module('helmeditor2App')
   .service('MonomerLibraryService', ['$http', 'x2js', function ($http, x2js) {
-    // AngularJS will instantiate a singleton by calling "new" on this function
+    // AngularJS will instantiate a singleton by calling 'new' on this function
     
     var self = this;
     var init = false;
 
     // Hierarchy of monomer types, retrievable through the monomer library. See
     // milestone 1 documentation for reference
-    var categorizedDB = $http.get("DefaultMonomerCategorizationTemplate.xml", {
+    var categorizedDB = $http.get('DefaultMonomerCategorizationTemplate.xml', {
         transformResponse: function (info) {
+            // jscs:disable requireCamelCaseOrUpperCaseIdentifiers
             return (x2js.xml_str2json(info));
+            // jscs:enable requireCamelCaseOrUpperCaseIdentifiers
         }
     });
 
-    var encodedDB = $http.get("MonomerDBGZEncoded.xml", {
+    var encodedDB = $http.get('MonomerDBGZEncoded.xml', {
         transformResponse: function (info) {
+            // jscs:disable requireCamelCaseOrUpperCaseIdentifiers
             return x2js.xml_str2json(info);
+            // jscs:enable requireCamelCaseOrUpperCaseIdentifiers
         }
     });
     // for each monomer in the parent group, it finds the corresponding monomer 
     // from the encoded database and adds the info there to the categorized 
     // database in order to help create one full database.
     function dbLinker (parent, polymerId) {
-      if(parent.Monomer != undefined){
+      if(parent.Monomer !== undefined){
         var monomerList = parent.Monomer;
         for(var j = 0; j < monomerList.length; j++){
           var encodedMonomer = getEncodedMonomer(monomerList[j]._name, polymerId);
-          if(encodedMonomer == null){
+          if(encodedMonomer === null){
             continue;
           }
           /*
@@ -47,12 +51,13 @@ angular.module('helmeditor2App')
           encodedMonomer.categorizedInfo = monomerList[j].encodedInfo;
         }
       }
-      if(parent.MonomerGroup != undefined){
-        for(var j = 0; j < parent.MonomerGroup.length; j++){
-          dbLinker(parent.MonomerGroup[j], polymerId);
+      if(parent.MonomerGroup !== undefined){
+        for(var k = 0; k < parent.MonomerGroup.length; k++){
+          dbLinker(parent.MonomerGroup[k], polymerId);
         }
       }
-    };
+    }
+
     function initLink(){
       // 
       var polymerList = categorizedDB.Template.Polymer;
@@ -63,7 +68,8 @@ angular.module('helmeditor2App')
           dbLinker(polymerList[i].MonomerGroup[j], polymerId);
         }
       }
-    };
+    }
+
     // searches the encoded database and returns a monomer matching the polymer 
     // type and monomer id
     function getEncodedMonomer (monomerId, polymerId) {
@@ -83,20 +89,21 @@ angular.module('helmeditor2App')
         }
       }
       return output;
-    };
+    }
 
     // getPolymer, getMonomerGroup, and getMonomer all return
     // an object with a boolean returnSuccess property and optional
     // result property representing a type from the categorized database
     var getPolymer = function (id) {
-      var list = categorizedDBInfo.Polymer;
+      var output;
+      var list = categorizedDB.Polymer;
       for(var i = 0; i < list.length; i++){
         if(list[i]._name.matches(id)){
-          var output = { returnSuccess: true, result: list[i] };
+          output = { returnSuccess: true, result: list[i] };
           return output;
         }
       }
-      var output = { returnSuccess: false };
+      output = { returnSuccess: false };
       return output;
     };
 
@@ -106,24 +113,24 @@ angular.module('helmeditor2App')
     // as comma separated values of the form <group>,<sub-group>
     var getMonomerGroup = function (polymerId, id) {
       var pGetter = getPolymer(polymerId);
-      var idList = id.split(",");
+      var idList = id.split(',');
       var parent, i=0;
       var output = { returnSuccess: false };
       if(!pGetter.returnSuccess){
         return output;
       }
-      var parent = pGetter.result();
-      while(i < idList.length){
+      parent = pGetter.result();
+      while (i < idList.length) {
         output.returnSuccess = false;
-        for(group in parent.MonomerGroup){
-          if(group._name.matches(idList[i])){
+        for (var group in parent.MonomerGroup) {
+          if (group._name.matches(idList[i])) {
             i++;
             output = { returnSuccess: true, result: group };
             break;
           }
         }
-        if(!output.returnSuccess()) { return output; }
-        if( i < idList.length) { parent = output.result; }
+        if (!output.returnSuccess()) { return output; }
+        if ( i < idList.length) { parent = output.result; }
       }
       return output;
     };
@@ -153,8 +160,8 @@ angular.module('helmeditor2App')
         return output;
       }
       var group = groupGetter.result;
-      for(monomer in group.Monomer){
-        if(monomer._name.matches(name)){
+      for (var monomer in group.Monomer) {
+        if (monomer._name.matches(name)) {
           output = { returnSuccess: true, result: monomer };
           return output;
         }
@@ -164,12 +171,12 @@ angular.module('helmeditor2App')
 
     // getPolymers - returns the list of polymers
     var getPolymers = function () {
-      return categorizedDBInfo.Polymer;
-    }
+      return categorizedDB.Polymer;
+    };
 
     // returns the full categorized DB
     var getCategorizedDB = function () {
-      if(!init){
+      if (!init) {
         initLink();
       }
       return categorizedDB.Template;
@@ -177,7 +184,7 @@ angular.module('helmeditor2App')
 
     // returns the entire encoded db
     var getEncodedDB = function(){
-      if(!init){
+      if (!init) {
         initLink();
       }
       return encodedDB.MONOMER_DB;
@@ -187,5 +194,6 @@ angular.module('helmeditor2App')
     self.getCategorizedDB = getCategorizedDB;
     self.getEncodedDB = getEncodedDB;
     self.getPolymers = getPolymers;
+    self.getCategorizedMonomer = getCategorizedMonomer;
 
   }]);

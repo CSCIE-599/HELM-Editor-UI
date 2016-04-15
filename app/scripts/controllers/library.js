@@ -21,8 +21,8 @@ angular.module('helmeditor2App')
     var groupOptListBuilder = function(list, parent){
       var options = list;
       for(var i = 0; i < parent.MonomerGroup.length; i++){
-        options += "<option value=\"" + parent.MonomerGroup[i]._name + 
-                   "\">" + parent.MonomerGroup[i]._name + "\n";
+        options += '<option value="' + parent.MonomerGroup[i]._name + 
+                   '">' + parent.MonomerGroup[i]._name + '\n';
       }
       return options;
     };
@@ -30,29 +30,29 @@ angular.module('helmeditor2App')
     // Grabs a Select List for the 3 polymer groups in the database
     // Will be used as the basic entry into querying the database.
     var getPolymerSelectList = function(){
-      var list = "Make a selection:\n" + "<select ng-model=\"polymer\">\n";
+      var list = 'Make a selection:\n' + '<select ng-model="polymer">\n';
       var polymers = MonomerLibraryService.getPolymers;
       for (var i = 0; i < polymers.length; i++){
-        list += "<option value=\"" + polymers[i]._name + "\">" + 
-                polymers[i]._name + "\n";
+        list += '<option value="' + polymers[i]._name + '">' + 
+                polymers[i]._name + '\n';
       }
-      list += "</select>\n";
+      list += '</select>\n';
       return list;
     };
 
     // Carries out the selection of the polymer group, displaying the select 
     // list for the monomer groups
     var getPolymerSelection = function(polymerId){
-      var list = "Select a " + polymerId + ":\n" +
-                 "<select ng-model=\"polymerSelection\">\n";
+      var list = 'Select a ' + polymerId + ':\n' +
+                 '<select ng-model="polymerSelection">\n';
 
       var getter = MonomerLibraryService.getPolymer(polymerId);
       if(!getter.returnSuccess){
-        return "";
+        return '';
       }
       var polymer = getter.result;
       list = groupOptListBuilder(list, polymer);
-      list += "</select>\n";
+      list += '</select>\n';
       return list;
     };
     // XXX Need to figure out how to incorporate into the view.
@@ -62,22 +62,22 @@ angular.module('helmeditor2App')
     var selectedInfo = function(polymerId,groupId){
       var getter = MonomerLibraryService.getMonomerGroup(polymerId,groupId);
       if(!getter.returnSuccess){
-        return "";
+        return '';
       }
       var group = getter.result;
-      var optionList = "";
-      if(group.MonomerGroup != undefined){
+      var optionList = '';
+      if(group.MonomerGroup !== undefined){
         //
-        optionList = ["Select a group:\n",
-                      "<select ng-model=\""+group._name+"\">\n"];
+        optionList = ['Select a group:\n',
+                      '<select ng-model="'+group._name+'">\n'];
         optionList = groupOptListBuilder(optionList, group);
-        optionList.push("</select>\n");
+        optionList.push('</select>\n');
       }
 
-      var nameList = "";
-      if(group.Monomer != undefined){
+      var nameList = '';
+      if(group.Monomer !== undefined){
         for(var i = 0; i < group.Monomer.length; i++){
-          nameList += "<p>"+group.Monomer[i]._name+"</p>\n";
+          nameList += '<p>'+group.Monomer[i]._name+'</p>\n';
         }
       }
       
