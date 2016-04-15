@@ -37,7 +37,7 @@ angular.module('helmeditor2App')
     // for each monomer in the parent group, it finds the corresponding monomer 
     // from the encoded database and adds the info there to the categorized 
     // database in order to help create one full database.
-    function dbLinker(parent, polymerId) {
+    function dbLinker (parent, polymerId) {
       if(parent.Monomer != undefined){
         var monomerList = parent.Monomer;
         for(var j = 0; j < monomerList.length; j++){
@@ -73,7 +73,7 @@ angular.module('helmeditor2App')
     };
     // searches the encoded database and returns a monomer matching the polymer 
     // type and monomer id
-    function getEncodedMonomer(monomerId, polymerId){
+    function getEncodedMonomer (monomerId, polymerId) {
       var i, j;
       var output = null;
       var polymerList = encodedDB.MONOMER_DB.PolymerList.Polymer;
@@ -95,7 +95,7 @@ angular.module('helmeditor2App')
     // getPolymer, getMonomerGroup, and getMonomer all return
     // an object with a boolean returnSuccess property and optional
     // result property representing a type from the categorized database
-    var getPolymer = function(id){
+    var getPolymer = function (id) {
       var list = categorizedDBInfo.Polymer;
       for(var i = 0; i < list.length; i++){
         if(list[i]._name.matches(id)){
@@ -106,11 +106,12 @@ angular.module('helmeditor2App')
       var output = { returnSuccess: false };
       return output;
     };
+
     // The monomer group must handle the case where a monomer group exists 
     // within another monomer group. In order to do so, the group info is 
     // pulled from the form such that sub-groups are appeneded to the group
     // as comma separated values of the form <group>,<sub-group>
-    var getMonomerGroup = function(polymerId, id){
+    var getMonomerGroup = function (polymerId, id) {
       var pGetter = getPolymer(polymerId);
       var idList = id.split(",");
       var parent, i=0;
@@ -152,7 +153,7 @@ angular.module('helmeditor2App')
       }
     };
 */
-    var getCategorizedMonomer = function(polymerId, groupId, name){
+    var getCategorizedMonomer = function (polymerId, groupId, name) {
       var groupGetter = getMonomerGroup(polymerId, groupId);
       var output = { returnSuccess: false };
       if(!groupGetter.returnSuccess){
@@ -168,14 +169,21 @@ angular.module('helmeditor2App')
       return output;
     };
 
-    self.getCategorizedDB = function(){
+    // getPolymers - returns the list of polymers
+    var getPolymers = function () {
+      return categorizedDBInfo.Polymer;
+    }
+
+    // returns the full categorized DB
+    var getCategorizedDB = function () {
       if(!init){
         initLink();
       }
       return categorizedDB.Template;
     };
 
-    self.getEncodedDB = function(){
+    // returns the entire encoded db
+    var getEncodedDB = function(){
       if(!init){
         initLink();
       }
@@ -183,6 +191,8 @@ angular.module('helmeditor2App')
     };
 
     self.getEncodedMonomer = getEncodedMonomer;
-
+    self.getCategorizedDB = getCategorizedDB;
+    self.getEncodedDB = getEncodedDB;
+    self.getPolymers = getPolymers;
 
   }]);

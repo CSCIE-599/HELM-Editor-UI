@@ -14,12 +14,8 @@ angular.module('helmeditor2App')
       'AngularJS',
       'Karma'
     ];
-    // the entire database
-    var categorizedDBInfo = MonomerLibraryService.getCategorizedDB();
-    var encodedDBInfo = MonomerLibraryService.getEncodedDB();
     
     var self = this;
-    
 
     // used by the list getters
     var groupOptListBuilder = function(list, parent){
@@ -35,7 +31,7 @@ angular.module('helmeditor2App')
     // Will be used as the basic entry into querying the database.
     var getPolymerSelectList = function(){
       var list = "Make a selection:\n" + "<select ng-model=\"polymer\">\n";
-      var polymers = categorizedDBInfo.Polymer;
+      var polymers = MonomerLibraryService.getPolymers;
       for (var i = 0; i < polymers.length; i++){
         list += "<option value=\"" + polymers[i]._name + "\">" + 
                 polymers[i]._name + "\n";
@@ -43,6 +39,7 @@ angular.module('helmeditor2App')
       list += "</select>\n";
       return list;
     };
+
     // Carries out the selection of the polymer group, displaying the select 
     // list for the monomer groups
     var getPolymerSelection = function(polymerId){
@@ -88,7 +85,7 @@ angular.module('helmeditor2App')
       return result;
     };
 
-    self.getPolymerSelectList = getPolymerSelectList;
+    //self.getPolymerSelectList = getPolymerSelectList;
     self.getPolymerSelection = getPolymerSelection;
     self.selectedInfo = selectedInfo;
   }]);
