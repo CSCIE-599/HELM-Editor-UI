@@ -85,7 +85,7 @@ angular.module('helmeditor2App')
       return result;
     };
 
-    //self.getPolymerSelectList = getPolymerSelectList;
+    self.getPolymerSelectList = getPolymerSelectList;
     self.getPolymerSelection = getPolymerSelection;
     self.selectedInfo = selectedInfo;
   }]);
