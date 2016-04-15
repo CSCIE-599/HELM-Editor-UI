@@ -8,7 +8,7 @@
  * Controller of the helmeditor2App
  */
 angular.module('helmeditor2App')
-  .controller('LibraryCtrl', function () {
+  .controller('LibraryCtrl', ['MonomerLibraryService', function (MonomerLibraryService) {
     this.awesomeThings = [
       'HTML5 Boilerplate',
       'AngularJS',
@@ -91,4 +91,4 @@ angular.module('helmeditor2App')
     self.getPolymerSelectList = getPolymerSelectList;
     self.getPolymerSelection = getPolymerSelection;
     self.selectedInfo = selectedInfo;
-  });
+  }]);
