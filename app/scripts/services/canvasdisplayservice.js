@@ -232,7 +232,7 @@ angular.module('helmeditor2App')
 	self.zoom = function (scale, evt){
 		
 	  var svgDoc = evt.target.parentNode;
-	  mapMatrix = svgDoc.getElementById("map-matrix");
+	  mapMatrix = svgDoc.getElementById('map-matrix');
 	  width = svgDoc.clientWidth;
 	  height = svgDoc.clientHeight;
 			
@@ -242,8 +242,8 @@ angular.module('helmeditor2App')
 
 	  transMatrix[4] += (1-scale)*width/2;
 	  transMatrix[5] += (1-scale)*height/2;				        
-	  newMatrix = "matrix(" +  transMatrix.join(' ') + ")";
-	  mapMatrix.setAttributeNS(null, "transform", newMatrix);
+	  newMatrix = 'matrix(' +  transMatrix.join(' ') + ')';
+	  mapMatrix.setAttributeNS(null, 'transform', newMatrix);
 	};
 
 
