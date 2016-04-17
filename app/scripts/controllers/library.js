@@ -17,6 +17,11 @@ angular.module('helmeditor2App')
     
     var self = this;
 
+    self.logDB = function () {
+      console.log(MonomerLibraryService.getEncodedDB());
+      console.log(MonomerLibraryService.getCategorizedDB());
+    };
+
     // used by the list getters
     var groupOptListBuilder = function(list, parent){
       var options = list;
