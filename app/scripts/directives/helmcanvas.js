@@ -15,5 +15,6 @@ angular.module('helmeditor2App')
        scope: {
            graph: '=graph',
        },
+       controller: 'MainCtrl',
     };
   });
