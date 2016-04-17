@@ -7,7 +7,7 @@
  * # MonomerLibraryService
  * Service in the helmeditor2App.
  */
-angular.module('helmeditor2App')
+angular.module('helmeditor2App.MonomerLibrary', ['cb.x2js'])
   .service('MonomerLibraryService', ['$http', 'x2js', function ($http, x2js) {
     // AngularJS will instantiate a singleton by calling 'new' on this function
     
