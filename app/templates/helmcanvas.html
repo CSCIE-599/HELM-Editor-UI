@@ -1,6 +1,15 @@
 <svg class="draggable-container"
   xmlns="http://www.w3.org/2000/svg">
 
+<!-- Zoom buttons -->
+<circle class="zoombtn"  cx="40" cy="31" r="8" ng-click="zoomCanvas(0.8, $event)"/>
+<circle class="zoombtn"  cx="40" cy="49" r="8" ng-click="zoomCanvas(1.25, $event)"/>
+<text class="plus-minus" x="36" y="28"> _  </text> 
+<text class="plus-minus" x="36" y="53"> +  </text>  
+
+
+<g id="map-matrix" transform="matrix(1 0 0 1 0 0)">
+
   <!-- loop thru all the connections in the graph -->
   <!-- connections are drawn first so the lines are not visible inside the nodes -->
   <g ng-repeat="connection in graph.connections">
@@ -39,5 +48,6 @@
       ng-attr-visibility="{{node.seqVisible()}}">
       {{node.num()}}
     </text>
+  </g>
   </g>
 </svg>

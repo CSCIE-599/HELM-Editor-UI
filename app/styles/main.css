@@ -77,9 +77,18 @@ body {
   padding-left: 0;
   padding-right: 0;
 }
+
 /* Space out the masthead */
 .header {
   margin-bottom: 49px;
+ }
+
+
+/* Space out the masthead */
+.modalHeader {
+  margin-bottom: 30px;
+  font-weight: bold;
+  font-size: 1.25em;
 }
 /* Remove the bottom border on the jumbotron for visual effect */
 .jumbotron {
@@ -92,12 +101,10 @@ body {
 
 .stdNucleotideBtnC {
   color : red;
-
 }
 
 .stdNucleotideBtnG {
   color : orange;
-
 }
 
 .stdNucleotideBtnU, .stdNucleotideBtnT {
@@ -200,6 +207,12 @@ body {
 input {
   margin-top: 5px;
   margin-bottom: 5px;
+}
+
+#input {
+  margin-top: 5px;
+  margin-bottom: 5px;
+  border:solid 1px #707070;  
 }
 
 .canvas-container {
