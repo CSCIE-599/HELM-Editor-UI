@@ -28,20 +28,25 @@
               <!-- -->
       </div>
       <div class='col-md-9 canvas-column'>
-        <div class='row canvas-row canvas-row-top'>
-          <p>HELM Notation: <span>{{main.result}}</span></p>
+        <div class='row canvas-row-top'>
+          <p><span>View: Detailed Sequence</span><span class="message-span">{{main.result}}</span></p>
           <div class='canvas-container'>
-            <helm-canvas graph='canvasView'>
+            <helm-canvas graph='canvasView' canvastype='upper'>
           </div>
         </div>
-        <!--
-        <div class='row canvas-row'>
-          <p>Placeholder 2 - <span>{{main.result}}</span></p>
-          <div class='canvas-container'>
-            <helm-canvas graph='canvasViewAlt'>
+        <div class='row canvas-row-bottom'>
+          <p><span>View: <select ng-model='viewType' ng-selected='viewType' ng-options='option as option.label for option in main.viewTypes' ng-change='updateLower(viewType)'></select></span></p>
+          <div ng-show='helm'><p><span>{{main.helm}}</span></p></div>
+          <div ng-show='moleculeprops'>
+            <table class='molecule-table'>
+              <tr><th>Component Type</th><th>Molecular Weight</th><th>Molecular Formula</th><th>Ext. Coefficient</td></tr>
+              <tr><td>{{main.seqtype}}</td><td>{{main.molecularweight}}</td><td>{{main.molecularformula}}</td><td>{{main.extcoefficient}}</td></tr>
+            </table>
+          </div>
+          <div class='canvas-container' ng-show='sequence'>
+            <helm-canvas graph='canvasView' canvastype='lower'>
           </div>
         </div>
-        -->
       </div>
     </div>
   </div>
