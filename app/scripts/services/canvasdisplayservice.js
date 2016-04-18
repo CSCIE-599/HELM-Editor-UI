@@ -198,12 +198,10 @@ angular.module('helmeditor2App')
 
 				cycleNodesArray.push(node);
 				i = i + degree;
-
 			}
 		});
 
 		return cycleNodesArray;
-
 	};
 
 
@@ -212,7 +210,7 @@ angular.module('helmeditor2App')
 
 		if(!pos){//starting pos
 			return {
-				x: 100, //TO-DO make this relatibe to the length of sequence
+				x: 200, //TO-DO make this relative to the length of sequence
 				y: 100
 			};
 		}
@@ -226,24 +224,24 @@ angular.module('helmeditor2App')
 
 	/*zoom related functions*/
 
-	var transMatrix = [1,0,0,1,0,0];
+	var transMatrix = [1,0,0,1,0,0];//identity matrix 
 	var mapMatrix, newMatrix, width, height;	
 
 	self.zoom = function (scale, evt){
 		
-	  var svgDoc = evt.target.parentNode;
-	  mapMatrix = svgDoc.getElementById('map-matrix');
-	  width = svgDoc.clientWidth;
-	  height = svgDoc.clientHeight;
-			
-	  for (var i=0; i<transMatrix.length; i++){
-	    transMatrix[i] *= scale;
-	  }
+		 var svgDoc = evt.target.parentNode;
+		 mapMatrix = svgDoc.getElementById('map-matrix');
+		 width = svgDoc.clientWidth;
+		 height = svgDoc.clientHeight;
 
-	  transMatrix[4] += (1-scale)*width/2;
-	  transMatrix[5] += (1-scale)*height/2;				        
-	  newMatrix = 'matrix(' +  transMatrix.join(' ') + ')';
-	  mapMatrix.setAttributeNS(null, 'transform', newMatrix);
+		 for (var i=0; i<transMatrix.length; i++){
+		   transMatrix[i] *= scale;
+		 }
+
+		 transMatrix[4] += (1-scale)*width/2;
+		 transMatrix[5] += (1-scale)*height/2;				        
+		 newMatrix = 'matrix(' +  transMatrix.join(' ') + ')';
+		 mapMatrix.setAttributeNS(null, 'transform', newMatrix);
 	};
 
 

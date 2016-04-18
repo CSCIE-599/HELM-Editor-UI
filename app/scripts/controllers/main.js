@@ -17,12 +17,12 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 		/* Toggle modal dialogue display */
 		main.modalShown = false;
 		main.toggleModal = function() {
-	    main.modalShown = !main.modalShown;
+	    	main.modalShown = !main.modalShown;
 		};
 
 		/* Variables for loadsequence view */
 		main.polyTypes = [
-	    { value: 'PEPTIDE', label:'PEPTIDE' },
+		{ value: 'PEPTIDE', label:'PEPTIDE' },
 	    { value: 'RNA', label:'RNA/DNA' },
 	    { value: 'HELM', label:'HELM' },
 		];
@@ -44,10 +44,10 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 	    	main.getHelmNotation(polymerType, inputSequence);
 	    }
 	    main.toggleModal();
-		};
+	};
 
-		/* Invoke factory function to get HELM notation */   
-		main.getHelmNotation = function (polymerType, inputSequence) {
+	/* Invoke factory function to get HELM notation */   
+	main.getHelmNotation = function (polymerType, inputSequence) {
 	    var successCallback = function (helmNotation) {
 	      main.result = helmNotation;
 	      $scope.resetCanvas();
@@ -65,7 +65,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 	      case 'RNA':
 	        webService.getHelmNotationRna(inputSequence).then(successCallback, errorCallback);
 	    }
-	  };
+	};
 
 	  main.validateHelmNotation = function (inputSequence) {
 	    var successCallback = function (valid) {
@@ -86,6 +86,13 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 	    webService.validateHelmNotation(inputSequence).then(successCallback, errorCallback);
 	  };
 
+
+	  main.clear = function (){
+	  	//TO-DO - change this to angular selector
+	  	 	document.getElementById('input').value = '';	  	  	 	
+	  };
+	
+
 	  /*
 	   * Begin code for Canvas
 	   */
@@ -101,10 +108,10 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 			connections: []
 		};
 
-		//function which takes in a HELM notation, converts to sequence and draws graphical image on the canvas
-		$scope.displayOnCanvas = function (notation) {
+	//function which takes in a HELM notation, converts to sequence and draws graphical image on the canvas
+	$scope.displayOnCanvas = function (notation) {
 	    //from HELM Notation, get requested sequences and connections between sequences
-    	var helmTranslation = HelmConversionService.convertHelmNotationToSequence(notation);
+      var helmTranslation = HelmConversionService.convertHelmNotationToSequence(notation);
       var sequenceArray = helmTranslation[0];   //each element has .name and .sequence (array of letters)
       var connectionArray = helmTranslation[1]; //each element has .source and .dest
 
@@ -328,17 +335,17 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
         var connectionPoints = $scope.getCyclicalSourceDest(seqName, connectionArray);
         var cycleStartId =  connectionPoints[1];
         var cycleEndId = connectionPoints[0];
-        var slicedSeqArr = [];
+        var slicedSeqArr  =  [];
         var beforeArr = [];
         var afterArr = [];
         var cycle = [];
 
         for (var i=0;i<sequence.length;i++) {
         	if (i < cycleStartId) {
-						beforeArr.push(sequence[i]);
+				beforeArr.push(sequence[i]);
         	}
         	else if (i>= cycleStartId && i<=cycleEndId) {
-						cycle.push(sequence[i]);
+				cycle.push(sequence[i]);
         	}
         	else if (i>cycleEndId) {
         		afterArr.push(sequence[i]);
@@ -538,6 +545,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 	$scope.zoomCanvas = function (scale, evt){
 		CanvasDisplayService.zoom(scale, evt);
 	};
+
 	
 	// Create the view for the canvas and attach to the scope.
 	$scope.canvasView = new CanvasDisplayService.CanvasView(helmDataModel);

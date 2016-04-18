@@ -138,16 +138,10 @@ Drag selection rectangle.
 }
 
 
-rect {
-	z-index: -1;
-}
-
 /*zoom button styles*/
 .zoombtn{
 	fill:  #225EA8;
-	stroke:  #0C2C84;
-	stroke-miterlimit:	6;
-	stroke-linecap:  round;
+	stroke:  #0C2C84;	
 }
 
 .zoombtn:hover{
