@@ -63,7 +63,7 @@
 
   <!-- modal dialog form -->
   <modal-dialog show='main.modalShown'>
-    <div class='header'>Load Sequence</div>
+    <div class='modalHeader'>Load Sequence</div>
     <div>
       <p>New | <!--TODO: Load file functionality--><a>Load Files</a></p>
     </div>
@@ -99,9 +99,10 @@
           </td>
         </tr>
         <tr>
-          <td align='right' colspan='2'>
-            <a ng-click='main.toggleModal()'>Cancel</a>
-            <button ng-click='main.processInput(polymerType, inputSequence)'>Load</button>
+          <td align='right' colspan='2'>          
+            <button class='btn' ng-click='main.processInput(polymerType, inputSequence)'>Load</button>
+            <button class='btn' ng-click='main.clear()'>Clear</button>
+            <button class='btn' ng-click='main.toggleModal()'>Cancel</button>
           </td>
         </tr>
       </table>

@@ -46,8 +46,6 @@ angular.module('helmeditor2App')
 	};
 
 
-
-
 	// create a new node
 	self.createNode = function (nodeName, sequenceType, nodeColor, isRotate, xpos, ypos, nodeType) {
 
@@ -91,7 +89,6 @@ angular.module('helmeditor2App')
 
 		//number nodes if Peptide, or if Nucleotide and a base node
         if ((sequenceType === 'PEPTIDE') || (sequenceType === 'NUCLEOTIDE' && nodeType === 'b')){
-        //if (!self.isRiboseNode(nodeName)  && nodeName.indexOf('P') === -1){
             nodeNum++;
             newNode.num = nodeNum;
             newNode.seqVisible = 'visible';
@@ -153,7 +150,6 @@ angular.module('helmeditor2App')
 		return nodeNum;
 	};
 
-
 	self.setNodeNum = function(num){
 		nodeNum = num;
 	};
@@ -187,8 +183,7 @@ angular.module('helmeditor2App')
 
 		var degree = 360/sequence.length; //divide the circle, to allow equal separation between the nodes
 
-		var nodexpos;
-		var nodeypos;
+		var nodexpos, nodeypos;
 
         var startDegrees = degree *2; //TO-DO: start position is hard-coded for Cyclic Peptide
 		var i = startDegrees;
@@ -203,12 +198,10 @@ angular.module('helmeditor2App')
 
 				cycleNodesArray.push(node);
 				i = i + degree;
-
 			}
 		});
 
 		return cycleNodesArray;
-
 	};
 
 
@@ -217,7 +210,7 @@ angular.module('helmeditor2App')
 
 		if(!pos){//starting pos
 			return {
-				x: 100, //TO-DO make this relatibe to the length of sequence
+				x: 200, //TO-DO make this relative to the length of sequence
 				y: 100
 			};
 		}
@@ -227,6 +220,28 @@ angular.module('helmeditor2App')
 				y: pos.y + (i * 150)
 			};
 		}
+	};
+
+	/*zoom related functions*/
+
+	var transMatrix = [1,0,0,1,0,0];//identity matrix 
+	var mapMatrix, newMatrix, width, height;	
+
+	self.zoom = function (scale, evt){
+		
+		 var svgDoc = evt.target.parentNode;
+		 mapMatrix = svgDoc.getElementById('map-matrix');
+		 width = svgDoc.clientWidth;
+		 height = svgDoc.clientHeight;
+
+		 for (var i=0; i<transMatrix.length; i++){
+		   transMatrix[i] *= scale;
+		 }
+
+		 transMatrix[4] += (1-scale)*width/2;
+		 transMatrix[5] += (1-scale)*height/2;				        
+		 newMatrix = 'matrix(' +  transMatrix.join(' ') + ')';
+		 mapMatrix.setAttributeNS(null, 'transform', newMatrix);
 	};
 
 
