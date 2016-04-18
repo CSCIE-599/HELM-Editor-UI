@@ -92,6 +92,33 @@ describe('Directive: helmCanvas', function () {
     expect(svg.hasClass('draggable-container'));
   }));
 
+  it('should have the zoom buttons and the graph', inject(function () {
+    element = angular.element('<div><helm-canvas></helm-canvas></div>');
+    element = $compile(element)(scope);
+    scope.$digest();
+
+    // check the children of the SVG element
+    var svg = element.children().eq(0);
+    var svgChildren = svg.children();
+    expect(svgChildren.length).toBe(5);
+    expect(svgChildren.eq(0).hasClass('zoombtn')).toBe(true);
+    expect(svgChildren.eq(0).attr('cx')).toBeDefined();
+    expect(svgChildren.eq(0).attr('cy')).toBeDefined();
+    expect(svgChildren.eq(1).hasClass('zoombtn')).toBe(true);
+    expect(svgChildren.eq(1).attr('cx')).toBeDefined();
+    expect(svgChildren.eq(1).attr('cy')).toBeDefined();
+    expect(svgChildren.eq(2).hasClass('plus-minus')).toBe(true);
+    expect(svgChildren.eq(2).attr('x')).toBeDefined();
+    expect(svgChildren.eq(2).attr('y')).toBeDefined();
+    expect(svgChildren.eq(3).hasClass('plus-minus')).toBe(true);
+    expect(svgChildren.eq(3).attr('x')).toBeDefined();
+    expect(svgChildren.eq(3).attr('y')).toBeDefined();
+
+    // check the actual graph (it should have no nodes)
+    expect(svgChildren.eq(4).attr('id')).toBe('map-matrix');
+    expect(svgChildren.eq(4).children().length).toBe(0);
+  }));
+
   it('should list out the connections in the graph', inject(function () {
     // set up the connections in scope
     scope.graph = {};
@@ -107,8 +134,10 @@ describe('Directive: helmCanvas', function () {
 
     // check that two paths were created, with the right d value
     var helmCanvas = element.children().eq(0);
-    expect(helmCanvas.children().length).toBe(2);
-    var paths = helmCanvas.find('path');
+    // take into account the zoom buttons
+    var g = helmCanvas.children().eq(4);
+    expect(g.children().length).toBe(2);
+    var paths = g.find('path');
     expect(paths.length).toBe(2);
     expect(paths.eq(0).attr('d')).toBe('M10, 10 L20, 20');
     expect(paths.eq(1).attr('d')).toBe('M30, 30 L40, 40');
@@ -211,9 +240,12 @@ describe('Directive: helmCanvas', function () {
     element = $compile(element)(scope);
     scope.$digest();
 
-    // check that there are three elements, and they have the right structure
+    // check that there are elements within g, and they have the right structure
     var helmCanvas = element.children().eq(0);
-    var children = helmCanvas.children();
+    // grab the element where the nodes go
+    var parentG = helmCanvas.children().eq(4);
+    // all of the nodes themselves
+    var children = parentG.children();
     expect(children.length).toBe(3);
 
     // go through each one
