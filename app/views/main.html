@@ -16,6 +16,19 @@
       <div class='col-md-3 library-column' ng-controller='LibraryCtrl as library'>
         <p>Monomer Library</p>
 
+        <form>
+          Polymer:   <input type="text" ng-model="search.polymer"><br>
+          MonomerId: <input type="text" ng-model="search.monomer"><br><br>
+          <!-- Button is intended to facilitate potential interactions between search box and other components -->
+          <button>PLACEHOLDER BUTTON</button>
+        </form>
+        <p> sanity = {{ library.sanityCheck() }} </p>
+        <p ng-show="search.showResult"> {{ library.searchBoxResult() }} </p>
+        <form>
+          Make a selection: <br>
+          {{ "Placeholder for select lists for categorical search" }}
+        </form>
+
         <button class="stdNucleotideBtnA"> A </button>
 
         <button class="stdNucleotideBtnC"> C </button>

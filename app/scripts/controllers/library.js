@@ -8,7 +8,7 @@
  * Controller of the helmeditor2App
  */
 angular.module('helmeditor2App')
-  .controller('LibraryCtrl', ['MonomerLibraryService', function (MonomerLibraryService) {
+  .controller('LibraryCtrl', ['$scope', 'MonomerLibraryService', function ($scope, MonomerLibraryService) {
     this.awesomeThings = [
       'HTML5 Boilerplate',
       'AngularJS',
@@ -89,8 +89,36 @@ angular.module('helmeditor2App')
       var result = { optionList: optionList, nameList: nameList };
       return result;
     };
+    function getSearchBoxResult(){
+      var polymer = $scope.search.polymer;
+      var monomer = $scope.search.monomer;
+      if(polymer === null || polymer.trim() === '' || monomer === null || monomer.trim() === ''){
+        $scope.search.showResult = false;
+        return ('');
+      }
+      var result = MonomerLibraryService.getEncodedById(polymer, monomer);
+      if(result === null){
+        $scope.search.showResult = false;
+        return ('');
+      }
+      $scope.search.showResult = true;
+      return ('name: ' + result.MonomerID + ' smiles: ' + result.MonomerSmiles);
+    }
 
     self.getPolymerSelectList = getPolymerSelectList;
     self.getPolymerSelection = getPolymerSelection;
     self.selectedInfo = selectedInfo;
+    self.searchBoxResult = getSearchBoxResult;
+    self.sanityCheck = function(){
+      var result = MonomerLibraryService.sanityCheck();
+      return result;
+    };
+    self.showCategorized = function(){
+      var result = MonomerLibraryService.getCategorizedDB();
+      if (result === {}){
+        result = 'blank';
+      }
+      return result;
+    };
+
   }]);
