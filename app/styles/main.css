@@ -204,10 +204,15 @@ body {
   height: 100%;
 }
 
+input {
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
 #input {
   margin-top: 5px;
   margin-bottom: 5px;
- border:solid 1px #707070;  
+  border:solid 1px #707070;  
 }
 
 .canvas-container {
