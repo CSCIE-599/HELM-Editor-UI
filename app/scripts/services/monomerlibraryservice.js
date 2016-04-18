@@ -36,7 +36,17 @@ angular.module('helmeditor2App.MonomerLibrary', ['cb.x2js'])
       }
     }).then(function (response) {
       encodedDB = response.data;
+      setupMonomerList();
     });
+
+    // store all of the monomers directly in an array
+    var fullMonomerList = [];
+    var setupMonomerList = function () {
+      var polymerArrays = encodedDB.MONOMER_DB.PolymerList.Polymer;
+      fullMonomerList = polymerArrays[0].Monomer
+        .concat(polymerArrays[1].Monomer)
+        .concat(polymerArrays[2].Monomer);
+    };
 
     // return the default encoded database
     var getEncodedDB = function () {
@@ -47,6 +57,49 @@ angular.module('helmeditor2App.MonomerLibrary', ['cb.x2js'])
     var getCategorizedDB = function () {
       return categorizedDB;
     };
+
+    // searches the encoded database and returns a monomer matching the polymer 
+    // type and monomer id
+    var getEncodedById = function (polymerId, monomerId) {
+      var output = '';
+      var polymerList = encodedDB.MONOMER_DB.PolymerList.Polymer;
+      for (var i=0; i < polymerList.length; i++) {
+        if (polymerList[i]._polymerType.toUpperCase().match(polymerId.toUpperCase())) {
+          var monomerList = polymerList[i].Monomer;
+          for(var j=0; j < monomerList.length; j++){
+            if(monomerList[j].MonomerID.toUpperCase().
+                match(monomerId.toUpperCase())){
+              output = monomerList[j];
+              break;
+            }
+          }
+          break;
+        }
+      }
+      return output;
+    };
+
+    // searches the encoded DB to match the given text on the monomer ID or monomer name
+    // returns all monomers that match
+    var searchEncodedDB = function (text, exact) {
+      var toSearch = text.toLowerCase();
+      console.log(toSearch);
+      return fullMonomerList.filter(function (el) {
+        if (exact) {
+          return ((el.MonomerID.toLowerCase() === toSearch) || 
+                  (el.MonomerName.toLowerCase() === toSearch));
+        }
+        else {
+          return ((el.MonomerID.toLowerCase().indexOf(toSearch) >= 0) || 
+                (el.MonomerName.toLowerCase().indexOf(toSearch) >= 0));
+        }
+      });
+    };
+
+    self.getEncodedById = getEncodedById;
+    self.getCategorizedDB = getCategorizedDB;
+    self.getEncodedDB = getEncodedDB;
+    self.searchEncodedDB = searchEncodedDB;
 
     // for each monomer in the parent group, it finds the corresponding monomer 
     // from the encoded database and adds the info there to the categorized 
@@ -87,27 +140,6 @@ angular.module('helmeditor2App.MonomerLibrary', ['cb.x2js'])
 //        }
 //      }
 //    }
-    // searches the encoded database and returns a monomer matching the polymer 
-    // type and monomer id
-    function getEncodedById(polymerId, monomerId) {
-      var output = '';
-      var polymerList = encodedDB.MONOMER_DB.PolymerList.Polymer;
-      for(var i=0; i < polymerList.length; i++){
-        if(polymerList[i]._polymerType.toUpperCase().
-            match(polymerId.toUpperCase())){
-          var monomerList = polymerList[i].Monomer;
-          for(var j=0; j < monomerList.length; j++){
-            if(monomerList[j].MonomerID.toUpperCase().
-                match(monomerId.toUpperCase())){
-              output = monomerList[j];
-              break;
-            }
-          }
-          break;
-        }
-      }
-      return output;
-    }
 /*
     // getPolymer, getMonomerGroup, and getMonomer all return
     // an object with a boolean returnSuccess property and optional
@@ -206,9 +238,6 @@ angular.module('helmeditor2App.MonomerLibrary', ['cb.x2js'])
 //      return encodedDB.MONOMER_DB;
 //    };
 */
-    self.getEncodedById = getEncodedById;
-    self.getCategorizedDB = getCategorizedDB;
-    self.getEncodedDB = getEncodedDB;
 //     self.getPolymers = getPolymers;
 //     self.getCategorizedMonomer = getCategorizedMonomer;
     self.sanityCheck = function () {
