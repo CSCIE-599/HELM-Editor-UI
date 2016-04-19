@@ -78,6 +78,7 @@ angular.module('helmeditor2App')
 			y: ypos,
 			rx:rx,
 			ry: ry,
+			lowery: ypos,
 			colour: nodeColor,
 			height:nodeHeight,
 			width:nodeWidth,
@@ -85,6 +86,7 @@ angular.module('helmeditor2App')
 			transformy:ypos+nodeWidth/2,
 			transformDegree:rotateDegree,
 			seqVisible:	'hidden',
+			nodeVisible: 'hidden',
 		};
 
 		//number nodes if Peptide, or if Nucleotide and a base node
@@ -92,6 +94,11 @@ angular.module('helmeditor2App')
             nodeNum++;
             newNode.num = nodeNum;
             newNode.seqVisible = 'visible';
+            newNode.nodeVisible = 'visible';
+        }
+        // adjust the positioning of base nodes in lower pane
+    	if ((nodeType === 'b')){
+        	newNode.lowery = newNode.lowery-150;
         }
         nodeId++;
 
@@ -328,6 +335,11 @@ angular.module('helmeditor2App')
 			return this.data.ry;
 		};
 
+		// Y coordinate of the lower node.
+		this.lowery = function () {
+			return this.data.lowery;
+		};
+
 		// Width of the node.
 		this.width = function () {
 			return this.data.width;
@@ -361,6 +373,11 @@ angular.module('helmeditor2App')
 		//visibility of the sequence#
 		this.seqVisible = function () {
 			return this.data.seqVisible;
+		};
+
+		//visibility of the node
+		this.nodeVisible = function () {
+			return this.data.nodeVisible;
 		};
 
 		this.position = function(){
