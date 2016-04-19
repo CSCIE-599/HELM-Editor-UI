@@ -22,11 +22,12 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 
 		/* Variables for loadsequence view */
 		main.polyTypes = [
-		{ value: 'PEPTIDE', label:'PEPTIDE' },
+		{ value: 'HELM', label:'HELM' },
 	    { value: 'RNA', label:'RNA/DNA' },
-	    { value: 'HELM', label:'HELM' },
+	    { value: 'PEPTIDE', label:'PEPTIDE' },
 		];
-		main.polymerType = main.polyTypes[0];
+
+		$scope.polymerType = main.polyTypes[0];
 		main.result = '';
 
 		/* Check if need to validate HELM input, or convert input to Helm */
@@ -49,8 +50,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 	/* Invoke factory function to get HELM notation */   
 	main.getHelmNotation = function (polymerType, inputSequence) {
 	    var successCallback = function (helmNotation) {
-	      main.result = helmNotation;
-	      $scope.resetCanvas();
+	      main.helm = helmNotation;
 	      $scope.displayOnCanvas(helmNotation);
 	    };
 	    var errorCallback = function(response) {
@@ -58,6 +58,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 	      console.log(response.data);
 	    };
 
+	    $scope.resetCanvas();
 	    switch(polymerType.value) {
 	      case 'PEPTIDE':
 	        webService.getHelmNotationPeptide(inputSequence).then(successCallback, errorCallback);
@@ -67,46 +68,126 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 	    }
 	};
 
-	  main.validateHelmNotation = function (inputSequence) {
-	    var successCallback = function (valid) {
-	      if (valid) {
-	      	main.result = inputSequence;
-	      	$scope.resetCanvas();
-	      	$scope.displayOnCanvas(inputSequence);	
-	      }
-	      else {
-	      	main.result = 'INVALID HELM SEQUENCE';
-	      }
+	/* Invoke factory function to validate the HELM notation */   
+	main.validateHelmNotation = function (inputSequence) {
+		var successCallback = function (valid) {
+		  if (valid) {
+		  	main.helm = inputSequence;
+		  	$scope.displayOnCanvas(inputSequence);	
+		  }
+		  else {
+		  	main.result = 'INVALID HELM SEQUENCE';
+		  }
+		};
+		var errorCallback = function (response) {
+		  main.result = response.data;
+		  console.log(response.data);
+		};
+
+		$scope.resetCanvas();
+	    webService.validateHelmNotation(inputSequence).then(successCallback, errorCallback);
+	};
+
+	/* Invoke factory function to get molecular weight */   
+	main.getMolecularWeight = function (inputSequence) {
+		var successCallback = function (result) {
+	      main.molecularweight = result;
 	    };
-	    var errorCallback = function (response) {
-	      main.result = response.data;
+	    var errorCallback = function(response) {
 	      console.log(response.data);
 	    };
-	    
-	    webService.validateHelmNotation(inputSequence).then(successCallback, errorCallback);
-	  };
+	    webService.getMolecularWeight(inputSequence).then(successCallback, errorCallback);
+	 };
+	 
+	 /* Invoke factory function to get milecular formula */   
+	main.getMolecularFormula = function (inputSequence) {
+		var successCallback = function (result) {
+	      main.molecularformula = result;
+	    };
+	    var errorCallback = function(response) {
+	      console.log(response.data);
+	    };
+	    webService.getMolecularFormula(inputSequence).then(successCallback, errorCallback);
+	 };
+	 
+	 /* Invoke factory function to get the extinction coefficient */   
+	main.getExtinctionCoefficient = function (inputSequence) {
+		var successCallback = function (result) {
+	      main.extcoefficient = result;
+	      console.log(result);
+	    };
+	    var errorCallback = function(response) {
+	      console.log(response.data);
+	    };
+	    webService.getExtinctionCoefficient(inputSequence).then(successCallback, errorCallback);
+	 };
 
+	/* clear the modal dialog text area*/
+	main.clear = function (){
+		//TO-DO - change this to angular selector
+		document.getElementById('input').value = '';		
+	};
 
-	  main.clear = function (){
-	  	//TO-DO - change this to angular selector
-	  	 	document.getElementById('input').value = '';	  	  	 	
-	  };
-	
+	/*
+	 * Begin code for lower pane
+	 */
+   	/* Variables for view types in lower pane */
+	main.viewTypes = [
+	    { value: 'HELM', label:'HELM' },
+	    { value: 'Sequence', label:'Sequence' },
+	    { value: 'Molecule Properties', label:'Molecule Properties' },
+	];
+	$scope.viewType = main.viewTypes[0];
+	$scope.helm = true;
+	$scope.sequence = false;
+	$scope.moleculeprops = false;	
+	main.result = '';
+	main.helm = '';
+	main.componenttype = '';
+	main.molecularweight = '';
+	main.molecularformula = '';
+	main.extcoefficient = '';
+	/* view type selection event handler */
+	$scope.updateLower = function(selectedView) {
+		$scope.viewType = selectedView;
+		switch(selectedView.value) {
+	      case 'HELM':
+	      	$scope.helm = true;
+			$scope.sequence = false;
+			$scope.moleculeprops = false;
+			break;
+	      case 'Molecule Properties':
+	        $scope.helm =false;
+	        $scope.sequence = false;
+			$scope.moleculeprops = true;
+			if(main.helm !== '' && main.molecularformula === '') {
+				main.getMolecularWeight(main.helm);
+				main.getMolecularFormula(main.helm);
+				main.getExtinctionCoefficient(main.helm);
+			}
+	        break;
+	      case 'Sequence':
+	      	$scope.helm = false;
+	      	$scope.moleculeprops = false;
+			$scope.sequence = true;			
+	        break;   
+	    }
+	};
 
-	  /*
-	   * Begin code for Canvas
-	   */
-	  //space between 2 adjacent horizontal nodes
-		var monomerSpacing = 50;
+	/*
+	* Begin code for Canvas
+	*/
+	//space between 2 adjacent horizontal nodes
+	var monomerSpacing = 50;
 
-		//length of a connection, between A and attacher node R
-		var connectionLength = 100;
+	//length of a connection, between A and attacher node R
+	var connectionLength = 100;
 
-		// Setup the data-model with nodes and connections
-		var helmDataModel = {
-			nodes: [],
-			connections: []
-		};
+	// Setup the data-model with nodes and connections
+	var helmDataModel = {
+		nodes: [],
+		connections: []
+	};
 
 	//function which takes in a HELM notation, converts to sequence and draws graphical image on the canvas
 	$scope.displayOnCanvas = function (notation) {
@@ -120,6 +201,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
       var graphedNodes = [];
       for (var i = 0; i < sequenceArray.length; i++){
         var seqType = $scope.getType(sequenceArray[i].name); //PEPTIDE, NUCLEOTIDE, or CHEM
+        main.seqtype = seqType;
         pos = CanvasDisplayService.getNewRowPos(pos, i);     //add a new row for a every iteration
 
         graphedNodes.push({
@@ -133,6 +215,8 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
       if (connectionArray.length > 0){
         $scope.makeRequestedConnections(connectionArray, graphedNodes);
       }
+
+      $scope.zoomCanvas(0.8);//zoomin the default view by 20%
     };
 
     //Parse the sequence, and generate the graph
@@ -327,7 +411,6 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
       }
     };
 
-
 	//makes a cyclic peptide, with two stems on the left and a circle on the right
     $scope.separateSequences = function (sequence, seqName, connectionArray) {
             
@@ -363,7 +446,6 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
     	}        
         return slicedSeqArr;               
     };
-
 
   	//makes a cyclic peptide after determining if there are any linear and cyclic combo
 	$scope.makeCyclicPeptide = function (sequence, dir, seqType, pos, seqName, connectionArray, sequenceArray) {
@@ -434,7 +516,6 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 		}
 		return new CanvasDisplayService.SubGraph(firstNode,currNode,allNodes);
 	};
-
 
     //Makes the connections requested in HELM Notation.
     //Each connectionArray element has the following items:
@@ -539,13 +620,27 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 		};
 		CanvasDisplayService.setNodeNum(0);
 		$scope.canvasView = new CanvasDisplayService.CanvasView(emptyData);
+		$scope.updateLower(main.viewTypes[0]);
+		main.result = '';
+		main.seqtype = '';
+		main.helm = '';
+		main.molecularweight = '';
+		main.molecularformula = '';
+		main.extcoefficient = '';
 	};
 
 	/* zoom functions */
-	$scope.zoomCanvas = function (scale, evt){
-		CanvasDisplayService.zoom(scale, evt);
-	};
+	$scope.zoomCanvas = function (scale, canvasId){
+		var svgDoc;
+		if(canvasId){//zooming the lower canvas, if true
+			svgDoc = document.getElementById(canvasId);
+		}
+		else {
+			svgDoc = document.getElementById('helmSvg');//main canvas
+		}
 
+		CanvasDisplayService.zoom(scale, svgDoc);
+	};
 	
 	// Create the view for the canvas and attach to the scope.
 	$scope.canvasView = new CanvasDisplayService.CanvasView(helmDataModel);
