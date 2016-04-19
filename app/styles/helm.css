@@ -30,6 +30,10 @@ Styles for nodes and connectors.
 	fill:none;
 }
 
+.boldText{
+	font-weight: bolder;
+}
+
 .mouseover-node-rect {
 	stroke: black;
 	stroke-width: 4;
