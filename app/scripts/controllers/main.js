@@ -141,19 +141,24 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 	$scope.helm = true;
 	$scope.sequence = false;
 	$scope.moleculeprops = false;	
-	main.result, main.helm, main.componenttype, 
-	main.molecularweight, main.molecularformula, main.extcoefficient = '';
-	
+	main.result = '';
+	main.helm = '';
+	main.componenttype = '';
+	main.molecularweight = '';
+	main.molecularformula = '';
+	main.extcoefficient = '';
 	/* view type selection event handler */
 	$scope.updateLower = function(selectedView) {
 		$scope.viewType = selectedView;
 		switch(selectedView.value) {
 	      case 'HELM':
 	      	$scope.helm = true;
-			$scope.sequence, $scope.moleculeprops = false;
+			$scope.sequence = false;
+			$scope.moleculeprops = false;
 			break;
 	      case 'Molecule Properties':
-	        $scope.helm, $scope.sequence = false;
+	        $scope.helm =false;
+	        $scope.sequence = false;
 			$scope.moleculeprops = true;
 			if(main.helm !== '' && main.molecularformula === '') {
 				main.getMolecularWeight(main.helm);
@@ -162,7 +167,8 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 			}
 	        break;
 	      case 'Sequence':
-	      	$scope.helm, $scope.moleculeprops = false;
+	      	$scope.helm = false;
+	      	$scope.moleculeprops = false;
 			$scope.sequence = true;			
 	        break;   
 	    }
@@ -629,7 +635,9 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 		if(canvasId){//zooming the lower canvas, if true
 			svgDoc = document.getElementById(canvasId);
 		}
-		else svgDoc = document.getElementById('helmSvg');//main canvas
+		else {
+			svgDoc = document.getElementById('helmSvg');//main canvas
+		}
 
 		CanvasDisplayService.zoom(scale, svgDoc);
 	};
