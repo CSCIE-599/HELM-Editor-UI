@@ -234,12 +234,12 @@ angular.module('helmeditor2App')
 	var transMatrix = [1,0,0,1,0,0];//identity matrix 
 	var mapMatrix, newMatrix, width, height;	
 
-	self.zoom = function (scale, evt){
-		
-		 var svgDoc = evt.target.parentNode;
-		 mapMatrix = svgDoc.getElementById('map-matrix');
+	self.zoom = function (scale, svgDoc){
+		//get canvas width and height
 		 width = svgDoc.clientWidth;
 		 height = svgDoc.clientHeight;
+
+		 mapMatrix = svgDoc.getElementById('map-matrix');
 
 		 for (var i=0; i<transMatrix.length; i++){
 		   transMatrix[i] *= scale;

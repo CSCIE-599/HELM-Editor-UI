@@ -22,11 +22,12 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 
 		/* Variables for loadsequence view */
 		main.polyTypes = [
-		{ value: 'PEPTIDE', label:'PEPTIDE' },
+		{ value: 'HELM', label:'HELM' },
 	    { value: 'RNA', label:'RNA/DNA' },
-	    { value: 'HELM', label:'HELM' },
+	    { value: 'PEPTIDE', label:'PEPTIDE' },
 		];
-		main.polymerType = main.polyTypes[0];
+
+		$scope.polymerType = main.polyTypes[0];
 		main.result = '';
 
 		/* Check if need to validate HELM input, or convert input to Helm */
@@ -121,9 +122,10 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 	    webService.getExtinctionCoefficient(inputSequence).then(successCallback, errorCallback);
 	 };
 
+	/* clear the modal dialog text area*/
 	main.clear = function (){
 		//TO-DO - change this to angular selector
-		document.getElementById('input').value = '';	  	  	 	
+		document.getElementById('input').value = '';		
 	};
 
 	/*
@@ -138,14 +140,13 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 	$scope.viewType = main.viewTypes[0];
 	$scope.helm = true;
 	$scope.sequence = false;
-	$scope.moleculeprops = false;
+	$scope.moleculeprops = false;	
 	main.result = '';
 	main.helm = '';
 	main.componenttype = '';
 	main.molecularweight = '';
 	main.molecularformula = '';
 	main.extcoefficient = '';
-
 	/* view type selection event handler */
 	$scope.updateLower = function(selectedView) {
 		$scope.viewType = selectedView;
@@ -154,10 +155,10 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 	      	$scope.helm = true;
 			$scope.sequence = false;
 			$scope.moleculeprops = false;
-	        break;
+			break;
 	      case 'Molecule Properties':
-	        $scope.helm = false;
-			$scope.sequence = false;
+	        $scope.helm =false;
+	        $scope.sequence = false;
 			$scope.moleculeprops = true;
 			if(main.helm !== '' && main.molecularformula === '') {
 				main.getMolecularWeight(main.helm);
@@ -167,8 +168,8 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 	        break;
 	      case 'Sequence':
 	      	$scope.helm = false;
-			$scope.sequence = true;
-			$scope.moleculeprops = false;
+	      	$scope.moleculeprops = false;
+			$scope.sequence = true;			
 	        break;   
 	    }
 	};
@@ -214,6 +215,8 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
       if (connectionArray.length > 0){
         $scope.makeRequestedConnections(connectionArray, graphedNodes);
       }
+
+      $scope.zoomCanvas(0.8);//zoomin the default view by 20%
     };
 
     //Parse the sequence, and generate the graph
@@ -627,8 +630,16 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 	};
 
 	/* zoom functions */
-	$scope.zoomCanvas = function (scale, evt){
-		CanvasDisplayService.zoom(scale, evt);
+	$scope.zoomCanvas = function (scale, canvasId){
+		var svgDoc;
+		if(canvasId){//zooming the lower canvas, if true
+			svgDoc = document.getElementById(canvasId);
+		}
+		else {
+			svgDoc = document.getElementById('helmSvg');//main canvas
+		}
+
+		CanvasDisplayService.zoom(scale, svgDoc);
 	};
 	
 	// Create the view for the canvas and attach to the scope.

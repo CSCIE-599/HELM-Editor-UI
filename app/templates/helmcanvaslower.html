@@ -1,20 +1,20 @@
-<svg class="draggable-container"
-  xmlns="http://www.w3.org/2000/svg">
+<svg xmlns="http://www.w3.org/2000/svg" id="helmSvgLower">
    <!-- Zoom buttons -->
-  <circle class="zoombtn"  cx="40" cy="31" r="8" ng-click="zoomCanvas(0.8, $event)"/>
-  <circle class="zoombtn"  cx="40" cy="49" r="8" ng-click="zoomCanvas(1.25, $event)"/>
+  <circle class="zoombtn"  cx="40" cy="31" r="8" ng-click="zoomCanvas(0.8, 'helmSvgLower')"/>
+  <circle class="zoombtn"  cx="40" cy="49" r="8" ng-click="zoomCanvas(1.20, 'helmSvgLower')"/>
   <text class="plus-minus" x="36" y="28"> _  </text> 
   <text class="plus-minus" x="36" y="53"> +  </text>  
 
   <g id="map-matrix" transform="matrix(1 0 0 1 0 0)">
     <!-- loop thru all the nodes in the graph -->
     <g ng-repeat="node in graph.nodes">
-      <text
+      <text 
         ng-attr-x="{{(node.width()/2)+node.x()}}"
         ng-attr-y="{{(node.height()/2)+node.lowery()}}"
         text-anchor="middle"
         alignment-baseline="middle"
-        ng-attr-visibility="{{node.nodeVisible()}}">
+        ng-attr-visibility="{{node.nodeVisible()}}"
+        ng-attr-class="{{'boldText'}}">
         {{node.name()}}
       </text>
       <text
