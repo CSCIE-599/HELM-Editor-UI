@@ -36,7 +36,8 @@
         ng-attr-x="{{(node.width()/2)+node.x()}}"
         ng-attr-y="{{(node.height()/2)+node.y()}}"
         text-anchor="middle"
-        alignment-baseline="middle">
+        alignment-baseline="middle"
+        ng-attr-fill = "{{node.textColor()}}">
         {{node.name()}}
       </text>
 
