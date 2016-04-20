@@ -17,6 +17,10 @@ angular.module('helmeditor2App')
     self.search.monomer = '';
     self.results = [];
 
+    // the array of the polymer types in the database
+    self.polymerTypes = MonomerLibraryService.polymerTypes;
+    self.activeType = 'RNA';
+
     // log function to help log the database out
     var logDB = function () {
       console.log(MonomerLibraryService.getEncodedDB());
@@ -55,7 +59,7 @@ angular.module('helmeditor2App')
     // // list for the monomer groups
     // var getPolymerSelection = function(polymerId){
     //   var list = 'Select a ' + polymerId + ':\n' +
-    //              '<select ng-model="polymerSelection">\n';
+    //              '<select needg-model="polymerSelection">\n';
 
     //   var getter = MonomerLibraryService.getPolymer(polymerId);
     //   if(!getter.returnSuccess){

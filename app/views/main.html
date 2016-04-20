@@ -14,7 +14,15 @@
     </div>
     <div class='row full-height'>
       <div class='col-md-3 library-column' ng-controller='LibraryCtrl as library'>
-        <p>Monomer Library</p>
+        <div class="btn-group btn-group-sm full-width" role="group" aria-label="Basic example">
+          <button 
+            ng-repeat="polymerType in library.polymerTypes" 
+            class="btn btn-secondary btn-selector"
+            ng-class="{activetype: library.activeType === polymerType}"
+            ng-click="library.activeType = polymerType">
+            {{ polymerType }}
+          </button>
+        </div>
 
         <form>
           Polymer:   <input type="text" ng-model="library.search.polymer"><br>

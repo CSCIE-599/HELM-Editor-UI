@@ -245,3 +245,17 @@ svg {
   display:table;
   width:100%;
 }
+
+.full-width {
+  width: 100%;
+}
+
+.btn-selector {
+  width: 33.33%;
+  background-color: white;
+  border: solid 1px #707070;
+}
+
+.activetype {
+  background-color: #bbbbbb;
+}

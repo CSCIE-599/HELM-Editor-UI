@@ -190,7 +190,7 @@ describe('Service: MonomerLibraryService', function () {
     expect(MonomerLibraryService.polymerTypes).toContain('RNA');
     expect(MonomerLibraryService.polymerTypes).toContain('PEPTIDE');
     expect(MonomerLibraryService.polymerTypes).toContain('CHEM');
-  })
+  });
 
   // functions to return our test databases (these are currently the full databases)
   var getDefaultCategorizationXML = function () {

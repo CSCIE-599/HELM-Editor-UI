@@ -77,8 +77,8 @@ angular.module('helmeditor2App.MonomerLibrary', ['cb.x2js'])
       }
 
       // create the list of polymer types
-      for (var i = 0; i < categorizedDB.Template.Polymer.length; i++) {
-        self.polymerTypes.push(categorizedDB.Template.Polymer[i]._name);
+      for (var l = 0; l < categorizedDB.Template.Polymer.length; l++) {
+        self.polymerTypes.push(categorizedDB.Template.Polymer[l]._name);
       }
 
       // signal complete
@@ -189,11 +189,6 @@ angular.module('helmeditor2App.MonomerLibrary', ['cb.x2js'])
       return categorizedDB;
     };
 
-    // return the list of options for the types
-    var getTypes = function () {
-      return categorizedDB.Template
-    }
-
     // searches the encoded database and returns a monomer matching the polymer 
     // type and monomer id
     var getEncodedById = function (polymerId, monomerId) {
@@ -236,51 +231,50 @@ angular.module('helmeditor2App.MonomerLibrary', ['cb.x2js'])
     self.getCategorizedDB = getCategorizedDB;
     self.getEncodedDB = getEncodedDB;
 
-    // getPolymer, getMonomerGroup, and getMonomer all return
-    // an object with a boolean returnSuccess property and optional
-    // result property representing a type from the categorized database
-    function getPolymer(id) {
-      var list = categorizedDB.Template.Polymer;
-      var output; 
-      for(var i = 0; i < list.length; i++){
-        if(list[i]._name.match(id)){
-          output = { returnSuccess: true, result: list[i] };
-          return output;
-        }
-      }
-      output = { returnSuccess: false };
-      return output;
-    }
-    // The monomer group must handle the case where a monomer group exists 
-    // within another monomer group. In order to do so, the group info is 
-    // pulled from the form such that sub-groups are appeneded to the group
-    // as comma separated values of the form <group>,<sub-group>
-    function getMonomerGroup(polymerId, id) {
-      var pGetter = getPolymer(polymerId);
-      var idList = id.split(',');
-      var parent, i=0;
-      var output = { returnSuccess: false };
-      if(!pGetter.returnSuccess){
-        return output;
-      }
-      parent = pGetter.result();
-      while (i < idList.length) {
-        output.returnSuccess = false;
-        for (var group in parent.MonomerGroup) {
-          if (group._name.match(idList[i])) {
-            i++;
-            output = { returnSuccess: true, result: group };
-            break;
-          }
-        }
-        if (!output.returnSuccess()) { return output; }
-        if ( i < idList.length) { parent = output.result; }
-      }
-      return output;
-    }
+    // // getPolymer, getMonomerGroup, and getMonomer all return
+    // // an object with a boolean returnSuccess property and optional
+    // // result property representing a type from the categorized database
+    // function getPolymer(id) {
+    //   var list = categorizedDB.Template.Polymer;
+    //   var output; 
+    //   for(var i = 0; i < list.length; i++){
+    //     if(list[i]._name.match(id)){
+    //       output = { returnSuccess: true, result: list[i] };
+    //       return output;
+    //     }
+    //   }
+    //   output = { returnSuccess: false };
+    //   return output;
+    // }
+    // // The monomer group must handle the case where a monomer group exists 
+    // // within another monomer group. In order to do so, the group info is 
+    // // pulled from the form such that sub-groups are appeneded to the group
+    // // as comma separated values of the form <group>,<sub-group>
+    // function getMonomerGroup(polymerId, id) {
+    //   var pGetter = getPolymer(polymerId);
+    //   var idList = id.split(',');
+    //   var parent, i=0;
+    //   var output = { returnSuccess: false };
+    //   if(!pGetter.returnSuccess){
+    //     return output;
+    //   }
+    //   parent = pGetter.result();
+    //   while (i < idList.length) {
+    //     output.returnSuccess = false;
+    //     for (var group in parent.MonomerGroup) {
+    //       if (group._name.match(idList[i])) {
+    //         i++;
+    //         output = { returnSuccess: true, result: group };
+    //         break;
+    //       }
+    //     }
+    //     if (!output.returnSuccess()) { return output; }
+    //     if ( i < idList.length) { parent = output.result; }
+    //   }
+    //   return output;
+    // }
 
     self.sanityCheck = function () {
       return '5';
     };
-
   }]);
