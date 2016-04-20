@@ -38,16 +38,7 @@ angular.module('helmeditor2App')
       return ('name: ' + result.MonomerID + ' smiles: ' + result.MonomerSmiles);
     };
 
-    // log function to help log the database out
-    var logDB = function () {
-      console.log(MonomerLibraryService.getEncodedDB());
-      console.log(MonomerLibraryService.getCategorizedDB());
-      console.log(MonomerLibraryService.searchEncodedDB('dR', true));
-      console.log(MonomerLibraryService.searchEncodedDB('dR', false));
-    };
-
-    // expose the methods we want to
-    self.logDB = logDB;
+    // expose the methods we want to 
     self.getSearchBoxResult = getSearchBoxResult;
 
     // // used by the list getters
