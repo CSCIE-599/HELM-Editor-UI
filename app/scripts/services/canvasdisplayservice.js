@@ -230,7 +230,7 @@ angular.module('helmeditor2App')
 				nodexpos = Math.sin(-i * Math.PI / 180) * r + xc; //making 'i' negative creates clockwise placement
 				nodeypos = Math.cos(-i * Math.PI / 180) * r + yc;
 
-				var node = self.createNode(value, seqType, 'lightblue', true, nodexpos, nodeypos);
+				var node = self.createNode(value, seqType, '#00C3FF', true, nodexpos, nodeypos);
 
 				cycleNodesArray.push(node);
 				i = i + degree;
