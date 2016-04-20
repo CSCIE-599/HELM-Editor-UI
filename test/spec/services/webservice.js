@@ -45,7 +45,7 @@ describe('Service: helmeditor2App.webService', function () {
 
   it('should return the Helm Image URL', function () {
     result = webService.getHelmImageUrl(helmSequence);
-    expect(result).toBe(baseUrl + 'Image/HELM/' + helmSequence);
+    expect(result).toBe(baseUrl + 'Image/HELM/' + encodeURIComponent(helmSequence));
   });
 
   it('should return a HELM string for getHelmNotationRna for a valid sequence', function() {
@@ -98,7 +98,7 @@ describe('Service: helmeditor2App.webService', function () {
  
   it('should return a valid molecular formula for getMolecularFormula for a valid HELM string', function() {
     $httpBackend.expect('GET', baseUrl + 'Calculation/MolecularFormula/' + inputSequence)
-      .respond({MolecularFormula: 'C10H13N5O4'});
+      .respond({MoleculcarFormula: 'C10H13N5O4'});
     webService.getMolecularFormula(inputSequence).then(function(response) {
       expect(response).toBe('C10H13N5O4');
     });
@@ -152,7 +152,7 @@ describe('Service: helmeditor2App.webService', function () {
 
   it('should return a FASTA string for getFastaConvertRna for a valid HELM input', function() {
     helmSequence = 'RNA1{R(A)}$$$$V2.0';
-    $httpBackend.expect('GET', baseUrl + 'Fasta/Convert/RNA/' + helmSequence)
+    $httpBackend.expect('GET', baseUrl + 'Fasta/Convert/RNA/' + encodeURIComponent(helmSequence))
       .respond({Sequence: 'A'});
     webService.getFastaConvertRna(helmSequence).then(function(response) {
       expect(response).toBe('A');
@@ -162,7 +162,7 @@ describe('Service: helmeditor2App.webService', function () {
 
   it('should return a FASTA sequence for getFastaConvertPeptide for a valid HELM input', function() {
     helmSequence = 'PEPTIDE1{A}$$$$V2.0';
-    $httpBackend.expect('GET', baseUrl + 'Fasta/Convert/PEPTIDE/' + helmSequence)
+    $httpBackend.expect('GET', baseUrl + 'Fasta/Convert/PEPTIDE/' + encodeURIComponent(helmSequence))
       .respond({Sequence: 'A'});
     webService.getFastaConvertPeptide(helmSequence).then(function(response) {
       expect(response).toBe('A');

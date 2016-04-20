@@ -77,9 +77,18 @@ body {
   padding-left: 0;
   padding-right: 0;
 }
+
 /* Space out the masthead */
 .header {
   margin-bottom: 49px;
+ }
+
+
+/* Space out the masthead */
+.modalHeader {
+  margin-bottom: 30px;
+  font-weight: bold;
+  font-size: 1.25em;
 }
 /* Remove the bottom border on the jumbotron for visual effect */
 .jumbotron {
@@ -92,12 +101,10 @@ body {
 
 .stdNucleotideBtnC {
   color : red;
-
 }
 
 .stdNucleotideBtnG {
   color : orange;
-
 }
 
 .stdNucleotideBtnU, .stdNucleotideBtnT {
@@ -189,7 +196,7 @@ body {
 .library-column {
   background-color: #fef;
   height: 100%;
-  border-right: 2px solid #333;
+  border-right: 2px solid #225EA8;
 }
 
 .canvas-column {
@@ -200,6 +207,12 @@ body {
 input {
   margin-top: 5px;
   margin-bottom: 5px;
+}
+
+#input {
+  margin-top: 5px;
+  margin-bottom: 5px;
+  border:solid 1px #707070;  
 }
 
 .canvas-container {
@@ -213,11 +226,22 @@ svg {
   height: 100%;
 }
 
-.canvas-row {
-  /*height: 50%;*/
-  height: 100%;
+.canvas-row-top {
+  height: 65%;
+  border-bottom: 2px solid #225EA8;
 }
 
-.canvas-row-top {
-  border-bottom: 2px solid #333;
+.canvas-row-bottom {
+  max-height: 35%;
+  resize: vertical;
+  overflow-y: auto;
+}
+
+.message-span {
+  padding-left: 45px;
+}
+
+.molecule-table {
+  display:table;
+  width:100%;
 }

@@ -30,6 +30,10 @@ Styles for nodes and connectors.
 	fill:none;
 }
 
+.boldText{
+	font-weight: bolder;
+}
+
 .mouseover-node-rect {
 	stroke: black;
 	stroke-width: 4;
@@ -138,6 +142,19 @@ Drag selection rectangle.
 }
 
 
-rect {
-	z-index: -1;
+/*zoom button styles*/
+.zoombtn{
+	fill:  #225EA8;
+	stroke:  #0C2C84;	
 }
+
+.zoombtn:hover{
+	stroke-width:  2;
+}  
+
+.plus-minus{
+	fill:  #fff;
+	pointer-events: none;
+	font-weight: bold;
+}
+

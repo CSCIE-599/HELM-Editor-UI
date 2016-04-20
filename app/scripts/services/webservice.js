@@ -56,7 +56,7 @@ angular.module('helmeditor2App.webService', [])
         return wsConfig.baseUrl;
       }, 
       getFullUrl: function (api, inputSequence) {
-        return wsConfig.baseUrl + api + inputSequence;
+        return wsConfig.baseUrl + api + encodeURIComponent(inputSequence);
       }, 
       getMonomerImageUrl: function (monomerId, polymerType, showRgroups) {
         var fullUrl = wsConfig.baseUrl + wsConfig.getMonomerImagePath + 
@@ -84,26 +84,26 @@ angular.module('helmeditor2App.webService', [])
       // returns a promise that resolves with a boolean true or false
       // true -> valid
       validateHelmNotation: function (inputSequence) {
-        return getHttpUrl(this.getFullUrl(wsConfig.validateHelmNotationPath, encodeURIComponent(inputSequence))).then(function(response) {
+        return getHttpUrl(this.getFullUrl(wsConfig.validateHelmNotationPath, inputSequence)).then(function(response) {
           return (response.data.Validation === 'valid');
         });
       },
       // returns a promise that resolves with the molecular weight if valid, or null if unknown response
       getMolecularWeight: function (inputSequence) {
         return getHttpUrl(this.getFullUrl(wsConfig.getMolecularWeightPath, inputSequence)).then(function(response) {
-          return response.data.MolecularWeight ? response.data.MolecularWeight : null;
+          return response.data.MolecularWeight ? response.data.MolecularWeight : 0;
         });
       },
       // returns a promise that resolves with the molecular formula if valid, or null if unknown response
       getMolecularFormula: function (inputSequence) {
         return getHttpUrl(this.getFullUrl(wsConfig.getMolecularFormulaPath, inputSequence)).then(function(response) {
-          return response.data.MolecularFormula ? response.data.MolecularFormula : null;
+          return response.data.MoleculcarFormula ? response.data.MoleculcarFormula : null;
         });
       },
       // returns a promise that resolves with the extinction coefficient if valid, or null if unknown response
       getExtinctionCoefficient: function (inputSequence) {
         return getHttpUrl(this.getFullUrl(wsConfig.getExtinctionCoefficientPath, inputSequence)).then(function(response) {
-          return response.data.ExtinctionCoefficient ? response.data.ExtinctionCoefficient : null;
+          return response.data.ExtinctionCoefficient ? response.data.ExtinctionCoefficient : 0;
         });
       },
       // returns a promise that resolves with the canonical HELM notation if valid, or null if unknown response
