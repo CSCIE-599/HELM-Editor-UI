@@ -13,7 +13,6 @@ angular.module('helmeditor2App')
     var self = this;
     // our search boxes
     self.search = {};
-    self.search.polymer = '';
     self.search.monomer = '';
     self.results = [];
 

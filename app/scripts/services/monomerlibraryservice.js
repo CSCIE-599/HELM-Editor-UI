@@ -210,23 +210,6 @@ angular.module('helmeditor2App.MonomerLibrary', ['cb.x2js'])
       return output;
     };
 
-    // searches the encoded DB to match the given text on the monomer ID or monomer name
-    // returns all monomers that match
-    // var searchEncodedDB = function (text, exact) {
-    //   var toSearch = text.toLowerCase();
-    //   console.log(toSearch);
-    //   return fullMonomerList.filter(function (el) {
-    //     if (exact) {
-    //       return ((el.MonomerID.toLowerCase() === toSearch) || 
-    //               (el.MonomerName.toLowerCase() === toSearch));
-    //     }
-    //     else {
-    //       return ((el.MonomerID.toLowerCase().indexOf(toSearch) >= 0) || 
-    //             (el.MonomerName.toLowerCase().indexOf(toSearch) >= 0));
-    //     }
-    //   });
-    // };
-
     self.getEncodedById = getEncodedById;
     self.getCategorizedDB = getCategorizedDB;
     self.getEncodedDB = getEncodedDB;

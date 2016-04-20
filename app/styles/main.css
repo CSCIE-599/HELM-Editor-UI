@@ -259,3 +259,11 @@ svg {
 .activetype {
   background-color: #bbbbbb;
 }
+
+.search-label {
+  width: 38%;
+}
+
+.search-input {
+  width: 60%;
+}
