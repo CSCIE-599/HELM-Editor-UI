@@ -48,17 +48,13 @@ describe('Service: CanvasDisplayService', function () {
   });
   
   it('should identify a node as Ribose node', function () {
-    var isPhosphate = CanvasDisplayService.isRiboseNode('RGNA') 
-      && CanvasDisplayService.isRiboseNode('R') 
-      && CanvasDisplayService.isRiboseNode('aR');
-      expect(isPhosphate).toBe(true);
+    var isRibose= CanvasDisplayService.isRiboseNode('RGNA') && CanvasDisplayService.isRiboseNode('R') && CanvasDisplayService.isRiboseNode('aR');
+      expect(isRibose).toBe(true);
   });
   
   it('should identify a node as Phosphate node', function () {
-     var isRibose = CanvasDisplayService.isPhosphateNode('P') 
-      && CanvasDisplayService.isPhosphateNode('sP') 
-      && CanvasDisplayService.isPhosphateNode('naP')
-      && CanvasDisplayService.isPhosphateNode('nasP');   
+     var isPhosphate = CanvasDisplayService.isPhosphateNode('P') && CanvasDisplayService.isPhosphateNode('sP') && CanvasDisplayService.isPhosphateNode('naP') && CanvasDisplayService.isPhosphateNode('nasP');   
+      expect(isPhosphate).toBe(true);
   });
   
   it('should get the right color for a given node', function () {
