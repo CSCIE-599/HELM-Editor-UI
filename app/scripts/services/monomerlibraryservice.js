@@ -12,21 +12,11 @@ angular.module('helmeditor2App.MonomerLibrary', ['cb.x2js'])
     // AngularJS will instantiate a singleton by calling 'new' on this function
     
     var self = this;
-    // var init = false;
+    self.initComplete = false;
 
     // Hierarchy of monomer types, retrievable through the monomer library. See
     // milestone 1 documentation for reference
     var categorizedDB;
-    $http.get('DefaultMonomerCategorizationTemplate.xml', {
-      transformResponse: function (info) {
-        // jscs:disable requireCamelCaseOrUpperCaseIdentifiers
-        return (x2js.xml_str2json(info));
-        // jscs:enable requireCamelCaseOrUpperCaseIdentifiers
-      }
-    }).then(function (response) {
-      categorizedDB = response.data;
-    });
-
     var encodedDB;
     $http.get('MonomerDBGZEncoded.xml', {
       transformResponse: function (info) {
@@ -36,16 +26,150 @@ angular.module('helmeditor2App.MonomerLibrary', ['cb.x2js'])
       }
     }).then(function (response) {
       encodedDB = response.data;
-      setupMonomerList();
+      // now get the categorization
+      $http.get('DefaultMonomerCategorizationTemplate.xml', {
+        transformResponse: function (info) {
+          // jscs:disable requireCamelCaseOrUpperCaseIdentifiers
+          return (x2js.xml_str2json(info));
+          // jscs:enable requireCamelCaseOrUpperCaseIdentifiers
+        }
+      }).then(function (response) {
+        categorizedDB = response.data;
+
+        // now link the two
+        linkDatabases();
+      });
     });
 
-    // store all of the monomers directly in an array
-    var fullMonomerList = [];
-    var setupMonomerList = function () {
-      var polymerArrays = encodedDB.MONOMER_DB.PolymerList.Polymer;
-      fullMonomerList = polymerArrays[0].Monomer
-        .concat(polymerArrays[1].Monomer)
-        .concat(polymerArrays[2].Monomer);
+    // links the two databases together, adding categorization detail to encoded database
+    // private helper function
+    var linkDatabases = function () {
+      // first go through and create the 'Other' listing in each type
+      createOtherCategories();
+
+      // now we need to go through the encoded database and add the data to the right place
+      var encodedTypes = encodedDB.MONOMER_DB.PolymerList.Polymer;
+      for (var i = 0; i < encodedTypes.length; i++) {
+        var polymerType = encodedTypes[i];
+        // remember the type to be used later
+        var type = polymerType._polymerType;
+        var categorizedPolymerGroup;
+        for (var j = 0; j < categorizedDB.Template.Polymer.length; j++) {
+          var categorizedPolymer = categorizedDB.Template.Polymer[j];
+          if (categorizedPolymer._name.match(type)) {
+            categorizedPolymerGroup = categorizedPolymer;
+            break;
+          }
+        }
+
+        // now go through all of the monomers in the encoded database and try to add them
+        // to the categorized database
+        var monomers = polymerType.Monomer;
+        for (var k = 0; k < monomers.length; k++) {
+          var monomer = monomers[k];
+          // if it wasn't added, we know we need to add it to the "other" group
+          if (!addMonomerToGroup(monomer, categorizedPolymerGroup)) {
+            addMonomerToOther(monomer, categorizedPolymerGroup);
+          }
+        }
+      }
+
+      // signal complete
+      self.initComplete = true;
+    };
+
+    // goes through the categorized database and adds the 'Other' category
+    // private helper function
+    var createOtherCategories = function () {
+      // start at the top, and go through each category (RNA, PEPTIDE, CHEM)
+      var categorizedPolymers = categorizedDB.Template.Polymer;
+      for (var i = 0; i < categorizedPolymers.length; i++) {
+        var polymerList = categorizedPolymers[i];
+
+        // prepare the categorized list to have an "Other" in the lowest level of MonomerGroup
+        var current = polymerList.MonomerGroup;
+        while (!(current instanceof Array)) {
+          current = current.MonomerGroup;
+        }
+        // add it
+        current.push({
+          Monomer: [],
+          _name: 'Other',
+          _shape: 'Rectangle'
+        });
+      }
+    };
+
+    // adds the given monomer to the correct location in the given group
+    // private helper function
+    var addMonomerToGroup = function (monomer, group) {
+      // search for the ID in the given group
+      return recursiveSearchAndAdd(monomer, group);
+    };
+
+    // recursively searches down properties and indices to find the bottom 
+    // (an array of Monomer or Fragment objects)
+    // returns true if the element was added
+    var recursiveSearchAndAdd = function (monomer, group) {
+      // base case - array of Monomers or Fragment objects
+      if (group.Monomer instanceof Array || group.Fragment instanceof Array) {
+        var list = group.Monomer || group.Fragment;
+        // go through all elements in the array and see if the ID matches
+        for (var i = 0; i < list.length; i++) {
+          // console.log(monomer.MonomerID);
+          // it was found, so add the details and return true
+          if (list[i]._name.match(monomer.MonomerID)) {
+            list[i].encodedMonomer = monomer;
+            return true;
+          }
+          // otherwise just go on to the next
+        }
+      }
+      // also need to handle the case where there's a single element, not an array
+      if ((group.Monomer && group.Monomer._name) || (group.Fragment && group.Fragment._name)) {
+        var el = group.Monomer || group.Fragment;
+        if (el._name.match(monomer.MonomerID)) {
+          el.encodedMonomer = monomer;
+          return true;
+        }
+      }
+      // if we have more groups underneath, we need to go deeper
+      else if (group instanceof Array || group.FragmentGroup || group.MonomerGroup) {
+        for (var key in group) {
+          // jump out if it was added somehow
+          if (recursiveSearchAndAdd(monomer, group[key])) {
+            return true;
+          }
+          // otherwise keep going
+        }
+
+        // if we got here, we never found it, so return false;
+        return false;
+      }
+
+      // also here we failed, too, finally
+      return false;
+    };
+
+    // adds the monomer to the "Other" group within the larger group provided
+    // private helper function 
+    var addMonomerToOther = function (monomer, group) {
+      var current = group.MonomerGroup;
+      while (!(current instanceof Array)) {
+        current = current.MonomerGroup;
+      }
+
+      // the other should be the last one in the group, but search just to be safe
+      for (var i = 0; i < current.length; i++) {
+        if (current[i]._name.match('Other')) {
+          current[i].Monomer.push({
+            _backgroundColor: 'White',
+            _fontColor: 'Black',
+            _name: monomer.MonomerID,
+            encodedMonomer: monomer
+          });
+        }
+      }
     };
 
     // return the default encoded database
@@ -81,25 +205,25 @@ angular.module('helmeditor2App.MonomerLibrary', ['cb.x2js'])
 
     // searches the encoded DB to match the given text on the monomer ID or monomer name
     // returns all monomers that match
-    var searchEncodedDB = function (text, exact) {
-      var toSearch = text.toLowerCase();
-      console.log(toSearch);
-      return fullMonomerList.filter(function (el) {
-        if (exact) {
-          return ((el.MonomerID.toLowerCase() === toSearch) || 
-                  (el.MonomerName.toLowerCase() === toSearch));
-        }
-        else {
-          return ((el.MonomerID.toLowerCase().indexOf(toSearch) >= 0) || 
-                (el.MonomerName.toLowerCase().indexOf(toSearch) >= 0));
-        }
-      });
-    };
+    // var searchEncodedDB = function (text, exact) {
+    //   var toSearch = text.toLowerCase();
+    //   console.log(toSearch);
+    //   return fullMonomerList.filter(function (el) {
+    //     if (exact) {
+    //       return ((el.MonomerID.toLowerCase() === toSearch) || 
+    //               (el.MonomerName.toLowerCase() === toSearch));
+    //     }
+    //     else {
+    //       return ((el.MonomerID.toLowerCase().indexOf(toSearch) >= 0) || 
+    //             (el.MonomerName.toLowerCase().indexOf(toSearch) >= 0));
+    //     }
+    //   });
+    // };
 
     self.getEncodedById = getEncodedById;
     self.getCategorizedDB = getCategorizedDB;
     self.getEncodedDB = getEncodedDB;
-    self.searchEncodedDB = searchEncodedDB;
+    // self.searchEncodedDB = searchEncodedDB;
 
     // for each monomer in the parent group, it finds the corresponding monomer 
     // from the encoded database and adds the info there to the categorized 

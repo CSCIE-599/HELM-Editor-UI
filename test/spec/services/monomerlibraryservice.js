@@ -10,12 +10,12 @@ describe('Service: MonomerLibraryService', function () {
   beforeEach(inject(function (_MonomerLibraryService_, _$httpBackend_) {
     MonomerLibraryService = _MonomerLibraryService_;
     $httpBackend = _$httpBackend_;
-    // mock the categorization of monomers
-    $httpBackend.expect('GET', 'DefaultMonomerCategorizationTemplate.xml')
-      .respond(200, getDefaultCategorizationXML());
-    // and mock the actual databse
+    // mock the database of monomers
     $httpBackend.expect('GET', 'MonomerDBGZEncoded.xml')
       .respond(200, getDatabaseXML());
+    // and mock the categorization databse
+    $httpBackend.expect('GET', 'DefaultMonomerCategorizationTemplate.xml')
+      .respond(200, getDefaultCategorizationXML());
     $httpBackend.flush();
   }));
 
@@ -55,7 +55,7 @@ describe('Service: MonomerLibraryService', function () {
     var rnaFragmentGroups = rnaList.FragmentGroup;
     var rnaMonomerGroups = rnaList.MonomerGroup;
     expect(rnaFragmentGroups.length).toBe(2);
-    expect(rnaMonomerGroups.length).toBe(3);
+    expect(rnaMonomerGroups.length).toBe(4); // including 'Other' that was added
     expect(rnaFragmentGroups[0]._name).toBe('Standard Nucleotide');
     expect(rnaFragmentGroups[0].Fragment.length).toBe(5);
     expect(rnaFragmentGroups[0].Fragment[0]._name).toBe('A');
@@ -84,7 +84,7 @@ describe('Service: MonomerLibraryService', function () {
     var chemFragmentGroups = chemList.FragmentGroup;
     var chemMonomerGroups = chemList.MonomerGroup;
     expect(chemFragmentGroups).not.toBeDefined();
-    expect(chemMonomerGroups.length).toBe(4);
+    expect(chemMonomerGroups.length).toBe(5); // inluding 'Other' that was added
     expect(chemMonomerGroups[0]._name).toBe('Reactive');
     expect(chemMonomerGroups[0].Monomer.length).toBe(3);
     expect(chemMonomerGroups[0].Monomer[0]._name).toBe('Az');
@@ -119,6 +119,70 @@ describe('Service: MonomerLibraryService', function () {
     expect(rnaList.Monomer.length).toBe(63);
     var peptideList = polymers.Polymer[2];
     expect(peptideList.Monomer.length).toBe(119);
+  });
+
+  it('should link the two databases, added encodedMonomer to each monomer', function () {
+    var categorizedDB = MonomerLibraryService.getCategorizedDB();
+
+    var polymers = categorizedDB.Template.Polymer;
+    expect(polymers.length).toBe(3);
+
+    // check an RNA Fragment
+    var fragment = polymers[0].FragmentGroup[0].Fragment[1];
+    expect(fragment._name).toBe('C');
+    expect(fragment.encodedMonomer).toBeDefined();
+    expect(fragment.encodedMonomer.MonomerID).toBe('C');
+
+    // check a deeper RNA Fragment
+    fragment = polymers[0].FragmentGroup[1].FragmentGroup[0].Fragment[2];
+    expect(fragment._name).toBe('dC');
+    expect(fragment.encodedMonomer).toBeUndefined(); // these actually don't exist in the encoded database
+
+    // check an RNA Monomer
+    var monomer = polymers[0].MonomerGroup[0].MonomerGroup[1].Monomer[1];
+    expect(monomer.encodedMonomer).toBeDefined();
+    expect(monomer._name).toBe(monomer.encodedMonomer.MonomerID);
+
+    // check a PEPTIDE Monomer
+    monomer = polymers[1].MonomerGroup[0].MonomerGroup[0].Monomer[1];
+    expect(monomer.encodedMonomer).toBeDefined();
+    expect(monomer._name).toBe(monomer.encodedMonomer.MonomerID);
+
+    // check a CHEM Monomer
+    monomer = polymers[2].MonomerGroup[0].Monomer[1];
+    expect(monomer.encodedMonomer).toBeDefined();
+    expect(monomer._name).toBe(monomer.encodedMonomer.MonomerID);
+  });
+
+  it('should not add elements to monomer groups that have no elements', function () {
+    var categorizedDB = MonomerLibraryService.getCategorizedDB();
+    var group = categorizedDB.Template.Polymer[0].MonomerGroup[1].MonomerGroup[3];
+    expect(group.Monomer).toBeUndefined();
+  });
+
+  it('should work correctly on monomer groups that have one element', function () {
+    var categorizedDB = MonomerLibraryService.getCategorizedDB();
+    var group = categorizedDB.Template.Polymer[2].MonomerGroup[3];
+    expect(group.Monomer).toBeDefined();
+    expect(group.Monomer._name).toBe(group.Monomer.encodedMonomer.MonomerID);
+  });
+
+  it('should add unknown elements to "Other"', function () {
+    var categorizedDB = MonomerLibraryService.getCategorizedDB();
+    // RNA - 4 elements
+    var group = categorizedDB.Template.Polymer[0].MonomerGroup[3];
+    expect(group._name).toBe('Other');
+    expect(group.Monomer.length).toBe(4);
+
+    // PEPTIDE - 0 elements
+    group = categorizedDB.Template.Polymer[1].MonomerGroup[7];
+    expect(group._name).toBe('Other');
+    expect(group.Monomer.length).toBe(0);
+
+    // CHEM - 1 elements
+    group = categorizedDB.Template.Polymer[2].MonomerGroup[4];
+    expect(group._name).toBe('Other');
+    expect(group.Monomer.length).toBe(1);
   });
 
   // functions to return our test databases (these are currently the full databases)
@@ -385,7 +449,7 @@ describe('Service: MonomerLibraryService', function () {
 '            <Monomer name="meY" backgroundColor="Light_Cyan" fontColor="Black"/>' + 
 '            <Monomer name="Sar" backgroundColor="Light_Cyan" fontColor="Black"/>' + 
 '        </MonomerGroup>' + 
-'                <MonomerGroup name="Synthetic Amino Acid" shape="Rhomb">' + 
+'        <MonomerGroup name="Synthetic Amino Acid" shape="Rhomb">' + 
 '            <Monomer name="Aib" backgroundColor="Light_Cyan" fontColor="Black"/>' + 
 '            <Monomer name="App" backgroundColor="Light_Cyan" fontColor="Black"/>' +
 '            <Monomer name="Bux" backgroundColor="Light_Cyan" fontColor="Black"/>' + 
