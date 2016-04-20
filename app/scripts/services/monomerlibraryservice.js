@@ -13,6 +13,8 @@ angular.module('helmeditor2App.MonomerLibrary', ['cb.x2js'])
     
     var self = this;
     self.initComplete = false;
+    // the array of the polymer types in the database
+    self.polymerTypes = [];
 
     // Hierarchy of monomer types, retrievable through the monomer library. See
     // milestone 1 documentation for reference
@@ -72,6 +74,11 @@ angular.module('helmeditor2App.MonomerLibrary', ['cb.x2js'])
             addMonomerToOther(monomer, categorizedPolymerGroup);
           }
         }
+      }
+
+      // create the list of polymer types
+      for (var i = 0; i < categorizedDB.Template.Polymer.length; i++) {
+        self.polymerTypes.push(categorizedDB.Template.Polymer[i]._name);
       }
 
       // signal complete
@@ -182,6 +189,11 @@ angular.module('helmeditor2App.MonomerLibrary', ['cb.x2js'])
       return categorizedDB;
     };
 
+    // return the list of options for the types
+    var getTypes = function () {
+      return categorizedDB.Template
+    }
+
     // searches the encoded database and returns a monomer matching the polymer 
     // type and monomer id
     var getEncodedById = function (polymerId, monomerId) {
@@ -223,7 +235,6 @@ angular.module('helmeditor2App.MonomerLibrary', ['cb.x2js'])
     self.getEncodedById = getEncodedById;
     self.getCategorizedDB = getCategorizedDB;
     self.getEncodedDB = getEncodedDB;
-    // self.searchEncodedDB = searchEncodedDB;
 
     // getPolymer, getMonomerGroup, and getMonomer all return
     // an object with a boolean returnSuccess property and optional

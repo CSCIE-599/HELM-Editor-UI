@@ -185,6 +185,13 @@ describe('Service: MonomerLibraryService', function () {
     expect(group.Monomer.length).toBe(1);
   });
 
+  it('should expose the three types of polymers', function () {
+    expect(MonomerLibraryService.polymerTypes.length).toBe(3);
+    expect(MonomerLibraryService.polymerTypes).toContain('RNA');
+    expect(MonomerLibraryService.polymerTypes).toContain('PEPTIDE');
+    expect(MonomerLibraryService.polymerTypes).toContain('CHEM');
+  })
+
   // functions to return our test databases (these are currently the full databases)
   var getDefaultCategorizationXML = function () {
     return '<?xml version="1.0" encoding="ISO-8859-1"?>' + 
