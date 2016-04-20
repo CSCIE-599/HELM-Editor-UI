@@ -23,8 +23,6 @@ angular.module('helmeditor2App')
     var getSearchBoxResult = function () {
       var polymer = self.activeType;
       var monomer = self.search.monomer;
-      console.log(polymer);
-      console.log(monomer);
       if(polymer === null || polymer.trim() === '' || monomer === null || monomer.trim() === ''){
         self.results = [];
         return ('');

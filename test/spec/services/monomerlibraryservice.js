@@ -192,6 +192,22 @@ describe('Service: MonomerLibraryService', function () {
     expect(MonomerLibraryService.polymerTypes).toContain('CHEM');
   });
 
+  it('should be able to return each type of polymer grouping', function () {
+    var groupRNA = MonomerLibraryService.getMonomersByType('RNA');
+    var groupPeptide = MonomerLibraryService.getMonomersByType('PEPTIDE');
+    var groupChem = MonomerLibraryService.getMonomersByType('CHEM');
+
+    expect(groupRNA._name).toBe('RNA');
+    expect(groupRNA.FragmentGroup.length).toBe(2);
+    expect(groupRNA.MonomerGroup.length).toBe(4);
+    expect(groupPeptide._name).toBe('PEPTIDE');
+    expect(groupPeptide.FragmentGroup).toBeUndefined();
+    expect(groupPeptide.MonomerGroup.length).toBe(8);
+    expect(groupChem._name).toBe('CHEM');
+    expect(groupChem.FragmentGroup).toBeUndefined();
+    expect(groupChem.MonomerGroup.length).toBe(5);
+  });
+
   // functions to return our test databases (these are currently the full databases)
   var getDefaultCategorizationXML = function () {
     return '<?xml version="1.0" encoding="ISO-8859-1"?>' + 
