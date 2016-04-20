@@ -20,6 +20,24 @@ angular.module('helmeditor2App')
     self.polymerTypes = MonomerLibraryService.polymerTypes;
     self.activeType = 'RNA';
 
+    var getSearchBoxResult = function () {
+      var polymer = self.activeType;
+      var monomer = self.search.monomer;
+      console.log(polymer);
+      console.log(monomer);
+      if(polymer === null || polymer.trim() === '' || monomer === null || monomer.trim() === ''){
+        self.results = [];
+        return ('');
+      }
+      var result = MonomerLibraryService.getEncodedById(polymer, monomer);
+      if(result === null){
+        self.results = [];
+        return ('');
+      }
+      self.results = [result];
+      return ('name: ' + result.MonomerID + ' smiles: ' + result.MonomerSmiles);
+    };
+
     // log function to help log the database out
     var logDB = function () {
       console.log(MonomerLibraryService.getEncodedDB());
@@ -30,6 +48,7 @@ angular.module('helmeditor2App')
 
     // expose the methods we want to
     self.logDB = logDB;
+    self.getSearchBoxResult = getSearchBoxResult;
 
     // // used by the list getters
     // var groupOptListBuilder = function(list, parent){
