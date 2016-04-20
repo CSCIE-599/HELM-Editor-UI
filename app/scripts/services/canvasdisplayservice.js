@@ -202,6 +202,8 @@ angular.module('helmeditor2App')
 		nodeNum = num;
 	};
 
+	/*helper method for creating cyclical nodes, only supports cyclical peptides now*/
+	// TO-DO Extend to support cyclical nucleotides
 	self.makeCycle = function(sequence, seqType, pos, dir){
 
 		var cycleNodesArray = [];
