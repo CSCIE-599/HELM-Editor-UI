@@ -225,6 +225,48 @@ describe('Service: MonomerLibraryService', function () {
     expect(groupChem.categories[0].monomers[0]._title).toBe('Chemical Modifier');
   });
 
+  it('should be able to return 0 monomers when searching with no match', function () {
+    var results = MonomerLibraryService.searchMonomers('PEPTIDE', 'foo-bar');
+    expect(results.length).toBe(0);
+    results = MonomerLibraryService.searchMonomers('CHEM', 'foo-bar');
+    expect(results.length).toBe(0);
+    results = MonomerLibraryService.searchMonomers('RNA', 'foo-bar');
+    expect(results.length).toBe(0);
+  });
+
+  it('should be able to return only 1 monomer when there is an exact match by ID', function () {
+    var results = MonomerLibraryService.searchMonomers('RNA', 'dsT');
+    expect(results.length).toBe(1);
+    expect(results[0]._name).toBe('dsT');
+    results = MonomerLibraryService.searchMonomers('PEPTIDE', 'Hcy');
+    expect(results.length).toBe(1);
+    expect(results[0]._name).toBe('Hcy');
+    results = MonomerLibraryService.searchMonomers('CHEM', 'SMPEG2');
+    expect(results.length).toBe(1);
+    expect(results[0]._name).toBe('SMPEG2');
+  });
+
+  it('should be able to return only 1 monomer when there is an exact match by name', function () {
+    var results = MonomerLibraryService.searchMonomers('RNA', '4-Formylbenzamidehexanol (5\' end)');
+    expect(results.length).toBe(1);
+    expect(results[0].encodedMonomer.MonomerName).toBe('4-Formylbenzamidehexanol (5\' end)');
+    results = MonomerLibraryService.searchMonomers('PEPTIDE', 'homocysteine');
+    expect(results.length).toBe(1);
+    expect(results[0].encodedMonomer.MonomerName).toBe('homocysteine');
+    results = MonomerLibraryService.searchMonomers('CHEM', 'SM(PEG)2 linker from Pierce');
+    expect(results.length).toBe(1);
+    expect(results[0].encodedMonomer.MonomerName).toBe('SM(PEG)2 linker from Pierce');
+  });
+
+  it('should be able to return multipel results when the search terms are not exact', function () {
+    var results = MonomerLibraryService.searchMonomers('RNA', 'fS');
+    expect(results.length).toBe(4);
+    results = MonomerLibraryService.searchMonomers('RNA', 'hexanol');
+    expect(results.length).toBe(4);
+    results = MonomerLibraryService.searchMonomers('CHEM', 'linker');
+    expect(results.length).toBe(2);
+  });
+
   // functions to return our test databases (these are currently the full databases)
   var getDefaultCategorizationXML = function () {
     return '<?xml version="1.0" encoding="ISO-8859-1"?>' + 

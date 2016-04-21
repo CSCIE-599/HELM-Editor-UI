@@ -204,7 +204,7 @@ body {
   height: 100%;
 }
 
-input {
+.right-controls input {
   margin-top: 5px;
   margin-bottom: 5px;
 }
@@ -262,23 +262,53 @@ svg {
   background-color: #bbbbbb;
 }
 
-.search-label {
-  width: 38%;
-}
-
-.search-input {
-  width: 60%;
-}
-
 .sub-group {
   width: 100%;
   padding-left: 2%;
   padding-right: 2%;
   border: solid 1px #777;
-  height: 95%;
+  height: 94%;
 }
 
 .button-row {
   height: 5%;
   width: 100%;
+}
+
+.button-row button {
+  line-height: 90%!important;
+}
+
+.input-row {
+  height: 5%;
+  width: 100%;
+  display: table;
+  table-layout: fixed;
+}
+
+.input-row input {
+  font-size : 12px;
+  display: table-cell;
+  vertical-align: middle;
+  width: 100%;
+}
+
+.input-row label {
+  font-style: normal;
+  display: table-cell;
+  vertical-align: middle;
+  width: 30%;
+}
+
+.monomer-listing {
+  width: 100%;
+  border: solid 1px #777;
+  padding-left: 2%;
+  padding-right: 2%;
+  height: 94%;
+}
+
+.monomer-view {
+  height: 95%;
+  overflow-y: auto;
 }

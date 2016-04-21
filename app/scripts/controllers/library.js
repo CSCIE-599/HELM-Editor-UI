@@ -11,9 +11,8 @@ angular.module('helmeditor2App')
   .controller('LibraryCtrl', ['MonomerLibraryService', function (MonomerLibraryService) {
     
     var self = this;
-    // our search boxes
-    self.search = {};
-    self.search.monomer = '';
+    // the serach box
+    self.search = '';
     self.results = [];
 
     // the array of the polymer types in the database
@@ -55,15 +54,23 @@ angular.module('helmeditor2App')
       return ('name: ' + result.MonomerID + ' smiles: ' + result.MonomerSmiles);
     };
 
+    // search for the monomers as needed
+    var searchMonomers = function () {
+      return [];
+    };
+
+    // list the monomers by the selection
+    var listMonomers = function () {
+      return [];
+    };
+
+    // link the monomers correctly
+    self.monomers = self.searchViewVisible ? searchMonomers() : listMonomers();
+
     // expose the methods we want to 
     self.getSearchBoxResult = getSearchBoxResult;
     self.setViewVisible = setViewVisible;
 
-    self.log = function () {
-      console.log(MonomerLibraryService.getCategorizedDB());
-      console.log(MonomerLibraryService.getEncodedDB());
-      console.log(MonomerLibraryService.getLinkedDB());
-    };
     // // used by the list getters
     // var groupOptListBuilder = function(list, parent){
     //   var options = list;

@@ -313,11 +313,49 @@ angular.module('helmeditor2App.MonomerLibrary', ['cb.x2js'])
       return linkedDB[type];
     };
 
+    // returns a list of monomers that match either the ID or the name
+    // public function
+    var searchMonomers = function (type, text) {
+      var results = [];
+      var searchText = text.toLowerCase();
+
+      // go through all of the monomers, and push them on if the contain the text
+      var group = getMonomersByType(type);
+      results = searchRecursive(group, searchText);
+      return results;
+    };
+
+    // recursive method to either return the monomers that match, or 
+    // concatenate results of recursive calls on all categories
+    var searchRecursive = function (group, text) {
+      var results = [];
+
+      // hanlde the case that we have monomers
+      if (group.monomers) {
+        for (var i = 0; i < group.monomers.length; i++) {
+          if (group.monomers[i]._name.toLowerCase().indexOf(text) >= 0 ||
+              (group.monomers[i].encodedMonomer && group.monomers[i].encodedMonomer.MonomerName.toLowerCase().indexOf(text) >= 0)) {
+            results.push(group.monomers[i]);
+          }
+        }
+      }
+      // otherwise need to concatenate the results from later calls
+      else {
+        for (var j = 0; j < group.categories.length; j++) {
+          results = results.concat(searchRecursive(group.categories[j], text));
+        }
+      }
+
+      // return it
+      return results;
+    };
+
     // and return the methods we actually want to expose
     self.getCategorizedDB = getCategorizedDB;
     self.getEncodedDB = getEncodedDB;
     self.getLinkedDB = getLinkedDB;
     self.getMonomersByType = getMonomersByType;
+    self.searchMonomers = searchMonomers;
 
     // // returns the list of strings of polymers names from the categorized database
     // var getPolymerIdList = function() {

@@ -49,15 +49,19 @@
             </div>
           </div>
           <div class="sub-group">
-            <div ng-show="library.searchViewVisible">
-              Search View
+            <div ng-show="library.searchViewVisible" style="height: 100%">
+              <div class="input-row">
+                <label class="search-label">Search: </label>
+                <input class="search-input" type="text" ng-model="library.search">
+              </div>
+              <div class="monomer-listing">
+                <p ng-repeat="monomer in library.monomers">ID: {{monomer._name}} Shape: {{monomer._shape}}</p>
+              </div>
             </div>
-            <div ng-show="library.exploreViewVisible">
+            <div ng-show="library.exploreViewVisible" class="monomer-view">
               Explore View
             </div>
           </div>
-
-          <button class="btn" ng-click="library.log()">Log</button>
         </div>
         <!-- <label class="search-label">Monomer Search:</label>
         <input class="search-input" type="text" ng-model="library.search.monomer">
