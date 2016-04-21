@@ -64,4 +64,12 @@ describe('Controller: LibraryCtrl', function () {
     expect(LibraryCtrl.convertFontColorClass('Cyan')).toBe('monomer-font-color-cyan');
     expect(LibraryCtrl.convertFontColorClass('Black')).toBe('monomer-font-color-black');
   });
+
+  it('should be able to transform properties to shape classes', function () {
+    expect(LibraryCtrl.convertShapeClass('No')).toBe('monomer-shape-no');
+    expect(LibraryCtrl.convertShapeClass('Rectangle')).toBe('monomer-shape-rect');
+    expect(LibraryCtrl.convertShapeClass('Rhomb')).toBe('monomer-shape-rhomb');
+    expect(LibraryCtrl.convertShapeClass('Circle')).toBe('monomer-shape-circle');
+    expect(LibraryCtrl.convertShapeClass('Hexagon')).toBe('monomer-shape-hexagon');
+  });
 });

@@ -58,7 +58,7 @@
                 <span 
                   ng-repeat="monomer in library.searchMonomers()"
                   class="monomer"
-                  ng-class="library.convertBackgroundColorClass(monomer._backgroundColor) + ' ' + library.convertFontColorClass(monomer._fontColor)">
+                  ng-class="library.convertBackgroundColorClass(monomer._backgroundColor) + ' ' + library.convertFontColorClass(monomer._fontColor) + ' ' + library.convertShapeClass(monomer._shape)">
                   {{monomer._name}}
                 </span>
               </div>

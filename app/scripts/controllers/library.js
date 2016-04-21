@@ -92,12 +92,29 @@ angular.module('helmeditor2App')
       }
     };
 
+    // convert the class to the right class name for the shape
+    var convertShapeClass = function (prop) {
+      switch (prop) {
+        case 'No':
+          return 'monomer-shape-no';
+        case 'Rectangle':
+          return 'monomer-shape-rect';
+        case 'Rhomb':
+          return 'monomer-shape-rhomb';
+        case 'Circle':
+          return 'monomer-shape-circle';
+        case 'Hexagon':
+          return 'monomer-shape-hexagon';
+      }
+    };
+
     // expose the methods we want to 
     self.setViewVisible = setViewVisible;
     self.searchMonomers = searchMonomers;
     self.listMonomers = listMonomers;
     self.convertBackgroundColorClass = convertBackgroundColorClass;
     self.convertFontColorClass = convertFontColorClass;
+    self.convertShapeClass = convertShapeClass;
 
     // // used by the list getters
     // var groupOptListBuilder = function(list, parent){
