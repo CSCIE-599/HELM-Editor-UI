@@ -17,16 +17,18 @@
         <p>Monomer Library</p>
 
         <form>
-          Polymer:   <input type="text" ng-model="library.search.polymer"><br>
           MonomerId: <input type="text" ng-model="library.search.monomer"><br><br>
           <!-- Button is intended to facilitate potential interactions between search box and other components -->
           <button>PLACEHOLDER BUTTON</button>
         </form>
         <p> sanity = {{ library.sanityCheck() }} </p>
-        <p ng-show="search.showResult"> {{ library.searchBoxResult() }} </p>
+        <p ng-show="library.showResult"> {{ library.searchBoxResult() }} </p>
         <form>
           Make a selection: <br>
-          {{ "Placeholder for select lists for categorical search" }}
+          <select>
+          <option ng-repeat="x in library.getPolymerIdList()">{{x}}</option>
+          </select>
+          <!-- show group selectors and actions buttons here. -->
         </form>
 
         <button class="stdNucleotideBtnA"> A </button>

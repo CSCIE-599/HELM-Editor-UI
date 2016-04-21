@@ -58,29 +58,147 @@ angular.module('helmeditor2App.MonomerLibrary', ['cb.x2js'])
       return categorizedDB;
     };
 
-    // searches the encoded database and returns a monomer matching the polymer 
-    // type and monomer id
-    var getEncodedById = function (polymerId, monomerId) {
-      var output = '';
-      var polymerList = encodedDB.MONOMER_DB.PolymerList.Polymer;
-      for (var i=0; i < polymerList.length; i++) {
-        if (polymerList[i]._polymerType.toUpperCase().match(polymerId.toUpperCase())) {
-          var monomerList = polymerList[i].Monomer;
-          for(var j=0; j < monomerList.length; j++){
-            if(monomerList[j].MonomerID.toUpperCase().
-                match(monomerId.toUpperCase())){
-              output = monomerList[j];
-              break;
-            }
-          }
+    // returns the list of strings of polymers names from the categorized database
+    var getPolymerIdList = function() {
+      var list = [];
+      var polymers = categorizedDB.Template.Polymer;
+      for(var i = 0; i < polymers.length; i++){
+        list.push(polymers[i]);
+      }
+      return list;
+    };
+
+    // the following functions and objects are used for creating and interfacing between the categorized database and a view 
+
+    // the current parent group for the lowest depth selection so far
+    var parent = null; 
+    // the list of categorized groups selected via the drop downs
+    // each entry consists of objects of type {name: <String>, subs: [<String>]}
+    var selectedGroups = [];
+    // recent selections holds recently chosen objects from the database with 
+    // maxrRecents being a macro defined to limit the size of the list
+    var maxRecents = 5, recentSelections = [];
+    function selectPolymer(name){
+      for(var i = 0; i < categorizedDB.Template.Polymer.length; i++){
+        if(categorizedDB.Template.Polymer[i]._name === name){
+          parent = categorizedDB.Template.Polymer[i];
+          selectedGroups = [];
           break;
         }
       }
-      return output;
-    };
+      return;
+    }
+    // Executes the selection of a group type member of the parent group
+    function selectGroup(number, name) {
+      //
+      if(parent === null || 
+        (parent.MonomerGroup === undefined && parent.FragmentGroup === undefined)){
+        // alert('Error selecting monomer group ' + name + '. Clear all selections and try again');
+        return;
+      }
+      for(var i = 0; i < parent.MonomerGroup.length; i++){
+        if(parent.MonomerGroup[i]._name.toUpperCase() === name.toUpperCase()){
+          if(number < (selectedGroups.length - 1)){
+            selectedGroups.slice(0,number);
+          }
+          var newParent = parent.MonomerGroup[i];
+          selectedGroups[number] = {name: name, subs: []};
+          parent = newParent;
+          storeSubGroupList();
+          break;
+        }
+      }
+      return;
+    }
+    // Adds a list of subgroups matching current parent to the last entry 
+    // in the selectedGroups list
+    function storeSubGroupList(){
+      if(parent === null){
+        // alert('Error selecting ' + name + '. Please clear all selections and try again');
+        return;
+      }
+      var checks = 0;
+      var nameList = [];
+      while(checks < 2){
+        var groupList = [];
+        if(checks === 0 && parent.MonomerGroup !== undefined){
+          groupList = parent.MonomerGroup;
+        }
+        else if(parent.FragmentGroup !== undefined){
+          groupList = parent.FragmentGroup;
+          checks++;
+        }
+        for(var i = 0; i < groupList.length; i++){
+            nameList.push(groupList[i]._name);
+        }
+        checks++;
+      }
+      selectedGroups[selectedGroups.length - 1].subs = nameList;
+    }
+    function showGroupSelectors(){
+      var selects = [], i;
+      for(i = 0; i < selectedGroups.length; i++){
+        // for each one, create a selector list using the entry' subs property.
+        // the indices of selectedGroups array should preferabley be used as 
+        // the "key" to the select list
+        // these select lists should be pushed onto the selects array
+      }
+      var actives = parent.Monomer.concat(parent.Fragment);
+      for(i = 0; i < actives.length; i++){
+        /***
+         Make buttons that can be used to activate a selection 
+         ***/
+      }
+    }
+    // Selects non-group type members of the parent group
+    function selectGroupMember(name){
+      if(parent === null){
+        //alert('Error selecting ' + name + '. Please clear all selections and try again');
+        return;
+      }
+      var found = false, checks = 0;
+      while(found !== true && checks < 2){
+        var list = [];
+        if(checks === 0 && parent.Monomer !== undefined){
+          list = parent.Monomer;
+        }
+        else if(parent.Fragment !== undefined){
+          list = parent.Fragment;
+          checks++;
+        }
+        for(var i = 0; i < list.length; i++){
+          if(list[i]._name === name){
+            // add to recents. 
+            // recentSelections[0] should remain as the newest at all times.
+            /*****
+             I need to think about how this thing gets added to recents.
+             Ideally we would add the same side of the linked db each time. Either it is better to expose the categorized side and have the encoded side documented as sub properties, or the encoded side exposed and the categorized properties listed as subs.
+             ******/ 
+            recentSelections.unshift(list[i]._name);
+            recentSelections.slice(0, maxRecents);
+            found = true; 
+            break;
+          }
+        }
+        checks++;
+        /****************************************************
+         right here should be a call to the action that sends the Monomer/Fragment to the canvas, or notifies the canvas that there is a new thing to be grabbed from the list of recents.
+         ****************************************************/
+      }
+    }
+
 
     // searches the encoded DB to match the given text on the monomer ID or monomer name
     // returns all monomers that match
+    /***
+     Encoded monomers have the following properties:
+     MonomerId, MonomerSmiles, MonomerMolFile, MonomerType, PolymerType, MonomerName, and Attachments (has a property called Attachment which is a list of attachments)
+
+     XXXXXEncoded monomers should have an additional field after linking that refers to the corresponding entry in the categorized db.XXXXXXXXXXXX
+
+     Attachment objects have the following properties:
+     AttachmentId, AttachmentLabel, CapGroupName, CapGroupSmiles
+     ***/
     var searchEncodedDB = function (text, exact) {
       var toSearch = text.toLowerCase();
       console.log(toSearch);
@@ -96,11 +214,13 @@ angular.module('helmeditor2App.MonomerLibrary', ['cb.x2js'])
       });
     };
 
-    self.getEncodedById = getEncodedById;
     self.getCategorizedDB = getCategorizedDB;
     self.getEncodedDB = getEncodedDB;
     self.searchEncodedDB = searchEncodedDB;
-
+    self.getPolymerIdList = getPolymerIdList;
+    self.selectPolymer = selectPolymer;
+    self.selectGroup = selectGroup;
+    self.selectGroupMember = selectGroupMember;
     // for each monomer in the parent group, it finds the corresponding monomer 
     // from the encoded database and adds the info there to the categorized 
     // database in order to help create one full database.
@@ -140,106 +260,7 @@ angular.module('helmeditor2App.MonomerLibrary', ['cb.x2js'])
 //        }
 //      }
 //    }
-/*
-    // getPolymer, getMonomerGroup, and getMonomer all return
-    // an object with a boolean returnSuccess property and optional
-    // result property representing a type from the categorized database
-    function getPolymer(id) {
-      var list = categorizedDB.Template.Polymer;
-      var output; 
-      for(var i = 0; i < list.length; i++){
-        if(list[i]._name.match(id)){
-          output = { returnSuccess: true, result: list[i] };
-          return output;
-        }
-      }
-      output = { returnSuccess: false };
-      return output;
-    }
-    // The monomer group must handle the case where a monomer group exists 
-    // within another monomer group. In order to do so, the group info is 
-    // pulled from the form such that sub-groups are appeneded to the group
-    // as comma separated values of the form <group>,<sub-group>
-    function getMonomerGroup(polymerId, id) {
-      var pGetter = getPolymer(polymerId);
-      var idList = id.split(',');
-      var parent, i=0;
-      var output = { returnSuccess: false };
-      if(!pGetter.returnSuccess){
-        return output;
-      }
-      parent = pGetter.result();
-      while (i < idList.length) {
-        output.returnSuccess = false;
-        for (var group in parent.MonomerGroup) {
-          if (group._name.match(idList[i])) {
-            i++;
-            output = { returnSuccess: true, result: group };
-            break;
-          }
-        }
-        if (!output.returnSuccess()) { return output; }
-        if ( i < idList.length) { parent = output.result; }
-      }
-      return output;
-    }
-// /*
-//     var infoGrabber = function(nameList){
-//       //
-//       var i, j;
-//       var currentName = nameList[0];
-//       var polymerList = encodedDB.MONOMER_DB.PolymerList.Polymer;
-//       for(i=0; i < polymerList.length; i++){
-//         if(polymerList[i]._polymerType.match(currentName)){
-//           while(nameList.length > 1){
-//             nameList.shift();
-//             var monomerList = polymerList[i].Monomer;
-//             for(j=0; j < monomerList.length; j++){
-//               if(monomerList[i].MonomerID.match(nameList[]))
-//             }
-//           }
-//         }
-//       }
-//     };
-// */
-/*    function getCategorizedMonomer(polymerId, groupId, name) {
-      var groupGetter = getMonomerGroup(polymerId, groupId);
-      var output = { returnSuccess: false };
-      if(!groupGetter.returnSuccess){
-        return output;
-      }
-      var group = groupGetter.result;
-      for (var monomer in group.Monomer) {
-        if (monomer._name.match(name)) {
-          output = { returnSuccess: true, result: monomer };
-          return output;
-        }
-      }
-      return output;
-    }
 
-    // getPolymers - returns the list of polymers
-    var getPolymers = function () {
-      return categorizedDB.Polymer;
-    };
-
-    // returns the full categorized DB
-//    var getCategorizedDB = function () {
-//      if (!init) {
-//        initLink();
-//      }
-//      return categorizedDB.Template;
-//    };
-     // returns the entire encoded db
-//    var getEncodedDB = function(){
-//      if (!init) {
-//        initLink();
-//      }
-//      return encodedDB.MONOMER_DB;
-//    };
-*/
-//     self.getPolymers = getPolymers;
-//     self.getCategorizedMonomer = getCategorizedMonomer;
     self.sanityCheck = function () {
       return '5';
     };
