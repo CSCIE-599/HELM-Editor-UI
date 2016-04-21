@@ -170,7 +170,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
         $scope.makeRequestedConnections(connectionArray, graphedNodes);
       }
 
-      $scope.zoomCanvas(0.8);//zoomin the default view by 20%
+      $scope.zoom(0.8);//zoomin the default view by 20%
     };
 
     //Parse the sequence, and generate the graph
@@ -582,8 +582,8 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 		main.extcoefficient = '';
 	};
 
-	/* zoom functions */
-	$scope.zoomCanvas = function (scale, canvasId){
+	/* zoom and pan functions */
+	$scope.zoom = function (scale, canvasId){
 		var svgDoc;
 		if(canvasId){//zooming the lower canvas, if true
 			svgDoc = document.getElementById(canvasId);
@@ -591,8 +591,18 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 		else {
 			svgDoc = document.getElementById('helmSvg');//main canvas
 		}
-
 		CanvasDisplayService.zoom(scale, svgDoc);
+	};
+	
+	$scope.pan = function (dx, dy, canvasId){
+		var svgDoc;
+		if(canvasId){//pan the lower canvas, if true
+			svgDoc = document.getElementById(canvasId);
+		}
+		else {
+			svgDoc = document.getElementById('helmSvg');//main canvas
+		}
+		CanvasDisplayService.pan(dx, dy, svgDoc);
 	};
 
 	/*
@@ -640,8 +650,6 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 	        break;   
 	    }
 	};
-
-
 	
 	// Create the view for the canvas and attach to the scope.
 	$scope.canvasView = new CanvasDisplayService.CanvasView(helmDataModel);

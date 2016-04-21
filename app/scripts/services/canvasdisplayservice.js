@@ -269,7 +269,6 @@ angular.module('helmeditor2App')
 		//get canvas width and height
 		 width = svgDoc.clientWidth;
 		 height = svgDoc.clientHeight;
-
 		 mapMatrix = svgDoc.getElementById('map-matrix');
 
 		 for (var i=0; i<transMatrix.length; i++){
@@ -280,6 +279,15 @@ angular.module('helmeditor2App')
 		 transMatrix[5] += (1-scale)*height/2;				        
 		 newMatrix = 'matrix(' +  transMatrix.join(' ') + ')';
 		 mapMatrix.setAttributeNS(null, 'transform', newMatrix);
+	};
+
+	self.pan = function(dx, dy, svgDoc){     	
+	  transMatrix[4] += dx;
+	  transMatrix[5] += dy;
+	  mapMatrix = svgDoc.getElementById('map-matrix');
+	            
+	  newMatrix = 'matrix(' +  transMatrix.join(' ') + ')';
+	  mapMatrix.setAttributeNS(null, 'transform', newMatrix);
 	};
 
 
