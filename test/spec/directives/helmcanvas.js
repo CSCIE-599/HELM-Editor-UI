@@ -15,6 +15,12 @@ describe('Directive: helmCanvas', function () {
   beforeEach(inject(function (_$compile_, $rootScope) {
     scope = $rootScope.$new();
     $compile = _$compile_;
+    
+    /*
+    // mock out our pan and zoom functions, to be tested in the unit tests
+    scope.pan = function () {};
+    scope.zoom = function () {};
+    */
   }));
 
   // helpers to create nodes and connections
@@ -92,7 +98,7 @@ describe('Directive: helmCanvas', function () {
     expect(svg.hasClass('draggable-container'));
   }));
 
-  it('should have the zoom buttons, the pan buttons and the graph', inject(function () {
+  it('should have the zoom buttons, the pan buttons, and the graph', inject(function () {
     element = angular.element('<div><helm-canvas></helm-canvas></div>');
     element = $compile(element)(scope);
     scope.$digest();
@@ -294,4 +300,33 @@ describe('Directive: helmCanvas', function () {
       expect(numText.attr('y')).toBe('' + (vals[i].y - 5));
     }
   }));
+
+  /*
+  * used to test zoom/pan eventually
+  it('should call the zoom and pan methods with the correct parameters', function () {
+    element = angular.element('<div><helm-canvas></helm-canvas></div>');
+    element = $compile(element)(scope);
+    scope.$digest();
+
+    // find the zoom and pan buttons
+    var svg = element.children().eq(0);
+    var svgChildren = svg.children();
+    var zoomOut = svgChildren.eq(0);
+    var zoomIn = svgChildren.eq(1);
+    var panUp = svgChildren.eq(4);
+    var panDown = svgChildren.eq(5);
+    var panRight = svgChildren.eq(6);
+    var panLeft = svgChildren.eq(7);
+
+    // set up the spy
+    // spyOn(scope, 'zoom');
+    // spyOn(scope, 'pan');
+
+    // click the buttons and make sure they were called
+    // zoomIn.click();
+    // expect(scope.zoom).toHaveBeenCalledWith(0.8);
+    // zoomOut.click();
+    // expect(scope.zoom).toHaveBeenCalledWith(1.2);
+  });
+  */
 });
