@@ -192,21 +192,38 @@ describe('Service: MonomerLibraryService', function () {
     expect(MonomerLibraryService.polymerTypes).toContain('CHEM');
   });
 
+  it('should return a normalized linked database with the groupings', function () {
+    var linkedDB = MonomerLibraryService.getLinkedDB();
+    expect(linkedDB['RNA']).toBeDefined();
+    expect(linkedDB['PEPTIDE']).toBeDefined();
+    expect(linkedDB['CHEM']).toBeDefined();
+  });
+
   it('should be able to return each type of polymer grouping', function () {
     var groupRNA = MonomerLibraryService.getMonomersByType('RNA');
     var groupPeptide = MonomerLibraryService.getMonomersByType('PEPTIDE');
     var groupChem = MonomerLibraryService.getMonomersByType('CHEM');
 
     expect(groupRNA._name).toBe('RNA');
-    expect(groupRNA.FragmentGroup.length).toBe(2);
-    expect(groupRNA.MonomerGroup.length).toBe(4);
+    expect(groupRNA.categories.length).toBe(6);
     expect(groupPeptide._name).toBe('PEPTIDE');
-    expect(groupPeptide.FragmentGroup).toBeUndefined();
-    expect(groupPeptide.MonomerGroup.length).toBe(8);
+    expect(groupPeptide.categories.length).toBe(8);
     expect(groupChem._name).toBe('CHEM');
-    expect(groupChem.FragmentGroup).toBeUndefined();
-    expect(groupChem.MonomerGroup.length).toBe(5);
+    expect(groupChem.categories.length).toBe(5);
   });
+
+  it('should have persisted properties from parents to children', function () {
+    var groupPeptide = MonomerLibraryService.getMonomersByType('PEPTIDE');
+    expect(groupPeptide.categories[0].categories.length).toBe(2);
+    expect(groupPeptide.categories[0].categories[0]._shape).toBe('Rhomb');
+    expect(groupPeptide.categories[0].categories[0]._title).toBe('Peptide');
+
+    var groupChem = MonomerLibraryService.getMonomersByType('CHEM');
+    expect(groupChem.categories[0]._name).toBe('Reactive');
+    expect(groupChem.categories[0].monomers.length).toBe(3);
+    expect(groupChem.categories[0].monomers[0]._name).toBe('Az');
+    expect(groupChem.categories[0].monomers[0]._title).toBe('Chemical Modifier');
+  })
 
   // functions to return our test databases (these are currently the full databases)
   var getDefaultCategorizationXML = function () {

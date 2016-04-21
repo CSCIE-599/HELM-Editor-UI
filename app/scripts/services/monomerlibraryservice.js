@@ -20,7 +20,7 @@ angular.module('helmeditor2App.MonomerLibrary', ['cb.x2js'])
     // milestone 1 documentation for reference
     var categorizedDB;
     var encodedDB;
-    var linkedDB;
+    var linkedDB; // 'categories' property is an array of sub-categories, 'monomers' is the array of monomers
     $http.get('MonomerDBGZEncoded.xml', {
       transformResponse: function (info) {
         // jscs:disable requireCamelCaseOrUpperCaseIdentifiers
@@ -42,13 +42,120 @@ angular.module('helmeditor2App.MonomerLibrary', ['cb.x2js'])
         // now link the two
         linkDatabases();
 
-        // go and reference the polymers by name
+        // create the new linked DB that reference the polymers by name
+        // also flatten it, so that each level is an object with a label and an 
+        // array of either more objects (sub-levels) or just monomers
         linkedDB = {};
         for (var i = 0; i < categorizedDB.Template.Polymer.length; i++) {
-          linkedDB[categorizedDB.Template.Polymer[i]._name] = categorizedDB.Template.Polymer[i];
+          // set up the properties (if they exist)
+          linkedDB[categorizedDB.Template.Polymer[i]._name] = {
+            _name: categorizedDB.Template.Polymer[i]._name,
+            _shape: categorizedDB.Template.Polymer[i]._shape,
+            _title: categorizedDB.Template.Polymer[i]._title,
+            _fontColor: categorizedDB.Template.Polymer[i]._fontColor
+          };
+
+          // and handle the children;
+          linkedDB[categorizedDB.Template.Polymer[i]._name].categories = flattenGroup(categorizedDB.Template.Polymer[i], categorizedDB.Template.Polymer[i]);
         }
       });
     });
+
+    // extends/overrides the properties of the first object with those in the second
+    // private helper function
+    var extend = function(a, b) {
+      var ret = {};
+      for (var keyA in a) {
+        if (keyA !== 'Fragment' && keyA !== 'Monomer' && keyA !== 'FragmentGroup' && keyA !== 'MonomerGroup') {
+          ret[keyA] = a[keyA];
+        }
+      }
+      for (var keyB in b) {
+        // don't add the actual monomers in, that's handled elsewhere
+        if (keyB !== 'Fragment' && keyB !== 'Monomer' && keyB !== 'FragmentGroup' && keyB !== 'MonomerGroup') {
+          // also don't override with "no"
+          if (b[keyB] !== 'No') {
+            ret[keyB] = b[keyB];
+          }
+        }
+      }
+      return ret;
+    };
+
+    // given a group, used recursively to flatten the group appropriately
+    // returns an array of nested objects with arrays, or of Monomers
+    // also passed the object of attributes to be included, if not specified
+    // private helper function
+    var flattenGroup = function (group, attrs) {
+      // the base case is that there is simply an array of Monomer or Fragments
+      if (group.Monomer || group.Fragment) {
+        var monomers = group.Monomer || group.Fragment;
+        if (!(monomers instanceof Array)) {
+          monomers = [monomers];
+        }
+
+        // add each monomer back, after extending the properties from the group
+        var newMonomers = [];
+        for (var i = 0; i < monomers.length; i++) {
+          newMonomers.push(extend(attrs, monomers[i]));
+        }
+        return newMonomers;
+      }
+
+      // otherwise, we're dealing with a FragmentGroup or MonomerGroup
+      else {
+        // need to do this whole things for FragmentGroup and MonomerGroup
+        var fragmentGroups = group.FragmentGroup;
+        var monomerGroups = group.MonomerGroup;
+        // make sure we have an array
+        if (!fragmentGroups) {
+          fragmentGroups = [];
+        }
+        else if (!(fragmentGroups instanceof Array)) {
+          fragmentGroups = [fragmentGroups];
+        }
+        if (!monomerGroups) {
+          monomerGroups = [];
+        }
+        else if (!(monomerGroups instanceof Array)) {
+          monomerGroups = [monomerGroups];
+        }
+
+        // and flatten each of them
+        var categories = [];
+        var obj;
+        for (var j = 0; j < fragmentGroups.length; j++) {
+          obj = extend(attrs, fragmentGroups[j]);
+          // recursively flatten into categories if groups
+          if (fragmentGroups[j].MonomerGroup || fragmentGroups[j].FragmentGroup) {
+            obj.categories = flattenGroup(fragmentGroups[j], obj);
+          }
+          // or monomers if not groups
+          else {
+            obj.monomers = flattenGroup(fragmentGroups[j], obj);
+          }
+          // add it
+          categories.push(obj);
+        }
+        // repeat for the monomer groups
+        for (var k = 0; k < monomerGroups.length; k++) {
+          obj = extend(attrs, monomerGroups[k]);
+          // recursively flatten into categories if groups
+          if (monomerGroups[k].MonomerGroup || monomerGroups[k].FragmentGroup) {
+            obj.categories = flattenGroup(monomerGroups[k], obj);
+          }
+          // or monomers if not groups
+          else {
+            obj.monomers = flattenGroup(monomerGroups[k], obj);
+          }
+          // add it
+          categories.push(obj);
+        }
+
+        // return it
+        return categories;
+      }
+    };
 
     // links the two databases together, adding categorization detail to encoded database
     // private helper function
@@ -197,6 +304,11 @@ angular.module('helmeditor2App.MonomerLibrary', ['cb.x2js'])
       return categorizedDB;
     };
 
+    // return the linked (flattened/normalized) database
+    var getLinkedDB = function () {
+      return linkedDB;
+    };
+
     // returns the list of strings of polymers names from the categorized database
     var getPolymerIdList = function() {
       var list = [];
@@ -249,6 +361,28 @@ angular.module('helmeditor2App.MonomerLibrary', ['cb.x2js'])
       }
       return;
     }
+
+    // searches the encoded database and returns a monomer matching the polymer 
+    // type and monomer id
+    // var getEncodedById = function (polymerId, monomerId) {
+    //   var output = '';
+    //   var polymerList = encodedDB.MONOMER_DB.PolymerList.Polymer;
+    //   for (var i=0; i < polymerList.length; i++) {
+    //     if (polymerList[i]._polymerType.toUpperCase().match(polymerId.toUpperCase())) {
+    //       var monomerList = polymerList[i].Monomer;
+    //       for(var j=0; j < monomerList.length; j++){
+    //         if(monomerList[j].MonomerID.toUpperCase().
+    //             match(monomerId.toUpperCase())){
+    //           output = monomerList[j];
+    //           break;
+    //         }
+    //       }
+    //     }
+    //   }
+
+    //   return output;
+    // };
+
     // Adds a list of subgroups matching current parent to the last entry 
     // in the selectedGroups list
     function storeSubGroupList(){
@@ -363,51 +497,13 @@ angular.module('helmeditor2App.MonomerLibrary', ['cb.x2js'])
 
     self.getCategorizedDB = getCategorizedDB;
     self.getEncodedDB = getEncodedDB;
+    self.getLinkedDB = getLinkedDB;
     self.getMonomersByType = getMonomersByType;
     // self.searchEncodedDB = searchEncodedDB;
     self.getPolymerIdList = getPolymerIdList;
     self.selectPolymer = selectPolymer;
     self.selectGroup = selectGroup;
     self.selectGroupMember = selectGroupMember;
-    // for each monomer in the parent group, it finds the corresponding monomer 
-    // from the encoded database and adds the info there to the categorized 
-    // database in order to help create one full database.
-//    function dbLinker(parent, polymerId) {
-//      var j;
-//      if(parent.Monomer !== undefined){
-//        var monomerList = parent.Monomer;
-//        for(j = 0; j < monomerList.length; j++){
-//          var encodedMonomer = getEncodedMonomer(monomerList[j]._name, polymerId);
-//          if(encodedMonomer === null){
-//            continue;
-//          }
-          /*
-          for(var prop in encodedMonomer){
-            monomerList[j].[prop] = encodedMonomer[prop];
-          }
-          */
-//          monomerList[j].encodedInfo = encodedMonomer;
-//          encodedMonomer.categorizedInfo = monomerList[j].encodedInfo;
-//        }
-//      }
-//      if(parent.MonomerGroup !== undefined){
-//        for(j = 0; j < parent.MonomerGroup.length; j++){
-//          dbLinker(parent.MonomerGroup[j], polymerId);
-//        }
-//      }
-//    }
-
-//    function initLink(){
-//      // 
-//      var polymerList = categorizedDB.Template.Polymer;
-//      for(var i = 0; i < polymerList.length; i++){
-//        //
-//        var polymerId = polymerList[i]._name;
-//        for(var j = 0; j < polymerList[i].MonomerGroup.length; j++){
-//          dbLinker(polymerList[i].MonomerGroup[j], polymerId);
-//        }
-//      }
-//    }
 
     self.sanityCheck = function () {
       return '5';
