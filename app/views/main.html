@@ -28,6 +28,21 @@
         <br><br>
         <p> {{ library.getSearchBoxResult() }} </p>
 
+        <form>
+          MonomerId: <input type="text" ng-model="library.search.monomer"><br><br>
+          <!-- Button is intended to facilitate potential interactions between search box and other components -->
+          <button>PLACEHOLDER BUTTON</button>
+        </form>
+        <p> sanity = {{ library.sanityCheck() }} </p>
+        <p ng-show="library.showResult"> {{ library.searchBoxResult() }} </p>
+        <form>
+          Make a selection: <br>
+          <select>
+          <option ng-repeat="x in library.getPolymerIdList()">{{x}}</option>
+          </select>
+          <!-- show group selectors and actions buttons here. -->
+        </form>
+
         <button class="stdNucleotideBtnA"> A </button>
 
         <button class="stdNucleotideBtnC"> C </button>
