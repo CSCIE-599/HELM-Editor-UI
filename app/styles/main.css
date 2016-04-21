@@ -190,7 +190,7 @@ body {
 }
 
 .full-height {
-  height: calc(100vh - 150px);
+  height: calc(100vh - 153px);
 }
 
 .library-column {
@@ -246,22 +246,16 @@ svg {
   width:100%;
 }
 
-.full-width {
-  width: 100%;
-}
-
 .btn-selector {
-  width: 33.33%;
+  width: 33.33333%;
   background-color: white;
   border: solid 1px #707070;
 }
 
 .btn-selector-view {
   width: 50%;
-  padding: 4px!important;
   background-color: white;
   border: solid 1px #707070;
-  margin-top: 6px;
 }
 
 .activetype {
@@ -274,4 +268,17 @@ svg {
 
 .search-input {
   width: 60%;
+}
+
+.sub-group {
+  width: 100%;
+  padding-left: 2%;
+  padding-right: 2%;
+  border: solid 1px #777;
+  height: 95%;
+}
+
+.button-row {
+  height: 5%;
+  width: 100%;
 }

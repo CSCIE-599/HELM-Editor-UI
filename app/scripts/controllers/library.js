@@ -24,6 +24,9 @@ angular.module('helmeditor2App')
     self.searchViewVisible = true;
     self.exploreViewVisible = false;
 
+    // the actual monomers that need to be displayed
+    self.monomers = [];
+
     // allow toggling
     var setViewVisible = function (view) {
       if (view === 'search') {
@@ -56,6 +59,11 @@ angular.module('helmeditor2App')
     self.getSearchBoxResult = getSearchBoxResult;
     self.setViewVisible = setViewVisible;
 
+    self.log = function () {
+      console.log(MonomerLibraryService.getCategorizedDB());
+      console.log(MonomerLibraryService.getEncodedDB());
+      console.log(MonomerLibraryService.getLinkedDB());
+    };
     // // used by the list getters
     // var groupOptListBuilder = function(list, parent){
     //   var options = list;
