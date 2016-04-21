@@ -72,4 +72,14 @@ describe('Controller: LibraryCtrl', function () {
     expect(LibraryCtrl.convertShapeClass('Circle')).toBe('monomer-shape-circle');
     expect(LibraryCtrl.convertShapeClass('Hexagon')).toBe('monomer-shape-hexagon');
   });
+
+  it('should set a default category to ""', function () {
+    expect(LibraryCtrl.activeCategory).toBe('');
+  });
+
+  it('should set a default subCategory to ""', function () {
+    expect(LibraryCtrl.activeSubCategory).toBe('');
+  });
+
+  // TODO - should probably test getCategories and getMonomers
 });

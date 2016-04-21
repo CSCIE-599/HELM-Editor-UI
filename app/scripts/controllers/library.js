@@ -18,6 +18,8 @@ angular.module('helmeditor2App')
     // the array of the polymer types in the database
     self.polymerTypes = MonomerLibraryService.polymerTypes;
     self.activeType = 'RNA';
+    self.activeCategory = ''; // the top level category under type
+    self.activeSubCategory = ''; // the lower-level category, if it exists
 
     // control which view is showing (search or exploring)
     self.searchViewVisible = true;
@@ -108,6 +110,31 @@ angular.module('helmeditor2App')
       }
     };
 
+    // retrieve the current active type
+    var getActiveType = function () {
+      return MonomerLibraryService.getMonomersByType(self.activeType);
+    };
+
+    // get the categories of the current group selected
+    var getCategories = function (group) {
+      return group.categories || [];
+    };
+
+    // get the monomers of the current group selected
+    var getMonomers = function (group) {
+      return group.monomers || [];
+    };
+
+    // return true if the given name is the active category
+    var categoryActive = function (name) {
+      return name === self.activeCategory;
+    };
+
+    // return true if the given name is the active sub category
+    var subCategoryActive = function (name) {
+      return name === self.activeSubCategory;
+    };
+
     // expose the methods we want to 
     self.setViewVisible = setViewVisible;
     self.searchMonomers = searchMonomers;
@@ -115,6 +142,11 @@ angular.module('helmeditor2App')
     self.convertBackgroundColorClass = convertBackgroundColorClass;
     self.convertFontColorClass = convertFontColorClass;
     self.convertShapeClass = convertShapeClass;
+    self.getActiveType = getActiveType;
+    self.getMonomers = getMonomers;
+    self.getCategories = getCategories;
+    self.categoryActive = categoryActive;
+    self.subCategoryActive = subCategoryActive;
 
     // // used by the list getters
     // var groupOptListBuilder = function(list, parent){

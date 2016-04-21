@@ -71,7 +71,75 @@
               </div>
             </div>
             <div ng-show="library.exploreViewVisible" class="monomer-view">
-              Explore View
+              <!-- display each category under this that exists -->
+              <div 
+                class="category-holder" 
+                ng-repeat="category in library.getCategories(library.getActiveType())">
+                <button 
+                  class="btn btn-secondary btn-category" 
+                  ng-click="library.activeCategory = category._name"
+                  ng-class="{activetype: library.categoryActive(category._name)}">
+                  {{ category._name }}
+                </button>
+                <!-- display sub elements -->
+                <div
+                  class="sub-selection-group"
+                  ng-show="library.activeCategory === category._name">
+                  <!-- display any sub-categories that may exist -->
+                  <div 
+                    class="sub-group"
+                    ng-show="library.activeCategory === category._name">
+                    <div
+                      class="sub-category-holder"
+                      ng-repeat="subCategory in library.getCategories(category)">
+                      <button
+                        class="btn btn-secondary btn-category"
+                        ng-click="library.activeSubCategory = subCategory._name"
+                        ng-class="{activetype: library.subCategoryActive(subCategory._name)}">
+                        {{ subCategory._name }}
+                      </button>
+                      <div
+                        ng-show="library.activeSubCategory === subCategory._name">
+                        <div
+                          class="monomer-listing monomer-explorer"
+                          ng-show="library.getMonomers(subCategory).length > 0 || library.getCategories(subCategory).length === 0">
+                          <div
+                            ng-repeat="monomer in library.getMonomers(subCategory)"
+                            class="monomer-holder">
+                            <div
+                              ng-class="library.convertBackgroundColorClass(monomer._backgroundColor) + ' ' + library.convertShapeClass(monomer._shape)"
+                              class="monomer">
+                            </div>
+                            <span 
+                              class="monomer-name noselect"
+                              ng-class="library.convertFontColorClass(monomer._fontColor)">
+                              {{monomer._name}}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- display if there are just monomers in here -->
+                  <div 
+                    class="monomer-listing monomer-explorer"
+                    ng-show="library.getMonomers(category).length > 0 || library.getCategories(category).length === 0">
+                    <div 
+                      ng-repeat="monomer in library.getMonomers(category)"
+                      class="monomer-holder">
+                      <div
+                        ng-class="library.convertBackgroundColorClass(monomer._backgroundColor) + ' ' + library.convertShapeClass(monomer._shape)"
+                        class="monomer">
+                      </div>
+                      <span 
+                        class="monomer-name noselect"
+                        ng-class="library.convertFontColorClass(monomer._fontColor)">
+                        {{monomer._name}}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
