@@ -58,6 +58,7 @@ angular.module('helmeditor2App.MonomerLibrary', ['cb.x2js'])
           // and handle the children;
           linkedDB[categorizedDB.Template.Polymer[i]._name].categories = flattenGroup(categorizedDB.Template.Polymer[i], categorizedDB.Template.Polymer[i]);
         }
+        self.initComplete = true;
       });
     });
 
@@ -316,6 +317,11 @@ angular.module('helmeditor2App.MonomerLibrary', ['cb.x2js'])
     // returns a list of monomers that match either the ID or the name
     // public function
     var searchMonomers = function (type, text) {
+      // jump out if we don't have anything to search by
+      if (text === null || text === '') {
+        return [];
+      }
+      
       var results = [];
       var searchText = text.toLowerCase();
 

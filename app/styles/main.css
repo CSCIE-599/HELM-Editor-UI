@@ -286,7 +286,7 @@ svg {
   table-layout: fixed;
 }
 
-.input-row input {
+.input-row input {  
   font-size : 12px;
   display: table-cell;
   vertical-align: middle;
@@ -306,6 +306,7 @@ svg {
   padding-left: 2%;
   padding-right: 2%;
   height: 94%;
+  overflow-y: auto;
 }
 
 .monomer-view {

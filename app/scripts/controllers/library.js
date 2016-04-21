@@ -23,9 +23,6 @@ angular.module('helmeditor2App')
     self.searchViewVisible = true;
     self.exploreViewVisible = false;
 
-    // the actual monomers that need to be displayed
-    self.monomers = [];
-
     // allow toggling
     var setViewVisible = function (view) {
       if (view === 'search') {
@@ -38,25 +35,12 @@ angular.module('helmeditor2App')
       }
     };
 
-    var getSearchBoxResult = function () {
-      var polymer = self.activeType;
-      var monomer = self.search.monomer;
-      if(polymer === null || polymer.trim() === '' || monomer === null || monomer.trim() === ''){
-        self.results = [];
-        return ('');
-      }
-      var result = MonomerLibraryService.getEncodedById(polymer, monomer);
-      if(result === null){
-        self.results = [];
-        return ('');
-      }
-      self.results = [result];
-      return ('name: ' + result.MonomerID + ' smiles: ' + result.MonomerSmiles);
-    };
-
     // search for the monomers as needed
     var searchMonomers = function () {
-      return [];
+      if (!MonomerLibraryService.initComplete) {
+        return [];
+      }
+      return MonomerLibraryService.searchMonomers(self.activeType, self.search);
     };
 
     // list the monomers by the selection
@@ -64,12 +48,10 @@ angular.module('helmeditor2App')
       return [];
     };
 
-    // link the monomers correctly
-    self.monomers = self.searchViewVisible ? searchMonomers() : listMonomers();
-
     // expose the methods we want to 
-    self.getSearchBoxResult = getSearchBoxResult;
     self.setViewVisible = setViewVisible;
+    self.searchMonomers = searchMonomers;
+    self.listMonomers = listMonomers;
 
     // // used by the list getters
     // var groupOptListBuilder = function(list, parent){
