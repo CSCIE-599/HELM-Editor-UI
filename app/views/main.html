@@ -14,7 +14,7 @@
     </div>
     <div class='row full-height'>
       <div class='col-md-3 library-column' ng-controller='LibraryCtrl as library'>
-        <div class="btn-group btn-group-sm full-width" role="group" aria-label="Basic example">
+        <div class="btn-group btn-group-sm full-width" role="group" aria-label="Type selection">
           <button 
             ng-repeat="polymerType in library.polymerTypes" 
             class="btn btn-secondary btn-selector"
@@ -23,24 +23,37 @@
             {{ polymerType }}
           </button>
         </div>
-        <label class="search-label">Monomer Search:</label>
+
+        <!-- allow either searching or exploring -->
+        <div class="btn-group btn-group-sm full-width" role="group" aria-label="View selection">
+          <button 
+            class="btn btn-secondary btn-selector-view"
+            ng-class="{activetype: library.searchViewVisible}"
+            ng-click="library.setViewVisible('search')">
+            Search
+          </button>
+          <button 
+            class="btn btn-secondary btn-selector-view"
+            ng-class="{activetype: library.exploreViewVisible}"
+            ng-click="library.setViewVisible('explore')">
+            Explore
+          </button>
+        </div>
+        <div ng-show="library.searchViewVisible">
+          Search View
+        </div>
+        <div ng-show="library.exploreViewVisible">
+          Explore View
+        </div>
+        <!-- <label class="search-label">Monomer Search:</label>
         <input class="search-input" type="text" ng-model="library.search.monomer">
         <br><br>
-        <p> {{ library.getSearchBoxResult() }} </p>
-
-        <form>
-          MonomerId: <input type="text" ng-model="library.search.monomer"><br><br>
-          <!-- Button is intended to facilitate potential interactions between search box and other components -->
-          <button>PLACEHOLDER BUTTON</button>
-        </form>
-        <p> sanity = {{ library.sanityCheck() }} </p>
         <p> {{ library.getSearchBoxResult() }} </p>
         <form>
           Make a selection: <br>
           <select>
           <option ng-repeat="x in library.getPolymerIdList()">{{x}}</option>
           </select>
-          <!-- show group selectors and actions buttons here. -->
         </form>
 
         <button class="stdNucleotideBtnA"> A </button>
@@ -51,7 +64,7 @@
 
         <button class="stdNucleotideBtnT"> T </button>
 
-        <button class="stdNucleotideBtnU"> U </button>
+        <button class="stdNucleotideBtnU"> U </button> -->
       </div>
       <div class='col-md-9 canvas-column'>
         <div class='row canvas-row-top'>

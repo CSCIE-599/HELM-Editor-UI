@@ -256,6 +256,14 @@ svg {
   border: solid 1px #707070;
 }
 
+.btn-selector-view {
+  width: 50%;
+  padding: 4px!important;
+  background-color: white;
+  border: solid 1px #707070;
+  margin-top: 6px;
+}
+
 .activetype {
   background-color: #bbbbbb;
 }

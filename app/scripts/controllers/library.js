@@ -20,6 +20,22 @@ angular.module('helmeditor2App')
     self.polymerTypes = MonomerLibraryService.polymerTypes;
     self.activeType = 'RNA';
 
+    // control which view is showing (search or exploring)
+    self.searchViewVisible = true;
+    self.exploreViewVisible = false;
+
+    // allow toggling
+    var setViewVisible = function (view) {
+      if (view === 'search') {
+        self.searchViewVisible = true;
+        self.exploreViewVisible = false;
+      }
+      else if (view === 'explore') {
+        self.searchViewVisible = false;
+        self.exploreViewVisible = true;
+      }
+    };
+
     var getSearchBoxResult = function () {
       var polymer = self.activeType;
       var monomer = self.search.monomer;
@@ -38,6 +54,7 @@ angular.module('helmeditor2App')
 
     // expose the methods we want to 
     self.getSearchBoxResult = getSearchBoxResult;
+    self.setViewVisible = setViewVisible;
 
     // // used by the list getters
     // var groupOptListBuilder = function(list, parent){
