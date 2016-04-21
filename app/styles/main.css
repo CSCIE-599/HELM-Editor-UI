@@ -194,7 +194,7 @@ body {
 }
 
 .library-column {
-  background-color: #fef;
+  /*background-color: #fef;*/
   height: 100%;
   border-right: 2px solid #225EA8;
 }
@@ -260,6 +260,7 @@ svg {
 
 .activetype {
   background-color: #bbbbbb!important;
+  border: solid 1px #707070;
 }
 
 .sub-group {
@@ -268,6 +269,7 @@ svg {
   padding-right: 2%;
   border: solid 1px #777;
   height: 94%;
+  padding-bottom: 2%;
 }
 
 .button-row {
@@ -491,4 +493,5 @@ svg {
   line-height: 90%;
   margin-top: 5px;
   background-color: white;
+  border: solid 1px #707070;
 }

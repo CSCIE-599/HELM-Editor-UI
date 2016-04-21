@@ -88,7 +88,7 @@
                   <!-- display any sub-categories that may exist -->
                   <div 
                     class="sub-group"
-                    ng-show="library.activeCategory === category._name">
+                    ng-show="library.getCategories(category).length > 0">
                     <div
                       class="sub-category-holder"
                       ng-repeat="subCategory in library.getCategories(category)">
