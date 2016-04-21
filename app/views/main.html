@@ -55,12 +55,19 @@
                 <input class="search-input" type="text" ng-model="library.search">
               </div>
               <div class="monomer-listing">
-                <span 
+                <div 
                   ng-repeat="monomer in library.searchMonomers()"
-                  class="monomer"
-                  ng-class="library.convertBackgroundColorClass(monomer._backgroundColor) + ' ' + library.convertFontColorClass(monomer._fontColor) + ' ' + library.convertShapeClass(monomer._shape)">
-                  {{monomer._name}}
-                </span>
+                  class="monomer-holder">
+                  <div
+                    ng-class="library.convertBackgroundColorClass(monomer._backgroundColor) + ' ' + library.convertShapeClass(monomer._shape)"
+                    class="monomer">
+                  </div>
+                  <span 
+                    class="monomer-name"
+                    ng-class="library.convertFontColorClass(monomer._fontColor)">
+                    {{monomer._name}}
+                  </span>
+                </div>
               </div>
             </div>
             <div ng-show="library.exploreViewVisible" class="monomer-view">

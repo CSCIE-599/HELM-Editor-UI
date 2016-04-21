@@ -314,14 +314,33 @@ svg {
   overflow-y: auto;
 }
 
-.monomer {
+.monomer-holder {
   text-align: center;
   vertical-align: middle;
   display: inline-block;
-  padding-top: 8px;
+  width: 50px;
+  height: 50px;
+  margin: 6px 3px 0px 3px;
+  position: relative;
+}
+
+.monomer {
   font-size: 14px;
   line-height: 30px;
-  margin: 6px 3px 0px 3px;
+  width: 100%;
+  height: 100%;
+  padding-top: 11px;
+}
+
+.monomer-name {
+  display: inline-block;
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  line-height: 50px;
 }
 
 /* background colors for monomers */
@@ -355,74 +374,94 @@ svg {
   color: #6ccc00;
   -webkit-text-fill-color: #6ccc00;
   -webkit-text-stroke: .4px black;
+  font-weight: bold;
 }
 .monomer-font-color-red {
   color: #ff0000;
   -webkit-text-fill-color: #ff0000;
   -webkit-text-stroke: .4px black;
+  font-weight: bold;
 }
 .monomer-font-color-orange {
   color: #ffa500;
   -webkit-text-fill-color: #ffa500;
   -webkit-text-stroke: .4px black;
+  font-weight: bold;
 }
 .monomer-font-color-cyan {
   color: #00ffff;
   -webkit-text-fill-color: #00ffff;
   -webkit-text-stroke: .4px black;
+  font-weight: bold;
 }
 .monomer-font-color-black {
   color: #000000;
   -webkit-text-fill-color: #000000;
   -webkit-text-stroke: .4px black;
+  font-weight: bold;
 }
 .monomer-font-color-white {
   color: #ffffff;
   -webkit-text-fill-color: #ffffff;
-  -webkit-text-stroke: .4px black;
+  -webkit-text-stroke: .7px black;
+  font-weight: bold;
 }
 
-/* the shapes for monomers (borrowed from https://css-tricks.com/examples/ShapesOfCSS/) */
+/* the shapes for monomers (borrowed from http://creative-punch.net/2014/01/perfect-css-hexagons-size-using-transform-calc/) */
 .monomer-shape-no {
-  width: 50px;
-  height: 50px;
 }
 .monomer-shape-rect {
-  width: 50px;
-  height: 50px;
   border: solid 1px black;
+  border-radius: 8px;
 }
 .monomer-shape-rhomb {
-  width: 50px;
-  height: 50px;
+  width: 70.7107%;
+  height: 70.7107%;
+  margin-left: 15%;
+  margin-top: 15%;
+  transform: rotate(45deg);
   border: solid 1px black;
 }
 .monomer-shape-circle {
-  width: 50px;
-  height: 50px;
-  -moz-border-radius: 25px;
-  -webkit-border-radius: 25px;
-  border-radius: 25px;
+  -moz-border-radius: 50%;
+  -webkit-border-radius: 50%;
+  border-radius: 50%;
   border: solid 1px black;
+}
+.monomer-shape-hexagon:before {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  background-color: inherit;
+  height: inherit;
+  width: inherit;
+  content: '';
+  transform: rotate(60deg);
+  transform-origin: 25% 25%;
+  border-top: solid 1px black;
+  border-bottom: solid 1px black;
+  margin-top: 5%;
 }
 .monomer-shape-hexagon {
-  width: 50px;
-  height: 50px;
-  border: solid 1px black;
+  height: 90%;
+  /*width: 57.735%;*/
+  width: 51.962%;
+  border-top: solid 1px black;
+  border-bottom: solid 1px black;
+  display: inline-block;
+  margin-top: 5%;
 }
-/*
-float: left;
-border-right: 30px solid #6C6;
-border-top: 52px solid transparent;
-border-bottom: 52px solid transparent;
-
-float: left;
-width: 60px;
-height: 104px;
-background-color: #6C6;
-
-float: left;
-border-left: 30px solid #6C6;
-border-top: 52px solid transparent;
-border-bottom: 52px solid transparent;
-*/
+.monomer-shape-hexagon:after {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  background-color: inherit;
+  height: inherit;
+  width: inherit;
+  content: '';
+  transform: rotate(-60deg);
+  transform-origin: 25% 75%;
+  border-top: solid 1px black;
+  border-bottom: solid 1px black;
+  margin-top: 5%;
+}
