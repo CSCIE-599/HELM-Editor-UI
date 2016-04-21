@@ -194,9 +194,9 @@ describe('Service: MonomerLibraryService', function () {
 
   it('should return a normalized linked database with the groupings', function () {
     var linkedDB = MonomerLibraryService.getLinkedDB();
-    expect(linkedDB['RNA']).toBeDefined();
-    expect(linkedDB['PEPTIDE']).toBeDefined();
-    expect(linkedDB['CHEM']).toBeDefined();
+    expect(linkedDB.RNA).toBeDefined();
+    expect(linkedDB.PEPTIDE).toBeDefined();
+    expect(linkedDB.CHEM).toBeDefined();
   });
 
   it('should be able to return each type of polymer grouping', function () {
@@ -223,7 +223,7 @@ describe('Service: MonomerLibraryService', function () {
     expect(groupChem.categories[0].monomers.length).toBe(3);
     expect(groupChem.categories[0].monomers[0]._name).toBe('Az');
     expect(groupChem.categories[0].monomers[0]._title).toBe('Chemical Modifier');
-  })
+  });
 
   // functions to return our test databases (these are currently the full databases)
   var getDefaultCategorizationXML = function () {
