@@ -44,4 +44,24 @@ describe('Controller: LibraryCtrl', function () {
     expect(LibraryCtrl.searchViewVisible).toBe(searchVisible);
     expect(LibraryCtrl.exploreViewVisible).toBe(exploreVisible);
   });
+
+  it('should be able to transform properties to background color classes', function () {
+    expect(LibraryCtrl.convertBackgroundColorClass('White')).toBe('monomer-background-color-white');
+    expect(LibraryCtrl.convertBackgroundColorClass('Light_Violet')).toBe('monomer-background-color-light-violet');
+    expect(LibraryCtrl.convertBackgroundColorClass('Green')).toBe('monomer-background-color-green');
+    expect(LibraryCtrl.convertBackgroundColorClass('Red')).toBe('monomer-background-color-red');
+    expect(LibraryCtrl.convertBackgroundColorClass('Orange')).toBe('monomer-background-color-orange');
+    expect(LibraryCtrl.convertBackgroundColorClass('Cyan')).toBe('monomer-background-color-cyan');
+    expect(LibraryCtrl.convertBackgroundColorClass('Light_Cyan')).toBe('monomer-background-color-light-cyan');
+    expect(LibraryCtrl.convertBackgroundColorClass('Purple')).toBe('monomer-background-color-purple');
+  });
+
+  it('should be able to transform properties to font color classes', function () {
+    expect(LibraryCtrl.convertFontColorClass('White')).toBe('monomer-font-color-white');
+    expect(LibraryCtrl.convertFontColorClass('Green')).toBe('monomer-font-color-green');
+    expect(LibraryCtrl.convertFontColorClass('Red')).toBe('monomer-font-color-red');
+    expect(LibraryCtrl.convertFontColorClass('Orange')).toBe('monomer-font-color-orange');
+    expect(LibraryCtrl.convertFontColorClass('Cyan')).toBe('monomer-font-color-cyan');
+    expect(LibraryCtrl.convertFontColorClass('Black')).toBe('monomer-font-color-black');
+  });
 });

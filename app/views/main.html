@@ -55,9 +55,12 @@
                 <input class="search-input" type="text" ng-model="library.search">
               </div>
               <div class="monomer-listing">
-                <div ng-repeat="monomer in library.searchMonomers()">
-                  ID: {{monomer._name}} Name: {{monomer.encodedMonomer.MonomerName || 'Undefined'}}<br>
-                </div>
+                <span 
+                  ng-repeat="monomer in library.searchMonomers()"
+                  class="monomer"
+                  ng-class="library.convertBackgroundColorClass(monomer._backgroundColor) + ' ' + library.convertFontColorClass(monomer._fontColor)">
+                  {{monomer._name}}
+                </span>
               </div>
             </div>
             <div ng-show="library.exploreViewVisible" class="monomer-view">

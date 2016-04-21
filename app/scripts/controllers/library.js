@@ -48,10 +48,56 @@ angular.module('helmeditor2App')
       return [];
     };
 
+    // convert the class to the right class name for the background color
+    var convertBackgroundColorClass = function (prop) {
+      switch (prop) {
+        case 'White':
+          return 'monomer-background-color-white';
+        case 'Light_Violet':
+          return 'monomer-background-color-light-violet';
+        case 'Green':
+          return 'monomer-background-color-green';
+        case 'Red':
+          return 'monomer-background-color-red';
+        case 'Orange':
+          return 'monomer-background-color-orange';
+        case 'Cyan':
+          return 'monomer-background-color-cyan';
+        case 'Light_Cyan':
+          return 'monomer-background-color-light-cyan';
+        case 'Purple':
+          return 'monomer-background-color-purple';
+        default:
+          return 'monomer-background-color-white';
+      }
+    };
+
+    // convert the class to the right class name for the color
+    var convertFontColorClass = function (prop) {
+      switch (prop) {
+        case 'White':
+          return 'monomer-font-color-white';
+        case 'Green':
+          return 'monomer-font-color-green';
+        case 'Red':
+          return 'monomer-font-color-red';
+        case 'Orange':
+          return 'monomer-font-color-orange';
+        case 'Cyan':
+          return 'monomer-font-color-cyan';
+        case 'Black':
+          return 'monomer-font-color-black';
+        default:
+          return 'monomer-font-color-black';
+      }
+    };
+
     // expose the methods we want to 
     self.setViewVisible = setViewVisible;
     self.searchMonomers = searchMonomers;
     self.listMonomers = listMonomers;
+    self.convertBackgroundColorClass = convertBackgroundColorClass;
+    self.convertFontColorClass = convertFontColorClass;
 
     // // used by the list getters
     // var groupOptListBuilder = function(list, parent){

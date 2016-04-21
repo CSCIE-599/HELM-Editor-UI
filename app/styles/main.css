@@ -313,3 +313,74 @@ svg {
   height: 95%;
   overflow-y: auto;
 }
+
+.monomer {
+  width: 50px;
+  height: 50px;
+  text-align: center;
+  vertical-align: middle;
+  border: solid 1px black;
+  display: inline-block;
+  padding-top: 8px;
+  font-size: 14px;
+  line-height: 30px;
+  margin: 6px 3px 0px 3px;
+}
+
+/* background colors for monomers */
+.monomer-background-color-white {
+  background-color: #ffffff;
+}
+.monomer-background-color-light-violet {
+  background-color: #ee82ee;
+}
+.monomer-background-color-green {
+  background-color: #7fff00;
+}
+.monomer-background-color-red {
+  background-color: #ff0000;
+}
+.monomer-background-color-orange {
+  background-color: #ffa500;
+}
+.monomer-background-color-cyan {
+  background-color: #00ffff;
+}
+.monomer-background-color-light-cyan {
+  background-color: #e0ffff;
+}
+.monomer-background-color-purple {
+  background-color: #a020f0;
+}
+
+/* font colors for monomers */
+.monomer-font-color-green {
+  color: #6ccc00;
+  -webkit-text-fill-color: #6ccc00;
+  -webkit-text-stroke: .4px black;
+}
+.monomer-font-color-red {
+  color: #ff0000;
+  -webkit-text-fill-color: #ff0000;
+  -webkit-text-stroke: .4px black;
+}
+.monomer-font-color-orange {
+  color: #ffa500;
+  -webkit-text-fill-color: #ffa500;
+  -webkit-text-stroke: .4px black;
+}
+.monomer-font-color-cyan {
+  color: #00ffff;
+  -webkit-text-fill-color: #00ffff;
+  -webkit-text-stroke: .4px black;
+}
+.monomer-font-color-black {
+  color: #000000;
+  -webkit-text-fill-color: #000000;
+  -webkit-text-stroke: .4px black;
+}
+.monomer-font-color-white {
+  color: #ffffff;
+  -webkit-text-fill-color: #ffffff;
+  -webkit-text-stroke: .4px black;
+}
