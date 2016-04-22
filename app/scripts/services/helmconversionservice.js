@@ -39,11 +39,6 @@ angular.module('helmeditor2App')
                 dest : self.getDest(connectionArray[i]),
             });
         }
-
-        /*this.testFunction = function(){
-            alert('hello');
-        }*/
-
         return [ processedSequences, processedConnections ];
     };
 

@@ -15,6 +15,12 @@ describe('Directive: helmCanvas', function () {
   beforeEach(inject(function (_$compile_, $rootScope) {
     scope = $rootScope.$new();
     $compile = _$compile_;
+    
+    /*
+    // mock out our pan and zoom functions, to be tested in the unit tests
+    scope.pan = function () {};
+    scope.zoom = function () {};
+    */
   }));
 
   // helpers to create nodes and connections
@@ -92,7 +98,7 @@ describe('Directive: helmCanvas', function () {
     expect(svg.hasClass('draggable-container'));
   }));
 
-  it('should have the zoom buttons and the graph', inject(function () {
+  it('should have the zoom buttons, the pan buttons, and the graph', inject(function () {
     element = angular.element('<div><helm-canvas></helm-canvas></div>');
     element = $compile(element)(scope);
     scope.$digest();
@@ -100,7 +106,7 @@ describe('Directive: helmCanvas', function () {
     // check the children of the SVG element
     var svg = element.children().eq(0);
     var svgChildren = svg.children();
-    expect(svgChildren.length).toBe(5);
+    expect(svgChildren.length).toBe(9);
     expect(svgChildren.eq(0).hasClass('zoombtn')).toBe(true);
     expect(svgChildren.eq(0).attr('cx')).toBeDefined();
     expect(svgChildren.eq(0).attr('cy')).toBeDefined();
@@ -114,9 +120,15 @@ describe('Directive: helmCanvas', function () {
     expect(svgChildren.eq(3).attr('x')).toBeDefined();
     expect(svgChildren.eq(3).attr('y')).toBeDefined();
 
+    // check the pan buttons
+    expect(svgChildren.eq(4).attr('xlink:href')).toContain('.png');
+    expect(svgChildren.eq(5).attr('xlink:href')).toContain('.png');
+    expect(svgChildren.eq(6).attr('xlink:href')).toContain('.png');
+    expect(svgChildren.eq(7).attr('xlink:href')).toContain('.png');
+
     // check the actual graph (it should have no nodes)
-    expect(svgChildren.eq(4).attr('id')).toBe('map-matrix');
-    expect(svgChildren.eq(4).children().length).toBe(0);
+    expect(svgChildren.eq(8).attr('id')).toBe('map-matrix');
+    expect(svgChildren.eq(8).children().length).toBe(0);
   }));
 
   it('should list out the connections in the graph', inject(function () {
@@ -135,7 +147,7 @@ describe('Directive: helmCanvas', function () {
     // check that two paths were created, with the right d value
     var helmCanvas = element.children().eq(0);
     // take into account the zoom buttons
-    var g = helmCanvas.children().eq(4);
+    var g = helmCanvas.children().eq(8);
     expect(g.children().length).toBe(2);
     var paths = g.find('path');
     expect(paths.length).toBe(2);
@@ -243,7 +255,7 @@ describe('Directive: helmCanvas', function () {
     // check that there are elements within g, and they have the right structure
     var helmCanvas = element.children().eq(0);
     // grab the element where the nodes go
-    var parentG = helmCanvas.children().eq(4);
+    var parentG = helmCanvas.children().eq(8);
     // all of the nodes themselves
     var children = parentG.children();
     expect(children.length).toBe(3);
@@ -288,4 +300,33 @@ describe('Directive: helmCanvas', function () {
       expect(numText.attr('y')).toBe('' + (vals[i].y - 5));
     }
   }));
+
+  /*
+  * used to test zoom/pan eventually
+  it('should call the zoom and pan methods with the correct parameters', function () {
+    element = angular.element('<div><helm-canvas></helm-canvas></div>');
+    element = $compile(element)(scope);
+    scope.$digest();
+
+    // find the zoom and pan buttons
+    var svg = element.children().eq(0);
+    var svgChildren = svg.children();
+    var zoomOut = svgChildren.eq(0);
+    var zoomIn = svgChildren.eq(1);
+    var panUp = svgChildren.eq(4);
+    var panDown = svgChildren.eq(5);
+    var panRight = svgChildren.eq(6);
+    var panLeft = svgChildren.eq(7);
+
+    // set up the spy
+    // spyOn(scope, 'zoom');
+    // spyOn(scope, 'pan');
+
+    // click the buttons and make sure they were called
+    // zoomIn.click();
+    // expect(scope.zoom).toHaveBeenCalledWith(0.8);
+    // zoomOut.click();
+    // expect(scope.zoom).toHaveBeenCalledWith(1.2);
+  });
+  */
 });

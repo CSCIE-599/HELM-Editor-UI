@@ -26,8 +26,8 @@ angular.module('helmeditor2App')
 	var nodeWidth = 25;
 
 	//regular node radius
-	var radiusX = '3';
-	var radiusY = '3';
+	var radiusX = 3;
+	var radiusY = 3;
 
 
 	self.createRibose = function (nodeName,  nodeColor, xPos, yPos) {
@@ -50,25 +50,24 @@ angular.module('helmeditor2App')
 	self.createNode = function (nodeName, sequenceType, nodeColor, isRotate, xpos, ypos, nodeType) {
 
 		var rotateDegree = '0';
-
 		var rx = radiusX;
 		var ry = radiusX;
+		var textColor;
 
+		nodeWidth = self.getNodeWidth(nodeName, isRotate);
+		
 		if(isRotate){
 			rotateDegree = '45';
 		}
-
 		if(nodeType === 'p'){//for phosphate, round the rectangle corners to look like circle
 			rx = radiusX +10;
-			ry = radiusY +10;
+			ry = radiusY +10;			
 		}
-
-        if(sequenceType === 'CHEM'){//CHEM nodes
-            nodeWidth = 50;
-        }
-        else {
-            nodeWidth = 25;
-        }
+        if(nodeColor === 'red' || nodeColor === 'purple'){
+			textColor = '#FFFFFF';
+		} else {
+			 textColor = '#000000';
+		}
 
 		var newNode = {
 			name: nodeName,
@@ -87,6 +86,8 @@ angular.module('helmeditor2App')
 			transformDegree:rotateDegree,
 			seqVisible:	'hidden',
 			nodeVisible: 'hidden',
+			textColor: textColor,
+			nodeType:nodeType
 		};
 
 		//number nodes if Peptide, or if Nucleotide and a base node
@@ -101,25 +102,23 @@ angular.module('helmeditor2App')
         	newNode.lowery = newNode.lowery-150;
         }
         nodeId++;
-
 		return newNode;
 	};
 
 	self.createConnection = function(sourceNode, destNode){
-
 		var conn = {
 			source: sourceNode,
 			dest: destNode
 		};
-
 		return conn;
 	};
 
+	/*Identify a ribose node*/
 	self.isRiboseNode = function(node){
-	 	var riboseArr = ['R', 'dR', 'sR', 'mR', 'fR', 'LR', 'MOE', 'fMOE',
+	 	var riboseArr = ['R', 'dR', 'sR', 'mR', 'fR', 'LR', 'MOE', 'FMOE',
 	 					 'mph', 'PONA','qR', 'RGNA', 'SGNA'	,'12ddR', '25R',
-	 					 '4sR' , 'aFR', 'aR', 'eR', 'fR', 'hx', 'ILR', 'tR',
-	 					 'UNA', '3A6','3FAM', '3ss6', '5A6','5cGT','5FAM',
+	 					 '4sR' , 'aFR', 'aR', 'eR', 'FR', 'hx', 'ILR', 'tR',
+	 					 'UNA', '3A6','3FAM', '3SS6', '5A6','5cGT','5FAM',
 	 					 '5FBC6', 'am12', 'am6'];
 
         //TO-DO: make test case insensitive
@@ -129,28 +128,70 @@ angular.module('helmeditor2App')
 	 	return false;
 	};
 
-
+	/*Identify a phosphate node*/
 	self.isPhosphateNode = function(node){
-		if(node === 'P' || node === 'sP'){
+		if(node === 'P' || node === 'sP' || node === 'naP' ||  node === 'nasP'){
 			return true;
         }
 		return false;
 	};
 
+	/*get color for a node*/
 	self.getNodeColor = function(nodeName){
-		if(nodeName === 'A'){
-			return 'lightgreen';
+
+		var color;
+		switch(nodeName){
+		
+			case 'A':
+			case 'cpmA': 
+			case 'eaA': 
+			case 'daA':
+			case 'dabA':
+			case 'meA':
+			case 'baA':	
+			case 'clA':	
+			color =	'lightgreen'; 
+			break;
+
+			case 'C':
+			case 'prpC':
+			case '5meC': 
+			case 'cpC': 
+			case 'cdaC':		
+			color =	'red'; 
+			break;
+			
+			case 'G':
+			color = 'orange'; 
+			break;
+			
+			case 'T':
+			case 'U': 
+			case '5eU': 
+			case '5fU':
+			case 'prpU':
+			case 'cpU':
+			case '5tpU':
+			case 'tfU':
+			case '5iU':
+			color =	'cyan'; 
+			break;
+		
+			default: 
+			color = 'lightgrey';
 		}
-		else if(nodeName === 'C' || nodeName === '5meC'){
-			return 'red';
+		return color;		
+    };
+
+    self.getNodeWidth = function(nodeName, isRotate){
+		if(!isRotate){
+	    	if(nodeName.length === 3){
+				return 30;
+			}else if(nodeName.length >= 4){ 
+				return 40;
+			}
 		}
-		else if(nodeName === 'G'){
-			return 'orange';
-		}
-		else if(nodeName === 'T' || nodeName === 'U'){
-			return 'cyan';
-		}
-        return 'lightgrey';
+		return 25;
     };
 
 	self.getNodeNum = function(){
@@ -161,23 +202,14 @@ angular.module('helmeditor2App')
 		nodeNum = num;
 	};
 
-	//helper function to combine arrays of nodes, into one big array
-	self.collapseNodes = function(allNodesArr){
-
-		var nodes = [];
-
-		for(var i=0; i<allNodesArr.length;i++){
-			nodes = nodes.concat(allNodesArr[i]);
-		}
-		return nodes;
-	};
-
+	/*helper method for creating cyclical nodes, only supports cyclical peptides now*/
+	// TO-DO Extend to support cyclical nucleotides
 	self.makeCycle = function(sequence, seqType, pos, dir){
 
 		var cycleNodesArray = [];
 		var r = (sequence.length * 10) + 10;//radius
 
-        //center points of the circle
+        //center of the circle
 		var yc = pos.y + r/2;
         var xc;
 
@@ -189,7 +221,6 @@ angular.module('helmeditor2App')
 		}
 
 		var degree = 360/sequence.length; //divide the circle, to allow equal separation between the nodes
-
 		var nodexpos, nodeypos;
 
         var startDegrees = degree *2; //TO-DO: start position is hard-coded for Cyclic Peptide
@@ -201,7 +232,7 @@ angular.module('helmeditor2App')
 				nodexpos = Math.sin(-i * Math.PI / 180) * r + xc; //making 'i' negative creates clockwise placement
 				nodeypos = Math.cos(-i * Math.PI / 180) * r + yc;
 
-				var node = self.createNode(value, seqType, 'lightblue', true, nodexpos, nodeypos);
+				var node = self.createNode(value, seqType, '#00C3FF', true, nodexpos, nodeypos);
 
 				cycleNodesArray.push(node);
 				i = i + degree;
@@ -234,11 +265,18 @@ angular.module('helmeditor2App')
 	var transMatrix = [1,0,0,1,0,0];//identity matrix 
 	var mapMatrix, newMatrix, width, height;	
 
-	self.zoom = function (scale, svgDoc){
+	self.zoom = function (scale, evt){
+		var svgDoc;
+
+		if(evt){
+			svgDoc = evt.target.parentNode;//keep track of which canvas is being zoomed
+		}
+		else {
+			svgDoc = document.getElementById('mainCanvas');//for zoom onload
+		}
 		//get canvas width and height
 		 width = svgDoc.clientWidth;
 		 height = svgDoc.clientHeight;
-
 		 mapMatrix = svgDoc.getElementById('map-matrix');
 
 		 for (var i=0; i<transMatrix.length; i++){
@@ -249,6 +287,16 @@ angular.module('helmeditor2App')
 		 transMatrix[5] += (1-scale)*height/2;				        
 		 newMatrix = 'matrix(' +  transMatrix.join(' ') + ')';
 		 mapMatrix.setAttributeNS(null, 'transform', newMatrix);
+	};
+
+	self.pan = function(dx, dy, evt){
+	  var svgDoc = evt.target.parentNode;//keep track of which canvas is being panned     	
+	  transMatrix[4] += dx;
+	  transMatrix[5] += dy;
+	  mapMatrix = svgDoc.getElementById('map-matrix');
+	            
+	  newMatrix = 'matrix(' +  transMatrix.join(' ') + ')';
+	  mapMatrix.setAttributeNS(null, 'transform', newMatrix);
 	};
 
 
@@ -378,6 +426,11 @@ angular.module('helmeditor2App')
 		//visibility of the node
 		this.nodeVisible = function () {
 			return this.data.nodeVisible;
+		};
+
+		//text color of the node
+		this.textColor = function () {
+			return this.data.textColor;
 		};
 
 		this.position = function(){
