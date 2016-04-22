@@ -583,26 +583,12 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 	};
 
 	/* zoom and pan functions */
-	$scope.zoom = function (scale, canvasId){
-		var svgDoc;
-		if(canvasId){//zooming the lower canvas, if true
-			svgDoc = document.getElementById(canvasId);
-		}
-		else {
-			svgDoc = document.getElementById('helmSvg');//main canvas
-		}
-		CanvasDisplayService.zoom(scale, svgDoc);
+	$scope.zoom = function (scale, evt){		
+		CanvasDisplayService.zoom(scale, evt);
 	};
 	
-	$scope.pan = function (dx, dy, canvasId){
-		var svgDoc;
-		if(canvasId){//pan the lower canvas, if true
-			svgDoc = document.getElementById(canvasId);
-		}
-		else {
-			svgDoc = document.getElementById('helmSvg');//main canvas
-		}
-		CanvasDisplayService.pan(dx, dy, svgDoc);
+	$scope.pan = function (dx, dy, evt){		
+		CanvasDisplayService.pan(dx, dy, evt);
 	};
 
 	/*

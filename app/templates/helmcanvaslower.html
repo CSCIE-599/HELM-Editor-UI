@@ -1,17 +1,17 @@
-<svg xmlns="http://www.w3.org/2000/svg" id="helmSvgLower">
+<svg xmlns="http://www.w3.org/2000/svg" >
    <!-- zoom and pan buttons -->
-  <circle class="zoombtn"  cx="40" cy="31" r="8" ng-click="zoom(0.8, 'helmSvgLower')"/>
-  <circle class="zoombtn"  cx="40" cy="49" r="8" ng-click="zoom(1.20, 'helmSvgLower')"/>
+  <circle class="zoombtn"  cx="40" cy="31" r="8" ng-click="zoom(0.8, $event)"/>
+  <circle class="zoombtn"  cx="40" cy="49" r="8" ng-click="zoom(1.20, $event)"/>
   <text class="plus-minus" x="36" y="28"> _  </text> 
   <text class="plus-minus" x="36" y="53"> +  </text> 
    <image xlink:href="images/arrow-up.png" x="30" y="5" 
-      height="20px" width="20px" ng-click ="pan(0,50,'helmSvgLower')"/>
+      height="20px" width="20px" ng-click ="pan(0,50,$event)"/>
   <image xlink:href="images/arrow-down.png" x="30" y="58" 
-      height="20px" width="20px" ng-click ="pan(0,-50,'helmSvgLower')"/>
+      height="20px" width="20px" ng-click ="pan(0,-50,$event)"/>
   <image xlink:href="images/arrow-right.png" x="45" y="30" 
-      height="20px" width="20px"  ng-click ="pan(-50,0,'helmSvgLower')"/>
+      height="20px" width="20px"  ng-click ="pan(-50,0,$event)"/>
   <image xlink:href="images/arrow-left.png" x="15" y="30" 
-      height="20px" width="20px" ng-click ="pan(50,0,'helmSvgLower')"/> 
+      height="20px" width="20px" ng-click ="pan(50,0,$event)"/> 
 
 
   <!-- Graph display begin -->

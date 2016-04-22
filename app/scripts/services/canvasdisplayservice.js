@@ -265,7 +265,15 @@ angular.module('helmeditor2App')
 	var transMatrix = [1,0,0,1,0,0];//identity matrix 
 	var mapMatrix, newMatrix, width, height;	
 
-	self.zoom = function (scale, svgDoc){
+	self.zoom = function (scale, evt){
+		var svgDoc;
+
+		if(evt){
+			svgDoc = evt.target.parentNode;//keep track of which canvas is being zoomed
+		}
+		else {
+			svgDoc = document.getElementById('mainCanvas');//for zoom onload
+		}
 		//get canvas width and height
 		 width = svgDoc.clientWidth;
 		 height = svgDoc.clientHeight;
@@ -281,7 +289,8 @@ angular.module('helmeditor2App')
 		 mapMatrix.setAttributeNS(null, 'transform', newMatrix);
 	};
 
-	self.pan = function(dx, dy, svgDoc){     	
+	self.pan = function(dx, dy, evt){
+	  var svgDoc = evt.target.parentNode;//keep track of which canvas is being panned     	
 	  transMatrix[4] += dx;
 	  transMatrix[5] += dy;
 	  mapMatrix = svgDoc.getElementById('map-matrix');
