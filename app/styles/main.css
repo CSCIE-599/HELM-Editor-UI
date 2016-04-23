@@ -123,8 +123,9 @@ body {
 
 }
 
-/* For the load sequence modal dialogue box 
+/* For the load sequence modal dialogue box
  * Taken from tutorial by Adam Albrecht (will probably tweak for consistent app layout) */
+
 .ng-modal-overlay {
   /* A dark translucent div that covers the whole screen */
   position:absolute;
@@ -212,7 +213,7 @@ input {
 #input {
   margin-top: 5px;
   margin-bottom: 5px;
-  border:solid 1px #707070;  
+  border:solid 1px #707070;
 }
 
 .canvas-container {
@@ -244,4 +245,30 @@ svg {
 .molecule-table {
   display:table;
   width:100%;
+}
+
+
+.myModal{
+  height:700px;
+  padding:5px;
+}
+
+.modal {
+display: block;
+}
+
+.btn {
+    background-color: lightgrey;
+    color: black;
+}
+
+th, td {
+    padding: 5px;
+    border-bottom: 1px solid #ddd;
+}
+
+/* table title in molecular properties modal */
+caption {
+    display: table-caption;
+    text-align: center;
 }

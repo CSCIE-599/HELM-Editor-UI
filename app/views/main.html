@@ -30,8 +30,10 @@
       <div class='col-md-9 canvas-column'>
         <div class='row canvas-row-top'>
           <p><span>View: Detailed Sequence</span><span class="message-span">{{main.result}}</span></p>
-          <div class='canvas-container'>
-            <helm-canvas graph='canvasView' canvastype='upper'>
+          <div class='canvas-container' id= 'canvas'>
+            <!-- canvas view with right-click context menu -->
+            <helm-canvas context-menu="menuOptions" model="expression" graph='canvasView' canvastype='upper'>
+            <script type="text/ng-template" id="viewmodal.html"></script>
           </div>
         </div>
         <div class='row canvas-row-bottom'>
@@ -79,7 +81,7 @@
       <table>
         <tr>
           <td rowspan='3'></td>
-          <td><label>Please choose:</label></td> 
+          <td><label>Please choose:</label></td>
           <td align='right'>
             <select ng-model='polymerType' ng-options='option as option.label for option in main.polyTypes'></select>
           </td>
@@ -90,7 +92,7 @@
           </td>
         </tr>
         <tr>
-          <td align='right' colspan='2'>          
+          <td align='right' colspan='2'>
             <button class='btn' ng-click='main.processInput(polymerType, inputSequence)'>Load</button>
             <button class='btn' ng-click='main.clear()'>Clear</button>
             <button class='btn' ng-click='main.toggleModal()'>Cancel</button>

@@ -11,13 +11,17 @@
 
 angular
   .module('helmeditor2App', [
-    'ngAnimate', 
+    'ngAnimate',
     'ngCookies',
     'ngResource',
     'ngRoute',
     'ngSanitize',
     'ngTouch',
-    'helmeditor2App.webService'
+    'helmeditor2App.webService',
+    'ngFileSaver',
+    'ngAnimate',
+    'ui.bootstrap',
+    'ui.bootstrap.tpls'
   ])
   .config(function ($routeProvider) {
     $routeProvider
