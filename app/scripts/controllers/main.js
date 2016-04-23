@@ -766,6 +766,13 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 	//options for right-click context-menu
 	//contextMenu doc: https://github.com/Templarian/ui.bootstrap.contextMenu
 	$scope.menuOptions = [
+
+		['Show Molecular Structure', function () {
+			//TODO - this is only an example image
+			$scope.requestedview = "/images/cyclicalpeptide.png";
+			$scope.openImageView();
+		}],
+		null,
 		['View', function (){
 		},[
 			['HELM Notation', function () {
@@ -853,13 +860,8 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 				$scope.fileExtension = '.mol';
 				$scope.downloadFile();
 			}]
-		]],
-		null,
-		['Show Molecular Structure', function () {
-			//TODO - this is only an example image
-			$scope.requestedview = "/images/cyclicalpeptide.png";
-			$scope.openImageView();
-		}]
+		]]
+
 	];
 
 	//TODO- remove the below - notes for clicking on specific nodes
