@@ -236,6 +236,7 @@ svg {
   max-height: 35%;
   resize: vertical;
   overflow-y: auto;
+  padding-top: 5px;
 }
 
 .message-span {

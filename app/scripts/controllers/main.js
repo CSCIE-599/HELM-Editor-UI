@@ -47,7 +47,15 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 	    main.toggleModal();
 	};
 
+
+	/* clear the modal dialog text area*/
+	main.clear = function (){
+		//TO-DO - change this to angular selector
+		document.getElementById('input').value = '';
+	};
+
 	/* Invoke factory function to get HELM notation */
+
 	main.getHelmNotation = function (polymerType, inputSequence) {
 	    var successCallback = function (helmNotation) {
 	      main.helm = helmNotation;
@@ -216,7 +224,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
         $scope.makeRequestedConnections(connectionArray, graphedNodes);
       }
 
-      $scope.zoomCanvas(0.8);//zoomin the default view by 20%
+      $scope.zoom(0.8);//zoomin the default view by 20%
     };
 
     //Parse the sequence, and generate the graph
@@ -232,7 +240,6 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
         graphedNodes.push(currSubGraph.nodes);
       }
       else {
-        //TO-DO: Change 'makeCyclicPeptide()' to a new function that handles different cyclical shapes
         var nodes = $scope.makeCyclicPeptide(sequence, dir, seqType, pos, seqName, connectionArray, sequenceArray);
         graphedNodes.push(nodes);
       }
@@ -335,7 +342,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 
 		angular.forEach(monomerArr, function(value, key) {
 
-			currNode = CanvasDisplayService.createNode(value, 'PEPTIDE', 'lightblue', true, x , y);
+			currNode = CanvasDisplayService.createNode(value, 'PEPTIDE', '#00C3FF', true, x , y);
 			allNodes.push(currNode);
 			$scope.canvasView.addNode(currNode);
 			if (key === 0) {
@@ -629,17 +636,59 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 		main.extcoefficient = '';
 	};
 
-	/* zoom functions */
-	$scope.zoomCanvas = function (scale, canvasId){
-		var svgDoc;
-		if(canvasId){//zooming the lower canvas, if true
-			svgDoc = document.getElementById(canvasId);
-		}
-		else {
-			svgDoc = document.getElementById('helmSvg');//main canvas
-		}
+	/* zoom and pan functions */
+	$scope.zoom = function (scale, evt){
+		CanvasDisplayService.zoom(scale, evt);
+	};
 
-		CanvasDisplayService.zoom(scale, svgDoc);
+	$scope.pan = function (dx, dy, evt){
+		CanvasDisplayService.pan(dx, dy, evt);
+	};
+
+	/*
+	 * Begin code for lower pane
+	 */
+   	/* Variables for view types in lower pane */
+	main.viewTypes = [
+	    { value: 'HELM', label:'HELM' },
+	    { value: 'Sequence', label:'Sequence' },
+	    { value: 'Molecule Properties', label:'Molecule Properties' },
+	];
+	$scope.viewType = main.viewTypes[0];
+	$scope.helm = true;
+	$scope.sequence = false;
+	$scope.moleculeprops = false;
+	main.result = '';
+	main.helm = '';
+	main.componenttype = '';
+	main.molecularweight = '';
+	main.molecularformula = '';
+	main.extcoefficient = '';
+	/* view type selection event handler */
+	$scope.updateLower = function(selectedView) {
+		$scope.viewType = selectedView;
+		switch(selectedView.value) {
+	      case 'HELM':
+	      	$scope.helm = true;
+			$scope.sequence = false;
+			$scope.moleculeprops = false;
+			break;
+	      case 'Molecule Properties':
+	        $scope.helm =false;
+	        $scope.sequence = false;
+			$scope.moleculeprops = true;
+			if(main.helm !== '' && main.molecularformula === '') {
+				main.getMolecularWeight(main.helm);
+				main.getMolecularFormula(main.helm);
+				main.getExtinctionCoefficient(main.helm);
+			}
+	        break;
+	      case 'Sequence':
+	      	$scope.helm = false;
+	      	$scope.moleculeprops = false;
+			$scope.sequence = true;
+	        break;
+	    }
 	};
 
 	// Create the view for the canvas and attach to the scope.

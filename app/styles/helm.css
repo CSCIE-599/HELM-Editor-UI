@@ -117,6 +117,7 @@ The element (in this case the SVG element) that contains the draggable elements.
 
 .draggable-container {
 	border: solid 1px blue;
+	background-color: #f1f1f1;
 }
 
 /*
