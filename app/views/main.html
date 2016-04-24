@@ -176,8 +176,9 @@
           <div ng-show='helm'><p><span>{{main.helm}}</span></p></div>
           <div ng-show='moleculeprops'>
             <table class='molecule-table'>
-              <tr><th>Component Type</th><th>Molecular Weight</th><th>Molecular Formula</th><th>Ext. Coefficient</td></tr>
-              <tr><td>{{main.seqtype}}</td><td>{{main.molecularweight}}</td><td>{{main.molecularformula}}</td><td>{{main.extcoefficient}}</td></tr>
+              <tr><th>Component Type</th><th>Molecular Weight</th><th>Molecular Formula</th><th>Ext. Coefficient</th><th>Molecular Structure</th></tr>
+              <tr><td>{{main.seqtype}}</td><td>{{main.molecularweight}}</td><td>{{main.molecularformula}}</td><td>{{main.extcoefficient}}</td>
+              <td><a ng-href="" ng-click='showHelmImage()'>{{main.helmImageLink}}</a></td></tr>
             </table>
           </div>
           <div class='canvas-container' ng-show='sequence'>
@@ -187,6 +188,11 @@
       </div>
     </div>
   </div>
+
+  <!-- modal dialog for image display-->
+  <modal-dialog show='main.imageModalShown'>
+    <div>Chemical Structure</div><div><img ng-src="{{imageUrl}}"/></div>
+  </modal-dialog>
 
   <!-- modal dialog form -->
   <modal-dialog show='main.modalShown'>
