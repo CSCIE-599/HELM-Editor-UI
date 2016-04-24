@@ -580,6 +580,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 		main.molecularweight = '';
 		main.molecularformula = '';
 		main.extcoefficient = '';
+		main.helmImageLink = ''; 
 	};
 
 	/* zoom and pan functions */
@@ -627,6 +628,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 				main.getMolecularWeight(main.helm);
 				main.getMolecularFormula(main.helm);
 				main.getExtinctionCoefficient(main.helm);
+				main.helmImageLink = 'Show'; 
 			}
 	        break;
 	      case 'Sequence':
@@ -636,7 +638,30 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 	        break;   
 	    }
 	};
-	
+
+	/*
+	* Begin code for showing Image Modal
+	*/
+	main.imageModalShown = false;
+	/* Invoke factory function to get the HELM Image */   
+	$scope.showHelmImage = function () {
+		$scope.imageUrl = '';
+		if (main.helm !== '') {
+		    $scope.imageUrl = webService.getHelmImageUrl(main.helm);
+		    main.imageModalShown = !main.imageModalShown;
+		}
+	};
+
+	/* Invoke factory function to get the Monomer Image */   
+	$scope.showMonomerImage = function (monomerId, polymerType) {
+		console.log(monomerId +'f' + polymerType);
+		$scope.imageUrl = '';
+		$scope.imageUrl = webService.getMonomerImageUrl(monomerId, polymerType, '');
+		console.log($scope.imageUrl);
+		
+		main.imageModalShown = !main.imageModalShown;
+	};
+
 	// Create the view for the canvas and attach to the scope.
 	$scope.canvasView = new CanvasDisplayService.CanvasView(helmDataModel);
 }]);
