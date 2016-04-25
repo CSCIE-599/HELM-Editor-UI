@@ -9,10 +9,14 @@
     "angular-resource": "^1.4.0",
     "angular-route": "^1.4.0",
     "angular-sanitize": "^1.4.0",
-    "angular-touch": "^1.4.0"
+    "angular-touch": "^1.4.0",
+    "angular-x2js": "^0.2.0"
   },
   "devDependencies": {
     "angular-mocks": "^1.4.0"
+  },
+  "resolutions": {
+    "angular": "^1.4.0"
   },
   "appPath": "app",
   "moduleName": "helmeditor2App",

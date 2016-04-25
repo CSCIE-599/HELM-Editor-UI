@@ -17,7 +17,8 @@ angular
     'ngRoute',
     'ngSanitize',
     'ngTouch',
-    'helmeditor2App.webService'
+    'helmeditor2App.webService',
+    'helmeditor2App.MonomerLibrary'
   ])
   .config(function ($routeProvider) {
     $routeProvider
