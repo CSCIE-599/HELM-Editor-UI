@@ -29,14 +29,23 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 
 		$scope.polymerType = main.polyTypes[0];
 		main.result = '';
+		
+		// reset check box is always selected in this version
+	    $scope.shouldReset = true;
 
-		/* Check if need to validate HELM input, or convert input to Helm */
-		main.processInput = function (polymerType, inputSequence) {
+	/* Check if need to validate HELM input, or convert input to Helm */
+	main.processInput = function (polymerType, inputSequence) {
 		  /* Check that input is not empty */
 	    if (!angular.isDefined(inputSequence)) {
 	      window.alert('Invalid input');
 	      return;
 	    }
+
+	    // clear the canvas if the reset check box is selected
+	    if ($scope.shouldReset) {
+	    	$scope.resetCanvas(); 
+	    }
+	    
 	    /* TODO: Check that input is valid type? */
 	    if (polymerType.value === 'HELM') {
 	    	main.validateHelmNotation(inputSequence);
