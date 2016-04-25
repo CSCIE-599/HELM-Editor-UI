@@ -58,6 +58,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 	    var successCallback = function (helmNotation) {
 	      main.helm = helmNotation;
 	      $scope.displayOnCanvas(helmNotation);
+	      main.getCanonicalHelmNotation(main.helm);
 	    };
 	    var errorCallback = function(response) {
 	      main.result = response.data;
@@ -79,7 +80,8 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 		var successCallback = function (valid) {
 		  if (valid) {
 		  	main.helm = inputSequence;
-		  	$scope.displayOnCanvas(inputSequence);	
+		  	$scope.displayOnCanvas(inputSequence);
+		  	main.getCanonicalHelmNotation(main.helm);
 		  }
 		  else {
 		  	main.result = 'INVALID HELM SEQUENCE';
@@ -94,7 +96,19 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 	    webService.validateHelmNotation(inputSequence).then(successCallback, errorCallback);
 	};
 
-	/* Invoke factory function to get molecular weight */   
+	/* Invoke factory function to get canonical helm notation */   
+	main.getCanonicalHelmNotation = function (inputSequence) {
+		var successCallback = function (result) {
+	      main.chelm = result;
+	      console.log(result);
+	    };
+	    var errorCallback = function(response) {
+	      console.log(response.data);
+	    };
+	    webService.getConversionCanonical(inputSequence).then(successCallback, errorCallback);
+	 };
+
+	 /* Invoke factory function to get molecular weight */   
 	main.getMolecularWeight = function (inputSequence) {
 		var successCallback = function (result) {
 	      main.molecularweight = result;
@@ -577,6 +591,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 		main.result = '';
 		main.seqtype = '';
 		main.helm = '';
+		main.chelm = '';
 		main.molecularweight = '';
 		main.molecularformula = '';
 		main.extcoefficient = '';
@@ -607,6 +622,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 	$scope.moleculeprops = false;	
 	main.result = '';
 	main.helm = '';
+	main.chelm = '';
 	main.componenttype = '';
 	main.molecularweight = '';
 	main.molecularformula = '';
@@ -665,7 +681,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 	// Create the view for the canvas and attach to the scope.
 	$scope.canvasView = new CanvasDisplayService.CanvasView(helmDataModel);
 
-		/*****************/
+	/*****************/
 	/*  right-click  */
 	/*****************/
 
@@ -750,7 +766,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 				$scope.open();
 			}],
 			['Canonical HELM Notation', function (){
-				$scope.requestedview = "TO-DO: CANONICAL HELM NOTATION";
+				$scope.requestedview = main.chelm;
 				$scope.open();
 			}],
 			['xHELM Notation', function (){
@@ -786,7 +802,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 				$scope.copyToClipboard();
 			}],
 			['Canonical HELM Notation', function (){
-				$scope.requestednotation = "TO-DO: GET CANONICAL HELM";
+				$scope.requestednotation = main.chelm;
 				$scope.copyToClipboard();
 			}],
 			['xHELM Notation', function (){
@@ -811,7 +827,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 				$scope.downloadFile();
 			}],
 			['Canonical HELM Notation', function (){
-				$scope.requestednotation = "TO-DO:_GET_CANONICAL_HELM";
+				$scope.requestednotation = main.chelm;
 				$scope.fileExtension = '.chelm';
 				$scope.downloadFile();
 			}],
