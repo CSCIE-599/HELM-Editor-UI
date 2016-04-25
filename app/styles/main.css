@@ -123,9 +123,8 @@ body {
 
 }
 
-/* For the load sequence modal dialogue box
+/* For the load sequence modal dialogue box 
  * Taken from tutorial by Adam Albrecht (will probably tweak for consistent app layout) */
-
 .ng-modal-overlay {
   /* A dark translucent div that covers the whole screen */
   position:absolute;
@@ -191,11 +190,11 @@ body {
 }
 
 .full-height {
-  height: calc(100vh - 150px);
+  height: calc(100vh - 153px);
 }
 
 .library-column {
-  background-color: #fef;
+  /*background-color: #fef;*/
   height: 100%;
   border-right: 2px solid #225EA8;
 }
@@ -205,7 +204,7 @@ body {
   height: 100%;
 }
 
-input {
+.input {
   margin-top: 5px;
   margin-bottom: 5px;
 }
@@ -213,7 +212,7 @@ input {
 #input {
   margin-top: 5px;
   margin-bottom: 5px;
-  border:solid 1px #707070;
+  border:solid 1px #707070;  
 }
 
 .canvas-container {
@@ -248,6 +247,255 @@ svg {
   width:100%;
 }
 
+.btn-selector {
+  width: 33.33333%;
+  background-color: white;
+  border: solid 1px #707070;
+}
+
+.btn-selector-view {
+  width: 50%;
+  background-color: white;
+  border: solid 1px #707070;
+}
+
+.activetype {
+  background-color: #bbbbbb!important;
+  border: solid 1px #707070;
+}
+
+.sub-group {
+  width: 100%;
+  padding-left: 2%;
+  padding-right: 2%;
+  border: solid 1px #777;
+  height: 94%;
+  padding-bottom: 2%;
+}
+
+.button-row {
+  height: 5%;
+  width: 100%;
+}
+
+.button-row button {
+  line-height: 90%!important;
+}
+
+.input-row {
+  height: 5%;
+  width: 100%;
+  display: table;
+  table-layout: fixed;
+}
+
+.input-row input {  
+  font-size : 12px;
+  display: table-cell;
+  vertical-align: middle;
+  width: 100%;
+}
+
+.input-row label {
+  font-style: normal;
+  display: table-cell;
+  vertical-align: middle;
+  width: 30%;
+}
+
+.monomer-listing {
+  width: 100%;
+  border: solid 1px #777;
+  padding-left: 2%;
+  padding-right: 2%;
+  height: 94%;
+  overflow-y: auto;
+}
+
+.monomer-view {
+  height: 100%;
+  overflow-y: auto;
+}
+
+.monomer-holder {
+  text-align: center;
+  vertical-align: middle;
+  display: inline-block;
+  width: 50px;
+  height: 50px;
+  margin: 6px 3px 0px 3px;
+  position: relative;
+}
+
+.monomer {
+  font-size: 14px;
+  line-height: 30px;
+  width: 100%;
+  height: 100%;
+  padding-top: 11px;
+}
+
+.monomer-name {
+  display: inline-block;
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  line-height: 50px;
+}
+
+.monomer-explorer {
+  /* TODO - this should probably be relative, somehow */
+  height: 240px;
+}
+
+/* background colors for monomers */
+.monomer-background-color-white {
+  background-color: #ffffff;
+}
+.monomer-background-color-light-violet {
+  background-color: #ee82ee;
+}
+.monomer-background-color-green {
+  background-color: #7fff00;
+}
+.monomer-background-color-red {
+  background-color: #ff0000;
+}
+.monomer-background-color-orange {
+  background-color: #ffa500;
+}
+.monomer-background-color-cyan {
+  background-color: #00ffff;
+}
+.monomer-background-color-light-cyan {
+  background-color: #e0ffff;
+}
+.monomer-background-color-purple {
+  background-color: #a020f0;
+}
+
+/* font colors for monomers */
+.monomer-font-color-green {
+  color: #6ccc00;
+  -webkit-text-fill-color: #6ccc00;
+  -webkit-text-stroke: .4px black;
+  font-weight: bold;
+}
+.monomer-font-color-red {
+  color: #ff0000;
+  -webkit-text-fill-color: #ff0000;
+  -webkit-text-stroke: .4px black;
+  font-weight: bold;
+}
+.monomer-font-color-orange {
+  color: #ffa500;
+  -webkit-text-fill-color: #ffa500;
+  -webkit-text-stroke: .4px black;
+  font-weight: bold;
+}
+.monomer-font-color-cyan {
+  color: #00ffff;
+  -webkit-text-fill-color: #00ffff;
+  -webkit-text-stroke: .4px black;
+  font-weight: bold;
+}
+.monomer-font-color-black {
+  color: #000000;
+  -webkit-text-fill-color: #000000;
+  -webkit-text-stroke: .4px black;
+  font-weight: bold;
+}
+.monomer-font-color-white {
+  color: #ffffff;
+  -webkit-text-fill-color: #ffffff;
+  -webkit-text-stroke: .7px black;
+  font-weight: bold;
+}
+
+/* the shapes for monomers (borrowed from http://creative-punch.net/2014/01/perfect-css-hexagons-size-using-transform-calc/) */
+.monomer-shape-no {
+}
+.monomer-shape-rect {
+  border: solid 1px black;
+  border-radius: 8px;
+}
+.monomer-shape-rhomb {
+  width: 70.7107%;
+  height: 70.7107%;
+  margin-left: 15%;
+  margin-top: 15%;
+  transform: rotate(45deg);
+  border: solid 1px black;
+}
+.monomer-shape-circle {
+  -moz-border-radius: 50%;
+  -webkit-border-radius: 50%;
+  border-radius: 50%;
+  border: solid 1px black;
+}
+.monomer-shape-hexagon:before {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  background-color: inherit;
+  height: inherit;
+  width: inherit;
+  content: '';
+  transform: rotate(60deg);
+  transform-origin: 25% 25%;
+  border-top: solid 1px black;
+  border-bottom: solid 1px black;
+  margin-top: 5%;
+}
+.monomer-shape-hexagon {
+  height: 90%;
+  /*width: 57.735%;*/
+  width: 51.962%;
+  border-top: solid 1px black;
+  border-bottom: solid 1px black;
+  display: inline-block;
+  margin-top: 5%;
+}
+.monomer-shape-hexagon:after {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  background-color: inherit;
+  height: inherit;
+  width: inherit;
+  content: '';
+  transform: rotate(-60deg);
+  transform-origin: 25% 75%;
+  border-top: solid 1px black;
+  border-bottom: solid 1px black;
+  margin-top: 5%;
+}
+
+/* don't let the text of the monomers be selected */
+.noselect {
+  -webkit-touch-callout: none; /* iOS Safari */
+  -webkit-user-select: none;   /* Chrome/Safari/Opera */
+  -khtml-user-select: none;    /* Konqueror */
+  -moz-user-select: none;      /* Firefox */
+  -ms-user-select: none;       /* Internet Explorer/Edge */
+  user-select: none;           /* Non-prefixed version, currently
+                                  not supported by any browser */
+}
+
+.category-holder {
+  overflow-y: auto;
+}
+
+.btn-category {
+  width: 100%;
+  line-height: 90%;
+  margin-top: 5px;
+  background-color: white;
+  border: solid 1px #707070;
+}
 
 .myModal{
   height:700px;
