@@ -20,7 +20,6 @@ angular
     'helmeditor2App.webService',
     'helmeditor2App.MonomerLibrary',
     'ngFileSaver',
-    'ngAnimate',
     'ui.bootstrap',
     'ui.bootstrap.tpls'
   ])
