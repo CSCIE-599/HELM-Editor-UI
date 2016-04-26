@@ -830,11 +830,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 				$scope.downloadFile();
 			}],
 			['Canonical HELM Notation', function (){
-<<<<<<< HEAD
-				$scope.requestednotation = 'TO-DO:_GET_CANONICAL_HELM';
-=======
 				$scope.requestednotation = main.chelm;
->>>>>>> 91347585754a4f4d7af6d70020b6f93bfcc56053
 				$scope.fileExtension = '.chelm';
 				$scope.downloadFile();
 			}]
@@ -857,11 +853,5 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 		]]
 
 	];
-<<<<<<< HEAD
-=======
 
-	//TODO- remove the below - notes for clicking on specific nodes
-	//http://stackoverflow.com/questions/15731634/how-do-i-handle-right-click-events-in-angular-js
-	//https://pterkildsen.com/2013/06/28/create-a-html5-canvas-element-with-clickable-elements/
->>>>>>> 91347585754a4f4d7af6d70020b6f93bfcc56053
 }]);
