@@ -123,7 +123,7 @@ body {
 
 }
 
-/* For the load sequence modal dialogue box 
+/* For the load sequence modal dialogue box
  * Taken from tutorial by Adam Albrecht (will probably tweak for consistent app layout) */
 .ng-modal-overlay {
   /* A dark translucent div that covers the whole screen */
@@ -141,6 +141,7 @@ body {
   z-index:10000;
   position: absolute;
   width: 50%; /* Default */
+  min-width: 300px;
 
   /* Center the dialog */
   top: 50%;
@@ -166,6 +167,19 @@ body {
   display: inline-block;
   font-weight: bold;
   font-family: 'arial', 'sans-serif';
+}
+
+/* adds scroll bar to load sequence modal
+ * source: http://jsfiddle.net/jasny/zclse/ */
+.ng-modal-dialog{
+    max-height: 900px;
+    overflow-y: auto;
+}
+
+/* wider modal for long sequences, for right-click modal */
+.wide-modal .modal-dialog{
+    width: 80%;
+    min-width: 400px;
 }
 
 /* CSS for the layout of the main page overall */
@@ -212,7 +226,7 @@ body {
 #input {
   margin-top: 5px;
   margin-bottom: 5px;
-  border:solid 1px #707070;  
+  border:solid 1px #707070;
 }
 
 .canvas-container {
@@ -289,7 +303,7 @@ svg {
   table-layout: fixed;
 }
 
-.input-row input {  
+.input-row input {
   font-size : 12px;
   display: table-cell;
   vertical-align: middle;

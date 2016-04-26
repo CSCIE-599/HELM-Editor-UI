@@ -114,7 +114,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 	      main.molecularweight = result;
 	    };
 	    var errorCallback = function(response) {
-	      console.log(response.data);
+	    //  console.log(response.data);
 	    };
 	    webService.getMolecularWeight(inputSequence).then(successCallback, errorCallback);
 	 };
@@ -125,7 +125,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 	      main.molecularformula = result;
 	    };
 	    var errorCallback = function(response) {
-	      console.log(response.data);
+	      //console.log(response.data);
 	    };
 	    webService.getMolecularFormula(inputSequence).then(successCallback, errorCallback);
 	 };
@@ -627,6 +627,8 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 	main.molecularweight = '';
 	main.molecularformula = '';
 	main.extcoefficient = '';
+	main.helmImageLink = '';
+
 	/* view type selection event handler */
 	$scope.updateLower = function(selectedView) {
 		$scope.viewType = selectedView;
@@ -718,6 +720,16 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 		});
     };
 
+	//wider modal
+	$scope.openWideModal = function(){
+		$uibModal.open({
+			templateUrl: '/templates/viewmodal.html',
+			controller: 'modal',
+			windowClass: 'wide-modal',
+			scope: $scope,
+		});
+	};
+
 	//helper function - show molecular properties table in modal
 	//TODO - should show Mass
 	$scope.openMolecularPropertiesModal = function(){
@@ -755,7 +767,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 
 		['Show Molecular Structure', function () {
 			//TODO - this is only an example image
-			$scope.requestedview = '/images/cyclicalpeptide.png';
+			$scope.requestedview = webService.getHelmImageUrl(main.helm);
 			$scope.openImageView();
 		}],
 		null,
@@ -763,11 +775,22 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 		},[
 			['HELM Notation', function () {
 				$scope.requestedview = main.helm;
-				$scope.open();
+				if (main.helm.length > 100){    //for long sequences,
+					$scope.openWideModal();			//use wider modal
+				}
+				else {
+					$scope.open();
+				}
+
 			}],
 			['Canonical HELM Notation', function (){
 				$scope.requestedview = main.chelm;
-				$scope.open();
+				if (main.helm.length > 100){
+					$scope.openWideModal();
+				}
+				else {
+					$scope.open();
+				}
 			}],
 			/*,
 			['xHELM Notation', function (){
@@ -787,16 +810,17 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 				$scope.open();
 			}]*/
 			['Molecule Properties', function (){
-				$scope.updateLower(main.viewTypes[2]);
+				main.getMolecularWeight(main.helm);       //sets main.molecularweight
+				main.getMolecularFormula(main.helm);      //sets main.molecularformula
+				main.getExtinctionCoefficient(main.helm); //sets main.extcoefficient
 				$scope.openMolecularPropertiesModal();
 			}]
 		]],
 		null,
 		['Copy', function (){
 		},[
-			//TODO: Enable copy image
-			/*['Image', function ($itemScope){
-				$scope.requestednotation = "/images/cyclicalpeptide.png";
+				/*['Image', function ($itemScope){
+				$scope.requestednotation = webService.getHelmImageUrl(main.helm);
 				$scope.copyToClipboard();
 			}],*/
 			['HELM Notation', function () {
@@ -851,7 +875,6 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 				$scope.downloadFile();
 			}]*/
 		]]
-
 	];
 
 }]);
