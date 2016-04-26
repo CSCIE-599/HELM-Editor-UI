@@ -27,11 +27,11 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 	    { value: 'PEPTIDE', label:'PEPTIDE' },
 		];
 
+    // indicates whether to reset during loading a new sequence 
+    main.shouldReset = true;
+
 		$scope.polymerType = main.polyTypes[0];
 		main.result = '';
-		
-		// reset check box is always selected in this version
-	    $scope.shouldReset = true;
 
 	/* Check if need to validate HELM input, or convert input to Helm */
 	main.processInput = function (polymerType, inputSequence) {
@@ -42,7 +42,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 	    }
 
 	    // clear the canvas if the reset check box is selected
-	    if ($scope.shouldReset) {
+	    if (main.shouldReset) {
 	    	$scope.resetCanvas(); 
 	    }
 	    
@@ -73,7 +73,6 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 	      console.log(response.data);
 	    };
 
-	    $scope.resetCanvas();
 	    switch(polymerType.value) {
 	      case 'PEPTIDE':
 	        webService.getHelmNotationPeptide(inputSequence).then(successCallback, errorCallback);
@@ -99,8 +98,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 		  console.log(response.data);
 		};
 
-		$scope.resetCanvas();
-	    webService.validateHelmNotation(inputSequence).then(successCallback, errorCallback);
+    webService.validateHelmNotation(inputSequence).then(successCallback, errorCallback);
 	};
 
 	/* Invoke factory function to get molecular weight */   
