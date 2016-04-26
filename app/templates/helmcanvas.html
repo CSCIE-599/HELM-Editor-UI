@@ -1,13 +1,22 @@
 <svg class="draggable-container"
-  xmlns="http://www.w3.org/2000/svg" id ="helmSvg">
+  xmlns="http://www.w3.org/2000/svg" id ="mainCanvas">
 
-  <!-- Zoom buttons: zoom up or down by 20% -->
-  <circle class="zoombtn"  cx="40" cy="31" r="8" ng-click="zoomCanvas(0.8)"/>
-  <circle class="zoombtn"  cx="40" cy="49" r="8" ng-click="zoomCanvas(1.20)"/>
+  <!-- zoom and pan buttons -->   
+  <circle class="zoombtn"  cx="40" cy="31" r="8" ng-click="zoom(0.8, $event)"/>
+  <circle class="zoombtn"  cx="40" cy="49" r="8" ng-click="zoom(1.20, $event)"/>
   <text class="plus-minus" x="36" y="28"> _  </text> 
-  <text class="plus-minus" x="36" y="53"> +  </text>  
-
-
+  <text class="plus-minus" x="36" y="53"> +  </text> 
+  <image xlink:href="images/arrow-up.png" x="30" y="5" 
+      height="20px" width="20px" ng-click ="pan(0,50, $event)"/>
+  <image xlink:href="images/arrow-down.png" x="30" y="58" 
+      height="20px" width="20px" ng-click ="pan(0,-50, $event)"/>
+  <image xlink:href="images/arrow-right.png" x="45" y="30" 
+      height="20px" width="20px"  ng-click ="pan(-50,0, $event)"/>
+  <image xlink:href="images/arrow-left.png" x="15" y="30" 
+      height="20px" width="20px" ng-click ="pan(50,0, $event)"/>
+   
+   
+  <!-- Graph display begin --> 
   <g id="map-matrix" transform="matrix(1 0 0 1 0 0)">
 
     <!-- loop thru all the connections in the graph -->
@@ -36,7 +45,8 @@
         ng-attr-x="{{(node.width()/2)+node.x()}}"
         ng-attr-y="{{(node.height()/2)+node.y()}}"
         text-anchor="middle"
-        alignment-baseline="middle">
+        alignment-baseline="middle"
+        ng-attr-fill = "{{node.textColor()}}">
         {{node.name()}}
       </text>
 
