@@ -25,6 +25,9 @@ angular.module('helmeditor2App')
     self.searchViewVisible = true;
     self.exploreViewVisible = false;
 
+    // expose the service directly so it can be used
+    self.libraryService = MonomerLibraryService;
+
     // allow toggling
     var setViewVisible = function (view) {
       if (view === 'search') {
