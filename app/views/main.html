@@ -232,7 +232,8 @@
           </td>
         </tr>
         <tr>
-          <td align='right' colspan='2'>          
+          <td align='right' colspan='2'>
+            <label>Reset Canvas <input type='checkbox' ng-model='main.shouldReset' ng-disabled='true'></label>
             <button class='btn' ng-click='main.processInput(polymerType, inputSequence)'>Load</button>
             <button class='btn' ng-click='main.clear()'>Clear</button>
             <button class='btn' ng-click='main.toggleModal()'>Cancel</button>
