@@ -10,17 +10,13 @@ describe('Directive: helmCanvas', function () {
 
   var element,
     scope,
-    $compile;
+    $compile,
+    $httpBackend;
 
-  beforeEach(inject(function (_$compile_, $rootScope) {
+  beforeEach(inject(function (_$compile_, $rootScope, _$httpBackend_) {
     scope = $rootScope.$new();
     $compile = _$compile_;
-    
-    /*
-    // mock out our pan and zoom functions, to be tested in the unit tests
-    scope.pan = function () {};
-    scope.zoom = function () {};
-    */
+    $httpBackend = _$httpBackend_;
   }));
 
   // helpers to create nodes and connections
@@ -432,12 +428,13 @@ describe('Directive: helmCanvas', function () {
     }
   });
 
-  /*
-  * used to test zoom/pan eventually
   it('should call the zoom and pan methods with the correct parameters', function () {
     element = angular.element('<div><helm-canvas></helm-canvas></div>');
     element = $compile(element)(scope);
     scope.$digest();
+
+    // make sure we deal with any requests to the view
+    $httpBackend.whenGET('views/main.html').respond('');
 
     // find the zoom and pan buttons
     var svg = element.children().eq(0);
@@ -449,15 +446,23 @@ describe('Directive: helmCanvas', function () {
     var panRight = svgChildren.eq(6);
     var panLeft = svgChildren.eq(7);
 
-    // set up the spy
-    // spyOn(scope, 'zoom');
-    // spyOn(scope, 'pan');
+    // set up the spies
+    var spiedScope = zoomIn.scope();
+    spyOn(spiedScope, 'zoom');
+    spyOn(spiedScope, 'pan');
 
     // click the buttons and make sure they were called
-    // zoomIn.click();
-    // expect(scope.zoom).toHaveBeenCalledWith(0.8);
-    // zoomOut.click();
-    // expect(scope.zoom).toHaveBeenCalledWith(1.2);
+    zoomIn.click();
+    expect(spiedScope.zoom).toHaveBeenCalledWith(1.2, jasmine.anything());
+    zoomOut.click();
+    expect(spiedScope.zoom).toHaveBeenCalledWith(0.8, jasmine.anything());
+    panUp.click();
+    expect(spiedScope.pan).toHaveBeenCalledWith(0, 50, jasmine.anything());
+    panDown.click();
+    expect(spiedScope.pan).toHaveBeenCalledWith(0, -50, jasmine.anything());
+    panLeft.click();
+    expect(spiedScope.pan).toHaveBeenCalledWith(50, 0, jasmine.anything());
+    panRight.click();
+    expect(spiedScope.pan).toHaveBeenCalledWith(-50, 0, jasmine.anything());
   });
-  */
 });
