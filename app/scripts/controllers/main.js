@@ -704,10 +704,10 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 
 		//make filename - eg, "HELM.04.21.2016.txt"
 		var now = new Date();
-		var date = (now.getMonth()+1) + "." + now.getDate() + "." + now.getFullYear();
-		var filename = "HELM."+ date + $scope.fileExtension;
+		var date = (now.getMonth()+1) + '.' + now.getDate() + '.' + now.getFullYear();
+		var filename = 'HELM.' + date + $scope.fileExtension;
 
-		//Safari - can't name file
+		//Safari - can't add filename
 		//http://stackoverflow.com/questions/12802109/download-blobs-locally-using-safari
 		if (typeof safari !== 'undefined'){
 			//alert("When downloading from Safari, filenames are not provided.  Please rename the file.");
@@ -769,7 +769,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 
 		['Show Molecular Structure', function () {
 			//TODO - this is only an example image
-			$scope.requestedview = "/images/cyclicalpeptide.png";
+			$scope.requestedview = '/images/cyclicalpeptide.png';
 			$scope.openImageView();
 		}],
 		null,
@@ -780,25 +780,26 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 				$scope.open();
 			}],
 			['Canonical HELM Notation', function (){
-				$scope.requestedview = "TO-DO: CANONICAL HELM NOTATION";
+				$scope.requestedview = main.chelm;
 				$scope.open();
 			}],
+			/*,
 			['xHELM Notation', function (){
-				$scope.requestedview = "TO-DO: xHELM NOTATION";
+				$scope.requestedview = 'TO-DO: xHELM NOTATION';
 				$scope.open();
 			}],
 			['SMILES', function () {
-				$scope.requestedview = "TO-DO: SMILES NOTATION";
+				$scope.requestedview = 'TO-DO: SMILES NOTATION';
 				$scope.open();
 			}],
 			['MDL Molfile', function (){
-				$scope.requestedview = "TO-DO: MDL MOLFILE NOTATION";
+				$scope.requestedview = 'TO-DO: MDL MOLFILE NOTATION';
 				$scope.open();
 			}],
 			['PDB Format', function (){
-				$scope.requestedview = "TO-DO: PDB FORMAT";
+				$scope.requestedview = 'TO-DO: PDB FORMAT';
 				$scope.open();
-			}],
+			}]*/
 			['Molecule Properties', function (){
 				$scope.updateLower(main.viewTypes[2]);
 				$scope.openMolecularPropertiesModal();
@@ -807,8 +808,9 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 		null,
 		['Copy', function (){
 		},[
+			//TODO: Enable copy image
 			/*['Image', function ($itemScope){
-				$scope.requestednotation = "/images/cyclicalpeptide.png";  //TO-DO: Enable copy image
+				$scope.requestednotation = "/images/cyclicalpeptide.png";
 				$scope.copyToClipboard();
 			}],*/
 			['HELM Notation', function () {
@@ -816,21 +818,22 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 				$scope.copyToClipboard();
 			}],
 			['Canonical HELM Notation', function (){
-				$scope.requestednotation = "TO-DO: GET CANONICAL HELM";
+				$scope.requestednotation = 'TO-DO: GET CANONICAL HELM';
 				$scope.copyToClipboard();
-			}],
+			}]
+			/*,
 			['xHELM Notation', function (){
-				$scope.requestednotation = "TO-DO: GET xHELM";
+				$scope.requestednotation = 'TODO: GET xHELM';
 				$scope.copyToClipboard();
 			}],
 			['SMILES', function () {
-				$scope.requestednotation = "TO-DO: GET SMILES";
+				$scope.requestednotation = 'TODO: GET SMILES';
 				$scope.copyToClipboard();
 			}],
 			['MDL Molfile', function (){
-				$scope.requestednotation = "TO-DO: GET MDL MOLFILE";
+				$scope.requestednotation = 'TODO: GET MDL MOLFILE';
 				$scope.copyToClipboard();
-			}]
+			}]*/
 		]],
 		null,
 		['Save', function (){
@@ -841,31 +844,27 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 				$scope.downloadFile();
 			}],
 			['Canonical HELM Notation', function (){
-				$scope.requestednotation = "TO-DO:_GET_CANONICAL_HELM";
+				$scope.requestednotation = 'TO-DO:_GET_CANONICAL_HELM';
 				$scope.fileExtension = '.chelm';
 				$scope.downloadFile();
-			}],
+			}]
+			/*,
 			['xHELM Notation', function (){
-				$scope.requestednotation = "TO-DO:_GET_xHELM";
+				$scope.requestednotation = 'TODO:_GET_xHELM';
 				$scope.fileExtension = '.xhelm';
 				$scope.downloadFile();
 			}],
 			['SMILES', function () {
-				$scope.requestednotation = "TO-DO:_GET_SMILES";
+				$scope.requestednotation = 'TODO:_GET_SMILES';
 				$scope.fileExtension = '.smi';
 				$scope.downloadFile();
 			}],
 			['MDL Molfile', function (){
-				$scope.requestednotation = "TO-DO:_MDL_Molfile";
+				$scope.requestednotation = 'TODO:_MDL_Molfile';
 				$scope.fileExtension = '.mol';
 				$scope.downloadFile();
-			}]
+			}]*/
 		]]
 
 	];
-
-	//TODO- remove the below - notes for clicking on specific nodes
-	//http://stackoverflow.com/questions/15731634/how-do-i-handle-right-click-events-in-angular-js
-	//https://pterkildsen.com/2013/06/28/create-a-html5-canvas-element-with-clickable-elements/
-
 }]);

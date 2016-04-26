@@ -13,7 +13,7 @@
  * copied from: http://codepen.io/templarian/pen/VLKZLB
  */
 angular.module('helmeditor2App')
-    .directive('contextMenu', ["$parse", "$q", function ($parse, $q) {
+    .directive('contextMenu', ['$parse', '$q', function ($parse, $q) {
         /* global $ */
         var contextMenus = [];
 
@@ -32,7 +32,7 @@ angular.module('helmeditor2App')
         var renderContextMenu = function ($scope, event, options, model, level) {
 
             if (!level) { level = 0; }
-            if (!$) {$ = angular.element; }
+            //if (!$) {$ = angular.element; }
             $(event.currentTarget).addClass('context');
             var $contextMenu = $('<div>');
             if ($currentContextMenu) {              //if nested list
@@ -53,7 +53,7 @@ angular.module('helmeditor2App')
                 position: 'absolute',
                 left: event.pageX + 'px',
                 top: event.pageY + 'px',
-                "z-index": 10000
+                'z-index': 10000
             });
 
             //add list items
@@ -74,13 +74,13 @@ angular.module('helmeditor2App')
                     angular.isArray(item[9]) ? item[9] :
                                                null;
                     var $a = $('<a>');
-                    $a.css("padding-right", "8px");
+                    $a.css('padding-right', '8px');
                     $a.attr({ tabindex: '-1', href: '#' });
                     var text = typeof item[0] === 'string' ? item[0] : item[0].call($scope, $scope, event, model);
                     $q.when(text).then(function (text) {
                         $a.text(text);
                         if (nestedMenu) {
-                            $a.css("cursor", "default");
+                            $a.css('cursor', 'default');
                             $a.append($('<strong style="font-family:monospace;font-weight:bold;float:right;">&gt;</strong>'));
                         }
                     });
@@ -148,7 +148,7 @@ angular.module('helmeditor2App')
 
             //add mouse events to contextMenu
             $(document).find('body').append($contextMenu);
-            $contextMenu.on("mousedown", function (e) {
+            $contextMenu.on('mousedown', function (e) {
                 if ($(e.target).hasClass('dropdown')) {
                     $(event.currentTarget).removeClass('context');
                     removeContextMenus();
@@ -158,7 +158,7 @@ angular.module('helmeditor2App')
                 event.preventDefault();
                 removeContextMenus(level);
             });
-            $scope.$on("$destroy", function () {
+            $scope.$on('$destroy', function () {
                 removeContextMenus();
             });
 
