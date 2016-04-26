@@ -45,11 +45,6 @@ angular.module('helmeditor2App')
       return MonomerLibraryService.searchMonomers(self.activeType, self.search);
     };
 
-    // list the monomers by the selection
-    var listMonomers = function () {
-      return [];
-    };
-
     // convert the class to the right class name for the background color
     var convertBackgroundColorClass = function (prop) {
       switch (prop) {
@@ -138,7 +133,6 @@ angular.module('helmeditor2App')
     // expose the methods we want to 
     self.setViewVisible = setViewVisible;
     self.searchMonomers = searchMonomers;
-    self.listMonomers = listMonomers;
     self.convertBackgroundColorClass = convertBackgroundColorClass;
     self.convertFontColorClass = convertFontColorClass;
     self.convertShapeClass = convertShapeClass;
