@@ -30,9 +30,9 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 		$scope.polymerType = main.polyTypes[0];
 		main.result = '';
 
-		/* Check if need to validate HELM input, or convert input to Helm */
-		main.processInput = function (polymerType, inputSequence) {
-		  /* Check that input is not empty */
+	/* Check if need to validate HELM input, or convert input to Helm */
+	main.processInput = function (polymerType, inputSequence) {
+		/* Check that input is not empty */
 	    if (!angular.isDefined(inputSequence)) {
 	      window.alert('Invalid input');
 	      return;
@@ -47,7 +47,6 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 	    main.toggleModal();
 	};
 
-
 	/* clear the modal dialog text area*/
 	main.clear = function (){
 		//TO-DO - change this to angular selector
@@ -55,11 +54,11 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 	};
 
 	/* Invoke factory function to get HELM notation */
-
 	main.getHelmNotation = function (polymerType, inputSequence) {
 	    var successCallback = function (helmNotation) {
 	      main.helm = helmNotation;
 	      $scope.displayOnCanvas(helmNotation);
+	      main.getCanonicalHelmNotation(main.helm);
 	    };
 	    var errorCallback = function(response) {
 	      main.result = response.data;
@@ -82,6 +81,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 		  if (valid) {
 		  	main.helm = inputSequence;
 		  	$scope.displayOnCanvas(inputSequence);
+		  	main.getCanonicalHelmNotation(main.helm);
 		  }
 		  else {
 		  	main.result = 'INVALID HELM SEQUENCE';
@@ -96,7 +96,19 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 	    webService.validateHelmNotation(inputSequence).then(successCallback, errorCallback);
 	};
 
-	/* Invoke factory function to get molecular weight */
+	/* Invoke factory function to get canonical helm notation */
+	main.getCanonicalHelmNotation = function (inputSequence) {
+		var successCallback = function (result) {
+	      main.chelm = result;
+	      console.log(result);
+	    };
+	    var errorCallback = function(response) {
+	      console.log(response.data);
+	    };
+	    webService.getConversionCanonical(inputSequence).then(successCallback, errorCallback);
+	 };
+
+	 /* Invoke factory function to get molecular weight */
 	main.getMolecularWeight = function (inputSequence) {
 		var successCallback = function (result) {
 	      main.molecularweight = result;
@@ -129,58 +141,6 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 	    };
 	    webService.getExtinctionCoefficient(inputSequence).then(successCallback, errorCallback);
 	 };
-
-	/* clear the modal dialog text area*/
-	main.clear = function (){
-		//TO-DO - change this to angular selector
-		document.getElementById('input').value = '';
-	};
-
-	/*
-	 * Begin code for lower pane
-	 */
-   	/* Variables for view types in lower pane */
-	main.viewTypes = [
-	    { value: 'HELM', label:'HELM' },
-	    { value: 'Sequence', label:'Sequence' },
-	    { value: 'Molecule Properties', label:'Molecule Properties' },
-	];
-	$scope.viewType = main.viewTypes[0];
-	$scope.helm = true;
-	$scope.sequence = false;
-	$scope.moleculeprops = false;
-	main.result = '';
-	main.helm = '';
-	main.componenttype = '';
-	main.molecularweight = '';
-	main.molecularformula = '';
-	main.extcoefficient = '';
-	/* view type selection event handler */
-	$scope.updateLower = function(selectedView) {
-		$scope.viewType = selectedView;
-		switch(selectedView.value) {
-	      case 'HELM':
-	      	$scope.helm = true;
-			$scope.sequence = false;
-			$scope.moleculeprops = false;
-			break;
-	      case 'Molecule Properties':
-	        $scope.helm =false;
-	        $scope.sequence = false;
-			$scope.moleculeprops = true;
-			if(main.helm !== '' && main.molecularformula === '') {
-				main.getMolecularWeight(main.helm);
-				main.getMolecularFormula(main.helm);
-				main.getExtinctionCoefficient(main.helm);
-			}
-	        break;
-	      case 'Sequence':
-	      	$scope.helm = false;
-	      	$scope.moleculeprops = false;
-			$scope.sequence = true;
-	        break;
-	    }
-	};
 
 	/*
 	* Begin code for Canvas
@@ -631,9 +591,11 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 		main.result = '';
 		main.seqtype = '';
 		main.helm = '';
+		main.chelm = '';
 		main.molecularweight = '';
 		main.molecularformula = '';
 		main.extcoefficient = '';
+		main.helmImageLink = '';
 	};
 
 	/* zoom and pan functions */
@@ -660,6 +622,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 	$scope.moleculeprops = false;
 	main.result = '';
 	main.helm = '';
+	main.chelm = '';
 	main.componenttype = '';
 	main.molecularweight = '';
 	main.molecularformula = '';
@@ -681,6 +644,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 				main.getMolecularWeight(main.helm);
 				main.getMolecularFormula(main.helm);
 				main.getExtinctionCoefficient(main.helm);
+				main.helmImageLink = 'Show';
 			}
 	        break;
 	      case 'Sequence':
@@ -691,9 +655,31 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 	    }
 	};
 
+	/*
+	* Begin code for showing Image Modal
+	*/
+	main.imageModalShown = false;
+	/* Invoke factory function to get the HELM Image */
+	$scope.showHelmImage = function () {
+		$scope.imageUrl = '';
+		if (main.helm !== '') {
+		    $scope.imageUrl = webService.getHelmImageUrl(main.helm);
+		    main.imageModalShown = !main.imageModalShown;
+		}
+	};
+
+	/* Invoke factory function to get the Monomer Image */
+	$scope.showMonomerImage = function (monomerId, polymerType) {
+		console.log(monomerId +'f' + polymerType);
+		$scope.imageUrl = '';
+		$scope.imageUrl = webService.getMonomerImageUrl(monomerId, polymerType, '');
+		console.log($scope.imageUrl);
+
+		main.imageModalShown = !main.imageModalShown;
+	};
+
 	// Create the view for the canvas and attach to the scope.
 	$scope.canvasView = new CanvasDisplayService.CanvasView(helmDataModel);
-
 
 	/*****************/
 	/*  right-click  */
@@ -818,7 +804,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 				$scope.copyToClipboard();
 			}],
 			['Canonical HELM Notation', function (){
-				$scope.requestednotation = 'TO-DO: GET CANONICAL HELM';
+				$scope.requestednotation = main.chelm;
 				$scope.copyToClipboard();
 			}]
 			/*,
@@ -844,7 +830,11 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 				$scope.downloadFile();
 			}],
 			['Canonical HELM Notation', function (){
+<<<<<<< HEAD
 				$scope.requestednotation = 'TO-DO:_GET_CANONICAL_HELM';
+=======
+				$scope.requestednotation = main.chelm;
+>>>>>>> 91347585754a4f4d7af6d70020b6f93bfcc56053
 				$scope.fileExtension = '.chelm';
 				$scope.downloadFile();
 			}]
@@ -867,4 +857,11 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 		]]
 
 	];
+<<<<<<< HEAD
+=======
+
+	//TODO- remove the below - notes for clicking on specific nodes
+	//http://stackoverflow.com/questions/15731634/how-do-i-handle-right-click-events-in-angular-js
+	//https://pterkildsen.com/2013/06/28/create-a-html5-canvas-element-with-clickable-elements/
+>>>>>>> 91347585754a4f4d7af6d70020b6f93bfcc56053
 }]);
