@@ -27,7 +27,7 @@
         ng-attr-class="{{'path-style'}}">
       </path>
     </g>
-
+    
   <!-- loop thru all the nodes in the graph -->
     <g ng-repeat="node in graph.nodes">
       <rect ng-attr-class={{'node-rect'}}    
@@ -57,6 +57,19 @@
         alignment-baseline="middle"
         ng-attr-visibility="{{node.seqVisible()}}">
         {{node.num()}}
+      </text>
+
+      <!-- annotation node and text inside it-->
+       <rect width="15" height="15" fill = "yellow"  
+       ng-attr-x="{{node.x() - 25}}"
+       ng-attr-y="{{node.y() - 20}}"
+       ng-attr-visibility="{{node.annotationVisible()}}"
+      />
+      <text
+        ng-attr-x="{{node.x() - 22}}" 
+        ng-attr-y="{{node.y() - 10}}"
+        ng-attr-visibility="{{node.annotationVisible()}}">
+        {{node.annotationText()}}
       </text>
     </g>
   </g>
