@@ -262,13 +262,13 @@ svg {
   width:100%;
 }
 
-.btn-selector {
+.btn-selector.btn-selector {
   width: 33.33333%;
   background-color: white;
   border: solid 1px #707070;
 }
 
-.btn-selector-view {
+.btn-selector-view.btn-selector-view {
   width: 50%;
   background-color: white;
   border: solid 1px #707070;
@@ -504,7 +504,7 @@ svg {
   overflow-y: auto;
 }
 
-.btn-category {
+.btn-category.btn-category {
   width: 100%;
   line-height: 90%;
   margin-top: 5px;
