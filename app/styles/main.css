@@ -178,8 +178,9 @@ body {
 
 /* wider modal for long sequences, for right-click modal */
 .wide-modal .modal-dialog{
-    width: 80%;
+    width: 85%;
     min-width: 400px;
+    overflow-y: auto;
 }
 
 /* CSS for the layout of the main page overall */
