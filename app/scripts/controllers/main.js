@@ -114,7 +114,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 	      main.molecularweight = result;
 	    };
 	    var errorCallback = function(response) {
-	    //  console.log(response.data);
+	      console.log(response.data);
 	    };
 	    webService.getMolecularWeight(inputSequence).then(successCallback, errorCallback);
 	 };
@@ -125,7 +125,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 	      main.molecularformula = result;
 	    };
 	    var errorCallback = function(response) {
-	      //console.log(response.data);
+	      console.log(response.data);
 	    };
 	    webService.getMolecularFormula(inputSequence).then(successCallback, errorCallback);
 	 };
