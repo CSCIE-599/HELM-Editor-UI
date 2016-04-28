@@ -682,8 +682,15 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
   main.currentMonomer = {};
 
   // sets the current selected monomer to be what was clicked
-  main.setSelectedMonomer = function (monomer) {
-    main.currentMonomer = monomer;
+  main.toggleSelectedMonomer = function (monomer, evt) {
+    // un-select if it was previously selected
+    if (main.currentMonomer._name === monomer._name) {
+      main.currentMonomer = {};
+    }
+    else {
+      main.currentMonomer = monomer;
+    }
+    evt.stopPropagation();
   };
 
   // returns 'monomer-selected' if this is currently selected, to handle a class display in the library

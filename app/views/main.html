@@ -14,7 +14,10 @@
     </div>
     <div class='row full-height'>
       <div class='col-md-3 library-column' ng-controller='LibraryCtrl as library'>
-        <div class="full-height" ng-show="library.libraryService.initComplete">
+        <div 
+          class="full-height" 
+          ng-show="library.libraryService.initComplete"
+          ng-click="main.toggleSelectedMonomer({}, $event)">
           <div class="btn-group btn-group-sm btn-group-justified button-row" role="group" aria-label="Type selection">
             <div 
               class="btn-group btn-group-sm" 
