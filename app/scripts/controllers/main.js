@@ -686,6 +686,11 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
     main.currentMonomer = monomer;
   };
 
+  // returns 'monomer-selected' if this is currently selected, to handle a class display in the library
+  main.monomerSelectedClass = function (monomer) {
+    return (monomer._name === main.currentMonomer._name) ? 'monomer-selected' : '';
+  };
+
   $scope.svgClicked = function () {
     //console.log('svg-clicked');
   };
