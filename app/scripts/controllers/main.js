@@ -10,8 +10,8 @@
 
 var app = angular.module('helmeditor2App');
 
-app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'CanvasDisplayService', 'MonomerSelectionService',
-	function ($scope, webService, HelmConversionService, CanvasDisplayService, MonomerSelectionService) {
+app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'CanvasDisplayService', 'MonomerSelectionService', 'HELMNotationService', 
+	function ($scope, webService, HelmConversionService, CanvasDisplayService, MonomerSelectionService, HELMNotationService) {
 		var main = this;
 
 		/* Toggle modal dialogue display */
@@ -22,7 +22,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 
 		/* Variables for loadsequence view */
 		main.polyTypes = [
-		{ value: 'HELM', label:'HELM' },
+		  { value: 'HELM', label:'HELM' },
 	    { value: 'RNA', label:'RNA/DNA' },
 	    { value: 'PEPTIDE', label:'PEPTIDE' },
 		];
@@ -66,6 +66,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 	main.getHelmNotation = function (polymerType, inputSequence) {
 	    var successCallback = function (helmNotation) {
 	      main.helm = helmNotation;
+        HELMNotationService.setHelm(helmNotation);
 	      $scope.displayOnCanvas(helmNotation);
 	    };
 	    var errorCallback = function(response) {
@@ -87,6 +88,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 		var successCallback = function (valid) {
 		  if (valid) {
 		  	main.helm = inputSequence;
+        HELMNotationService.setHelm(inputSequence);
 		  	$scope.displayOnCanvas(inputSequence);	
 		  }
 		  else {
@@ -584,6 +586,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 		main.result = '';
 		main.seqtype = '';
 		main.helm = '';
+    HELMNotationService.setHelm('');
 		main.molecularweight = '';
 		main.molecularformula = '';
 		main.extcoefficient = '';
@@ -620,6 +623,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 	$scope.moleculeprops = false;	
 	main.result = '';
 	main.helm = '';
+  HELMNotationService.setHelm('');
 	main.componenttype = '';
 	main.molecularweight = '';
 	main.molecularformula = '';
@@ -689,7 +693,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
     var currentMonomer = MonomerSelectionService.getSelectedMonomer();
     // if we have a monomer selected, we need to add it
     if (currentMonomer._name) {
-      console.log(main.helm);
+      console.log(HELMNotationService.getHelm());
       console.log(currentMonomer);
     }
   };

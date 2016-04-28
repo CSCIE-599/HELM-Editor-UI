@@ -8,7 +8,7 @@
  * Controller of the helmeditor2App
  */
 angular.module('helmeditor2App')
-  .controller('LibraryCtrl', ['MonomerLibraryService', 'MonomerSelectionService', 
+  .controller('LibraryCtrl', ['MonomerLibraryService', 'MonomerSelectionService',   
     function (MonomerLibraryService, MonomerSelectionService) {
       
       var self = this;
