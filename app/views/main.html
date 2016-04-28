@@ -14,128 +14,130 @@
     </div>
     <div class='row full-height'>
       <div class='col-md-3 library-column' ng-controller='LibraryCtrl as library'>
-        <div class="btn-group btn-group-sm btn-group-justified button-row" role="group" aria-label="Type selection">
-          <div 
-            class="btn-group btn-group-sm" 
-            role="group"
-            ng-repeat="polymerType in library.polymerTypes">
-            <button 
-              class="btn btn-secondary btn-selector"
-              ng-class="{activetype: library.activeType === polymerType}"
-              ng-click="library.activeType = polymerType">
-              {{ polymerType }}
-            </button>
+        <div class="full-height" ng-show="library.libraryService.initComplete">
+          <div class="btn-group btn-group-sm btn-group-justified button-row" role="group" aria-label="Type selection">
+            <div
+              class="btn-group btn-group-sm"
+              role="group"
+              ng-repeat="polymerType in library.polymerTypes">
+              <button
+                class="btn btn-secondary btn-selector"
+                ng-class="{activetype: library.activeType === polymerType}"
+                ng-click="library.activeType = polymerType">
+                {{ polymerType }}
+              </button>
+            </div>
           </div>
-        </div>
 
-        <div class="sub-group">
-          <!-- allow either searching or exploring -->
-          <div class="btn-group btn-group-sm btn-group-justified button-row" role="group" aria-label="View selection">
-            <div class="btn-group btn-group-sm" role="group">
-              <button 
-                class="btn btn-secondary btn-selector-view"
-                ng-class="{activetype: library.searchViewVisible}"
-                ng-click="library.setViewVisible('search')">
-                Search
-              </button>
-            </div>
-            <div class="btn-group btn-group-sm" role="group">
-              <button 
-                class="btn btn-secondary btn-selector-view"
-                ng-class="{activetype: library.exploreViewVisible}"
-                ng-click="library.setViewVisible('explore')">
-                Explore
-              </button>
-            </div>
-          </div>
           <div class="sub-group">
-            <div ng-show="library.searchViewVisible" style="height: 100%">
-              <div class="input-row">
-                <label class="search-label">Search: </label>
-                <input class="search-input" type="text" ng-model="library.search">
+            <!-- allow either searching or exploring -->
+            <div class="btn-group btn-group-sm btn-group-justified button-row" role="group" aria-label="View selection">
+              <div class="btn-group btn-group-sm" role="group">
+                <button
+                  class="btn btn-secondary btn-selector-view"
+                  ng-class="{activetype: library.searchViewVisible}"
+                  ng-click="library.setViewVisible('search')">
+                  Search
+                </button>
               </div>
-              <div class="monomer-listing">
-                <div 
-                  ng-repeat="monomer in library.searchMonomers()"
-                  class="monomer-holder">
+              <div class="btn-group btn-group-sm" role="group">
+                <button
+                  class="btn btn-secondary btn-selector-view"
+                  ng-class="{activetype: library.exploreViewVisible}"
+                  ng-click="library.setViewVisible('explore')">
+                  Explore
+                </button>
+              </div>
+            </div>
+            <div class="sub-group">
+              <div ng-show="library.searchViewVisible" style="height: 100%">
+                <div class="input-row">
+                  <label class="search-label">Search: </label>
+                  <input class="search-input" type="text" ng-model="library.search">
+                </div>
+                <div class="monomer-listing">
                   <div
-                    ng-class="library.convertBackgroundColorClass(monomer._backgroundColor) + ' ' + library.convertShapeClass(monomer._shape)"
-                    class="monomer">
+                    ng-repeat="monomer in library.searchMonomers()"
+                    class="monomer-holder">
+                    <div
+                      ng-class="library.convertBackgroundColorClass(monomer._backgroundColor) + ' ' + library.convertShapeClass(monomer._shape)"
+                      class="monomer">
+                    </div>
+                    <span
+                      class="monomer-name noselect"
+                      ng-class="library.convertFontColorClass(monomer._fontColor)">
+                      {{monomer._name}}
+                    </span>
                   </div>
-                  <span 
-                    class="monomer-name noselect"
-                    ng-class="library.convertFontColorClass(monomer._fontColor)">
-                    {{monomer._name}}
-                  </span>
                 </div>
               </div>
-            </div>
-            <div ng-show="library.exploreViewVisible" class="monomer-view">
-              <!-- display each category under this that exists -->
-              <div 
-                class="category-holder" 
-                ng-repeat="category in library.getCategories(library.getActiveType())">
-                <button 
-                  class="btn btn-secondary btn-category" 
-                  ng-click="library.activeCategory = category._name"
-                  ng-class="{activetype: library.categoryActive(category._name)}">
-                  {{ category._name }}
-                </button>
-                <!-- display sub elements -->
+              <div ng-show="library.exploreViewVisible" class="monomer-view">
+                <!-- display each category under this that exists -->
                 <div
-                  class="sub-selection-group"
-                  ng-show="library.activeCategory === category._name">
-                  <!-- display any sub-categories that may exist -->
-                  <div 
-                    class="sub-group"
-                    ng-show="library.getCategories(category).length > 0">
+                  class="category-holder"
+                  ng-repeat="category in library.getCategories(library.getActiveType())">
+                  <button
+                    class="btn btn-secondary btn-category"
+                    ng-click="library.activeCategory = category._name"
+                    ng-class="{activetype: library.categoryActive(category._name)}">
+                    {{ category._name }}
+                  </button>
+                  <!-- display sub elements -->
+                  <div
+                    class="sub-selection-group"
+                    ng-show="library.activeCategory === category._name">
+                    <!-- display any sub-categories that may exist -->
                     <div
-                      class="sub-category-holder"
-                      ng-repeat="subCategory in library.getCategories(category)">
-                      <button
-                        class="btn btn-secondary btn-category"
-                        ng-click="library.activeSubCategory = subCategory._name"
-                        ng-class="{activetype: library.subCategoryActive(subCategory._name)}">
-                        {{ subCategory._name }}
-                      </button>
+                      class="sub-group"
+                      ng-show="library.getCategories(category).length > 0">
                       <div
-                        ng-show="library.activeSubCategory === subCategory._name">
+                        class="sub-category-holder"
+                        ng-repeat="subCategory in library.getCategories(category)">
+                        <button
+                          class="btn btn-secondary btn-category"
+                          ng-click="library.activeSubCategory = subCategory._name"
+                          ng-class="{activetype: library.subCategoryActive(subCategory._name)}">
+                          {{ subCategory._name }}
+                        </button>
                         <div
-                          class="monomer-listing monomer-explorer"
-                          ng-show="library.getMonomers(subCategory).length > 0 || library.getCategories(subCategory).length === 0">
+                          ng-show="library.activeSubCategory === subCategory._name">
                           <div
-                            ng-repeat="monomer in library.getMonomers(subCategory)"
-                            class="monomer-holder">
+                            class="monomer-listing monomer-explorer"
+                            ng-show="library.getMonomers(subCategory).length > 0 || library.getCategories(subCategory).length === 0">
                             <div
-                              ng-class="library.convertBackgroundColorClass(monomer._backgroundColor) + ' ' + library.convertShapeClass(monomer._shape)"
-                              class="monomer">
+                              ng-repeat="monomer in library.getMonomers(subCategory)"
+                              class="monomer-holder">
+                              <div
+                                ng-class="library.convertBackgroundColorClass(monomer._backgroundColor) + ' ' + library.convertShapeClass(monomer._shape)"
+                                class="monomer">
+                              </div>
+                              <span
+                                class="monomer-name noselect"
+                                ng-class="library.convertFontColorClass(monomer._fontColor)">
+                                {{monomer._name}}
+                              </span>
                             </div>
-                            <span 
-                              class="monomer-name noselect"
-                              ng-class="library.convertFontColorClass(monomer._fontColor)">
-                              {{monomer._name}}
-                            </span>
                           </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                  <!-- display if there are just monomers in here -->
-                  <div 
-                    class="monomer-listing monomer-explorer"
-                    ng-show="library.getMonomers(category).length > 0 || library.getCategories(category).length === 0">
-                    <div 
-                      ng-repeat="monomer in library.getMonomers(category)"
-                      class="monomer-holder">
+                    <!-- display if there are just monomers in here -->
+                    <div
+                      class="monomer-listing monomer-explorer"
+                      ng-show="library.getMonomers(category).length > 0 || library.getCategories(category).length === 0">
                       <div
-                        ng-class="library.convertBackgroundColorClass(monomer._backgroundColor) + ' ' + library.convertShapeClass(monomer._shape)"
-                        class="monomer">
+                        ng-repeat="monomer in library.getMonomers(category)"
+                        class="monomer-holder">
+                        <div
+                          ng-class="library.convertBackgroundColorClass(monomer._backgroundColor) + ' ' + library.convertShapeClass(monomer._shape)"
+                          class="monomer">
+                        </div>
+                        <span
+                          class="monomer-name noselect"
+                          ng-class="library.convertFontColorClass(monomer._fontColor)">
+                          {{monomer._name}}
+                        </span>
                       </div>
-                      <span 
-                        class="monomer-name noselect"
-                        ng-class="library.convertFontColorClass(monomer._fontColor)">
-                        {{monomer._name}}
-                      </span>
                     </div>
                   </div>
                 </div>
@@ -143,26 +145,9 @@
             </div>
           </div>
         </div>
-        <!-- <label class="search-label">Monomer Search:</label>
-        <input class="search-input" type="text" ng-model="library.search.monomer">
-        <br><br>
-        <p> {{ library.getSearchBoxResult() }} </p>
-        <form>
-          Make a selection: <br>
-          <select>
-          <option ng-repeat="x in library.getPolymerIdList()">{{x}}</option>
-          </select>
-        </form>
-
-        <button class="stdNucleotideBtnA"> A </button>
-
-        <button class="stdNucleotideBtnC"> C </button>
-
-        <button class="stdNucleotideBtnG"> G </button>
-
-        <button class="stdNucleotideBtnT"> T </button>
-
-        <button class="stdNucleotideBtnU"> U </button> -->
+        <div class="full-height" ng-show="!library.libraryService.initComplete">
+          <h4 class='text-center'>Loading Monomer Library</h3>
+        </div>
       </div>
       <div class='col-md-9 canvas-column'>
         <div class='row canvas-row-top'>
@@ -216,14 +201,17 @@
         Cyclic Peptide:<br>
         PEPTIDE1{A.R.C.A.A.K.T.C.D.A}$PEPTIDE1,PEPTIDE1,8:R3-3:R3$$$<br>
         PEPTIDE1{R.Y.F.L.W.V.F.P.L}$PEPTIDE1,PEPTIDE1,9:R2-1:R1$$$<br>
-        PEPTIDE1{T.R.L}|PEPTIDE2{R.Y.R}$PEPTIDE1,PEPTIDE1,3:R2-1:R1|PEPTIDE2,PEPTIDE2,3:R2-1:R1$$$<br><br>
+        PEPTIDE1{T.R.L}|PEPTIDE2{R.Y.R}$PEPTIDE1,PEPTIDE1,3:R2-1:R1|PEPTIDE2,PEPTIDE2,3:R2-1:R1$$$<br>
+        <br>
+        Issues warning alert:<br>
+        PEPTIDE1{T.R.L}|PEPTIDE2{R.Y.R}$PEPTIDE1,PEPTIDE1,3:R2-1:R1|PEPTIDE2,PEPTIDE2,3:R2-1:R1|PEPTIDE1,PEPTIDE2,2:R1-2:R1$$$<br><br>
       </i>
     </div>
     <form>
       <table>
         <tr>
           <td rowspan='3'></td>
-          <td><label>Please choose:</label></td> 
+          <td><label>Please choose:</label></td>
           <td align='right'>
             <select ng-model='polymerType' ng-options='option as option.label for option in main.polyTypes'></select>
           </td>
@@ -234,7 +222,8 @@
           </td>
         </tr>
         <tr>
-          <td align='right' colspan='2'>          
+          <td align='right' colspan='2'>
+            <label>Reset Canvas <input type='checkbox' ng-model='main.shouldReset' ng-disabled='true'></label>
             <button class='btn' ng-click='main.processInput(polymerType, inputSequence)'>Load</button>
             <button class='btn' ng-click='main.clear()'>Clear</button>
             <button class='btn' ng-click='main.toggleModal()'>Cancel</button>

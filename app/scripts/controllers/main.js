@@ -27,16 +27,25 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 	    { value: 'PEPTIDE', label:'PEPTIDE' },
 		];
 
+    // indicates whether to reset during loading a new sequence 
+    main.shouldReset = true;
+
 		$scope.polymerType = main.polyTypes[0];
 		main.result = '';
 
 	/* Check if need to validate HELM input, or convert input to Helm */
 	main.processInput = function (polymerType, inputSequence) {
-		/* Check that input is not empty */
+		  /* Check that input is not empty */
 	    if (!angular.isDefined(inputSequence)) {
 	      window.alert('Invalid input');
 	      return;
 	    }
+
+	    // clear the canvas if the reset check box is selected
+	    if (main.shouldReset) {
+	    	$scope.resetCanvas(); 
+	    }
+	    
 	    /* TODO: Check that input is valid type? */
 	    if (polymerType.value === 'HELM') {
 	    	main.validateHelmNotation(inputSequence);
@@ -65,7 +74,6 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 	      console.log(response.data);
 	    };
 
-	    $scope.resetCanvas();
 	    switch(polymerType.value) {
 	      case 'PEPTIDE':
 	        webService.getHelmNotationPeptide(inputSequence).then(successCallback, errorCallback);
@@ -92,8 +100,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 		  console.log(response.data);
 		};
 
-		$scope.resetCanvas();
-	    webService.validateHelmNotation(inputSequence).then(successCallback, errorCallback);
+    webService.validateHelmNotation(inputSequence).then(successCallback, errorCallback);
 	};
 
 	/* Invoke factory function to get canonical helm notation */

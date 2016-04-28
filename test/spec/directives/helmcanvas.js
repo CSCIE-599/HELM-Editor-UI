@@ -10,17 +10,13 @@ describe('Directive: helmCanvas', function () {
 
   var element,
     scope,
-    $compile;
+    $compile,
+    $httpBackend;
 
-  beforeEach(inject(function (_$compile_, $rootScope) {
+  beforeEach(inject(function (_$compile_, $rootScope, _$httpBackend_) {
     scope = $rootScope.$new();
     $compile = _$compile_;
-    
-    /*
-    // mock out our pan and zoom functions, to be tested in the unit tests
-    scope.pan = function () {};
-    scope.zoom = function () {};
-    */
+    $httpBackend = _$httpBackend_;
   }));
 
   // helpers to create nodes and connections
@@ -298,15 +294,147 @@ describe('Directive: helmCanvas', function () {
       expect(numText.attr('visibility')).toBe(vals[i].seqVisible);
       expect(numText.attr('x')).toBe('' + (vals[i].x - 5));
       expect(numText.attr('y')).toBe('' + (vals[i].y - 5));
+      expect(numText.text()).toContain(vals[i].num);
     }
   }));
 
-  /*
-  * used to test zoom/pan eventually
+  it('should list out node names in the lowercanvas variant', function () {
+    // set up the nodes
+    scope.graph = {};
+    var vals = [
+      {
+        name: 'node1',
+        num: '1',
+        seqVisible: 'visible',
+        width: '10',
+        height: '20',
+        x: '30',
+        y: '40',
+        rx: '50',
+        ry: '60',
+        colour: 'red',
+        transformDegree: '70',
+        transformx: '80',
+        transformy: '90'
+      },
+      {
+        name: 'node2',
+        num: '2',
+        seqVisible: 'visible',
+        width: '100',
+        height: '200',
+        x: '300',
+        y: '400',
+        rx: '500',
+        ry: '600',
+        colour: 'blue',
+        transformDegree: '700',
+        transformx: '800',
+        transformy: '900'
+      },
+      {
+        name: 'node3',
+        num: '3',
+        seqVisible: 'hidden',
+        width: '2',
+        height: '4',
+        x: '6',
+        y: '8',
+        rx: '10',
+        ry: '12',
+        colour: 'green',
+        transformDegree: '14',
+        transformx: '16',
+        transformy: '18'
+      }
+    ];
+    scope.graph.nodes = [
+      createNode(vals[0].name, 
+        vals[0].num, 
+        vals[0].seqVisible, 
+        vals[0].width, 
+        vals[0].height, 
+        vals[0].x, 
+        vals[0].y, 
+        vals[0].rx, 
+        vals[0].ry, 
+        vals[0].colour, 
+        vals[0].transformDegree, 
+        vals[0].transformx, 
+        vals[0].transformy),
+      createNode(vals[1].name, 
+        vals[1].num, 
+        vals[1].seqVisible, 
+        vals[1].width, 
+        vals[1].height, 
+        vals[1].x, 
+        vals[1].y, 
+        vals[1].rx, 
+        vals[1].ry, 
+        vals[1].colour, 
+        vals[1].transformDegree, 
+        vals[1].transformx, 
+        vals[1].transformy),
+      createNode(vals[2].name, 
+        vals[2].num, 
+        vals[2].seqVisible, 
+        vals[2].width, 
+        vals[2].height, 
+        vals[2].x, 
+        vals[2].y, 
+        vals[2].rx, 
+        vals[2].ry, 
+        vals[2].colour, 
+        vals[2].transformDegree, 
+        vals[2].transformx, 
+        vals[2].transformy),
+    ];
+
+    // create the element
+    element = angular.element('<div><helm-canvas graph="graph" canvastype="lower"></helm-canvas></div>');
+    element = $compile(element)(scope);
+    scope.$digest();
+
+    // check that there are elements within g, and they have the right structure
+    var helmCanvas = element.children().eq(0);
+
+    // grab the element where the nodes go
+    var parentG = helmCanvas.children().eq(8);
+    // all of the nodes themselves
+    var children = parentG.children();
+    expect(children.length).toBe(3);
+
+    // go through each one
+    for (var i = 0; i < children.length; i++) {
+      var g = children.eq(i);
+      expect(g.children().length).toBe(2);
+      var nameText = g.children().eq(0);
+      var numText = g.children().eq(1);
+
+      // test the name text
+      expect(nameText.attr('text-anchor')).toBe('middle');
+      expect(nameText.attr('alignment-baseline')).toBe('middle');
+      expect(nameText.attr('x')).toBeDefined();
+      expect(nameText.attr('y')).toBeDefined();
+      expect(nameText.text()).toContain(vals[i].name);
+
+      // test the num text
+      expect(numText.attr('text-anchor')).toBe('middle');
+      expect(numText.attr('alignment-baseline')).toBe('middle');
+      expect(numText.attr('visibility')).toBe(vals[i].seqVisible);
+      expect(numText.attr('x')).toBeDefined();
+      expect(numText.attr('y')).toBeDefined();
+      expect(numText.text()).toContain(vals[i].num);
+    }
+  });
+
   it('should call the zoom and pan methods with the correct parameters', function () {
     element = angular.element('<div><helm-canvas></helm-canvas></div>');
     element = $compile(element)(scope);
     scope.$digest();
+
+    // make sure we deal with any requests to the view
+    $httpBackend.whenGET('views/main.html').respond('');
 
     // find the zoom and pan buttons
     var svg = element.children().eq(0);
@@ -318,15 +446,23 @@ describe('Directive: helmCanvas', function () {
     var panRight = svgChildren.eq(6);
     var panLeft = svgChildren.eq(7);
 
-    // set up the spy
-    // spyOn(scope, 'zoom');
-    // spyOn(scope, 'pan');
+    // set up the spies
+    var spiedScope = zoomIn.scope();
+    spyOn(spiedScope, 'zoom');
+    spyOn(spiedScope, 'pan');
 
     // click the buttons and make sure they were called
-    // zoomIn.click();
-    // expect(scope.zoom).toHaveBeenCalledWith(0.8);
-    // zoomOut.click();
-    // expect(scope.zoom).toHaveBeenCalledWith(1.2);
+    zoomIn.click();
+    expect(spiedScope.zoom).toHaveBeenCalledWith(1.2, jasmine.anything());
+    zoomOut.click();
+    expect(spiedScope.zoom).toHaveBeenCalledWith(0.8, jasmine.anything());
+    panUp.click();
+    expect(spiedScope.pan).toHaveBeenCalledWith(0, 50, jasmine.anything());
+    panDown.click();
+    expect(spiedScope.pan).toHaveBeenCalledWith(0, -50, jasmine.anything());
+    panLeft.click();
+    expect(spiedScope.pan).toHaveBeenCalledWith(50, 0, jasmine.anything());
+    panRight.click();
+    expect(spiedScope.pan).toHaveBeenCalledWith(-50, 0, jasmine.anything());
   });
-  */
 });

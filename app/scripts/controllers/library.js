@@ -25,6 +25,9 @@ angular.module('helmeditor2App')
     self.searchViewVisible = true;
     self.exploreViewVisible = false;
 
+    // expose the service directly so it can be used
+    self.libraryService = MonomerLibraryService;
+
     // allow toggling
     var setViewVisible = function (view) {
       if (view === 'search') {
@@ -35,19 +38,6 @@ angular.module('helmeditor2App')
         self.searchViewVisible = false;
         self.exploreViewVisible = true;
       }
-    };
-
-    // search for the monomers as needed
-    var searchMonomers = function () {
-      if (!MonomerLibraryService.initComplete) {
-        return [];
-      }
-      return MonomerLibraryService.searchMonomers(self.activeType, self.search);
-    };
-
-    // list the monomers by the selection
-    var listMonomers = function () {
-      return [];
     };
 
     // convert the class to the right class name for the background color
@@ -110,19 +100,33 @@ angular.module('helmeditor2App')
       }
     };
 
+    // search for the monomers as needed
+    var searchMonomers = function () {
+      if (!MonomerLibraryService.initComplete) {
+        return [];
+      }
+      return MonomerLibraryService.searchMonomers(self.activeType, self.search);
+    };
+
     // retrieve the current active type
     var getActiveType = function () {
-      return MonomerLibraryService.getMonomersByType(self.activeType);
+      if (MonomerLibraryService.initComplete) {
+        return MonomerLibraryService.getMonomersByType(self.activeType);
+      }
     };
 
     // get the categories of the current group selected
     var getCategories = function (group) {
-      return group.categories || [];
+      if (group) {
+        return group.categories || [];
+      }
     };
 
     // get the monomers of the current group selected
     var getMonomers = function (group) {
-      return group.monomers || [];
+      if (group) {
+        return group.monomers || [];
+      }
     };
 
     // return true if the given name is the active category
@@ -138,7 +142,6 @@ angular.module('helmeditor2App')
     // expose the methods we want to 
     self.setViewVisible = setViewVisible;
     self.searchMonomers = searchMonomers;
-    self.listMonomers = listMonomers;
     self.convertBackgroundColorClass = convertBackgroundColorClass;
     self.convertFontColorClass = convertFontColorClass;
     self.convertShapeClass = convertShapeClass;
