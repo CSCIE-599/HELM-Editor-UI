@@ -593,10 +593,16 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 	/* zoom and pan functions */
 	$scope.zoom = function (scale, evt){		
 		CanvasDisplayService.zoom(scale, evt);
+    if (evt) {
+      evt.stopPropagation();
+    }
 	};
 	
 	$scope.pan = function (dx, dy, evt){		
 		CanvasDisplayService.pan(dx, dy, evt);
+    if (evt) {
+      evt.stopPropagation();
+    }
 	};
 
 	/*
@@ -671,4 +677,16 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 
 	// Create the view for the canvas and attach to the scope.
 	$scope.canvasView = new CanvasDisplayService.CanvasView(helmDataModel);
+
+  // Methods used by the monomer library to add/drag elements to the 
+  main.currentMonomer = {};
+
+  // sets the current selected monomer to be what was clicked
+  main.setSelectedMonomer = function (monomer) {
+    main.currentMonomer = monomer;
+  };
+
+  $scope.svgClicked = function () {
+    //console.log('svg-clicked');
+  };
 }]);

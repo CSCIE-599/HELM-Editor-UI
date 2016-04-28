@@ -59,7 +59,7 @@
                   <div 
                     ng-repeat="monomer in library.searchMonomers()"
                     class="monomer-holder">
-                    <monomer monomer="monomer" library="library"></monomer>
+                    <monomer monomer="monomer" library="library" main="main"></monomer>
                   </div>
                 </div>
               </div>
@@ -99,7 +99,7 @@
                             <div
                               ng-repeat="monomer in library.getMonomers(subCategory)"
                               class="monomer-holder">
-                              <monomer monomer="monomer" library="library"></monomer>
+                              <monomer monomer="monomer" library="library" main="main"></monomer>
                             </div>
                           </div>
                         </div>
@@ -112,7 +112,7 @@
                       <div 
                         ng-repeat="monomer in library.getMonomers(category)"
                         class="monomer-holder">
-                        <monomer monomer="monomer" library="library"></monomer>
+                        <monomer monomer="monomer" library="library" main="main"></monomer>
                       </div>
                     </div>
                   </div>
