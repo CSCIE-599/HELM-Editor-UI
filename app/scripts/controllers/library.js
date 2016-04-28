@@ -139,6 +139,12 @@ angular.module('helmeditor2App')
       return name === self.activeSubCategory;
     };
 
+    // handle when the user clicks on a monomer
+    var showMonomerDetails = function (monomer) {
+      console.log('clicked');
+      console.log(monomer);
+    };
+
     // expose the methods we want to 
     self.setViewVisible = setViewVisible;
     self.searchMonomers = searchMonomers;
@@ -150,4 +156,5 @@ angular.module('helmeditor2App')
     self.getCategories = getCategories;
     self.categoryActive = categoryActive;
     self.subCategoryActive = subCategoryActive;
+    self.showMonomerDetails = showMonomerDetails;
   }]);

@@ -65,7 +65,8 @@
                     </div>
                     <span 
                       class="monomer-name noselect"
-                      ng-class="library.convertFontColorClass(monomer._fontColor)">
+                      ng-class="library.convertFontColorClass(monomer._fontColor)"
+                      ng-dblclick="library.showMonomerDetails(monomer)">
                       {{monomer._name}}
                     </span>
                   </div>
@@ -113,7 +114,8 @@
                               </div>
                               <span 
                                 class="monomer-name noselect"
-                                ng-class="library.convertFontColorClass(monomer._fontColor)">
+                                ng-class="library.convertFontColorClass(monomer._fontColor)"
+                                ng-dblclick="library.showMonomerDetails(monomer)">
                                 {{monomer._name}}
                               </span>
                             </div>
@@ -134,7 +136,8 @@
                         </div>
                         <span 
                           class="monomer-name noselect"
-                          ng-class="library.convertFontColorClass(monomer._fontColor)">
+                          ng-class="library.convertFontColorClass(monomer._fontColor)"
+                          ng-dblclick="library.showMonomerDetails(monomer)">
                           {{monomer._name}}
                         </span>
                       </div>
