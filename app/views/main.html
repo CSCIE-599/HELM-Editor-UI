@@ -59,16 +59,7 @@
                   <div 
                     ng-repeat="monomer in library.searchMonomers()"
                     class="monomer-holder">
-                    <div
-                      ng-class="library.convertBackgroundColorClass(monomer._backgroundColor) + ' ' + library.convertShapeClass(monomer._shape)"
-                      class="monomer">
-                    </div>
-                    <span 
-                      class="monomer-name noselect"
-                      ng-class="library.convertFontColorClass(monomer._fontColor)"
-                      ng-dblclick="library.showMonomerDetails(monomer)">
-                      {{monomer._name}}
-                    </span>
+                    <monomer monomer="monomer" library="library"></monomer>
                   </div>
                 </div>
               </div>
@@ -108,16 +99,7 @@
                             <div
                               ng-repeat="monomer in library.getMonomers(subCategory)"
                               class="monomer-holder">
-                              <div
-                                ng-class="library.convertBackgroundColorClass(monomer._backgroundColor) + ' ' + library.convertShapeClass(monomer._shape)"
-                                class="monomer">
-                              </div>
-                              <span 
-                                class="monomer-name noselect"
-                                ng-class="library.convertFontColorClass(monomer._fontColor)"
-                                ng-dblclick="library.showMonomerDetails(monomer)">
-                                {{monomer._name}}
-                              </span>
+                              <monomer monomer="monomer" library="library"></monomer>
                             </div>
                           </div>
                         </div>
@@ -130,16 +112,7 @@
                       <div 
                         ng-repeat="monomer in library.getMonomers(category)"
                         class="monomer-holder">
-                        <div
-                          ng-class="library.convertBackgroundColorClass(monomer._backgroundColor) + ' ' + library.convertShapeClass(monomer._shape)"
-                          class="monomer">
-                        </div>
-                        <span 
-                          class="monomer-name noselect"
-                          ng-class="library.convertFontColorClass(monomer._fontColor)"
-                          ng-dblclick="library.showMonomerDetails(monomer)">
-                          {{monomer._name}}
-                        </span>
+                        <monomer monomer="monomer" library="library"></monomer>
                       </div>
                     </div>
                   </div>

@@ -332,7 +332,6 @@ svg {
   line-height: 30px;
   width: 100%;
   height: 100%;
-  padding-top: 11px;
 }
 
 .monomer-name {
@@ -495,4 +494,9 @@ svg {
   margin-top: 5px;
   background-color: white;
   border: solid 1px #707070;
+}
+
+.monomer-directive {
+  width: 100%;
+  height: 100%;
 }

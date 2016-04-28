@@ -1,0 +1,12 @@
+<div class='monomer-directive'>
+  <div
+    ng-class="library.convertBackgroundColorClass(monomer._backgroundColor) + ' ' + library.convertShapeClass(monomer._shape)"
+    class="monomer">
+  </div>
+  <span 
+    class="monomer-name noselect"
+    ng-class="library.convertFontColorClass(monomer._fontColor)"
+    ng-dblclick="library.showMonomerDetails(monomer)">
+    {{monomer._name}}
+  </span>
+</div>
