@@ -14,8 +14,7 @@ angular.module('helmeditor2App')
       replace: true,
       scope: {
         monomer: '=',
-        library: '=',
-        main: '='
+        library: '='
       }
     };
   });

@@ -10,8 +10,8 @@
 
 var app = angular.module('helmeditor2App');
 
-app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'CanvasDisplayService', 
-	function ($scope, webService, HelmConversionService, CanvasDisplayService) {
+app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'CanvasDisplayService', 'MonomerSelectionService',
+	function ($scope, webService, HelmConversionService, CanvasDisplayService, MonomerSelectionService) {
 		var main = this;
 
 		/* Toggle modal dialogue display */
@@ -679,26 +679,18 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 	$scope.canvasView = new CanvasDisplayService.CanvasView(helmDataModel);
 
   // Methods used by the monomer library to add/drag elements to the 
-  main.currentMonomer = {};
-
   // sets the current selected monomer to be what was clicked
   main.toggleSelectedMonomer = function (monomer, evt) {
-    // un-select if it was previously selected
-    if (main.currentMonomer._name === monomer._name) {
-      main.currentMonomer = {};
-    }
-    else {
-      main.currentMonomer = monomer;
-    }
-    evt.stopPropagation();
+    MonomerSelectionService.toggleSelectedMonomer(monomer, evt);
   };
 
-  // returns 'monomer-selected' if this is currently selected, to handle a class display in the library
-  main.monomerSelectedClass = function (monomer) {
-    return (monomer._name === main.currentMonomer._name) ? 'monomer-selected' : '';
-  };
-
+  // hanlde the clicks on the SVG itself
   $scope.svgClicked = function () {
-    //console.log('svg-clicked');
+    var currentMonomer = MonomerSelectionService.getSelectedMonomer();
+    // if we have a monomer selected, we need to add it
+    if (currentMonomer._name) {
+      console.log(main.helm);
+      console.log(currentMonomer);
+    }
   };
 }]);

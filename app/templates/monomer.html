@@ -5,9 +5,8 @@
   </div>
   <span 
     class="monomer-name noselect"
-    ng-class="library.convertFontColorClass(monomer._fontColor) + ' ' + main.monomerSelectedClass(monomer)"
-    ng-click="main.toggleSelectedMonomer(monomer, $event)"
-    ng-dblclick="library.showMonomerDetails(monomer)">
+    ng-class="library.convertFontColorClass(monomer._fontColor) + ' ' + library.monomerSelectedClass(monomer)"
+    ng-click="library.monomerClicked(monomer, $event)">
     {{monomer._name}}
   </span>
 </div>
