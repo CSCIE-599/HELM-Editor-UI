@@ -55,7 +55,7 @@ angular.module('helmeditor2App')
 		var textColor;
 
 		nodeWidth = self.getNodeWidth(nodeName, isRotate);
-		
+
 		if(isRotate){
 			rotateDegree = '45';
 		}
@@ -188,7 +188,7 @@ angular.module('helmeditor2App')
 	    	if(nodeName.length === 3){
 				return 30;
 			}else if(nodeName.length >= 4){ 
-				return 40;
+				return 55;
 			}
 		}
 		return 25;

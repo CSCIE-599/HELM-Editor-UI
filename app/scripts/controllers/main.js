@@ -151,7 +151,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 		nodes: [],
 		connections: []
 	};
-
+	var zoomCount = 0;
 	//function which takes in a HELM notation, converts to sequence and draws graphical image on the canvas
 	$scope.displayOnCanvas = function (notation) {
 	    //from HELM Notation, get requested sequences and connections between sequences
@@ -164,13 +164,14 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
       var graphedNodes = [];
       for (var i = 0; i < sequenceArray.length; i++){
         var seqType = $scope.getType(sequenceArray[i].name); //PEPTIDE, NUCLEOTIDE, or CHEM
-        main.seqtype = seqType;
+       	main.seqtype = seqType;
         pos = CanvasDisplayService.getNewRowPos(pos, i);     //add a new row for a every iteration
 
         graphedNodes.push({
           name : sequenceArray[i].name,
           nodes : $scope.generateGraph(sequenceArray[i].sequence, sequenceArray[i].name, connectionArray, pos, seqType, sequenceArray)
         });
+
         CanvasDisplayService.setNodeNum(0); //reset node numbering
       }
 
@@ -179,7 +180,9 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
         $scope.makeRequestedConnections(connectionArray, graphedNodes);
       }
 
-      $scope.zoom(0.8);//zoomin the default view by 20%
+	  if(zoomCount === 0){
+        $scope.zoom(0.8);//zoomin the default view by 20%
+  	  }
     };
 
     //Parse the sequence, and generate the graph
@@ -327,8 +330,14 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 
       //get x position, whether to the far left or right side of canvas
       var x = $scope.getCHEMXPosition(connectionArray, chemSequenceName, sequenceArray);
-      var y = 190;  //TO-DO: this is hard coded to be slightly below the previous, first sequence
-
+      var y;
+      if(!x){
+      	x = pos.x;
+      	y = pos.y;
+      }
+      else {
+      	y = 190;  //TO-DO: this is hard coded to be slightly below the previous, first sequence
+	  }
 	  var allNodes = [];
       var currNode = CanvasDisplayService.createNode(monomerArr[0], 'CHEM', 'purple', false, x , y);
       allNodes.push(currNode);
@@ -595,9 +604,10 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 	/* zoom and pan functions */
 	$scope.zoom = function (scale, evt){		
 		CanvasDisplayService.zoom(scale, evt);
-    if (evt) {
-      evt.stopPropagation();
-    }
+		zoomCount++;
+    	if (evt) {
+      		evt.stopPropagation();
+    	}
 	};
 	
 	$scope.pan = function (dx, dy, evt){		
