@@ -193,12 +193,12 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
       var graphedNodes = [];  //all nodes created and graphed
       var dir = 'forward';    //'forward' places nodes left to right, 'reverse' places them right to left
 
-      if (!$scope.isCyclical(seqName, connectionArray)){  //if the sequence is not cyclical,
+      if (!$scope.isCyclical(seqName, connectionArray)){  //if sequence is linear, no cycle found
         currSubGraph = $scope.makeLinearGraph(sequence, dir, seqType, pos, seqName, connectionArray, sequenceArray);
         graphedNodes.push(currSubGraph.nodes);
       }
       else {
-        var nodes = $scope.makeCyclicPeptide(sequence, dir, seqType, pos, seqName, connectionArray, sequenceArray);
+        var nodes = $scope.makeGraphWithCycles(sequence, dir, seqType, pos, seqName, connectionArray, sequenceArray);
         graphedNodes.push(nodes);
       }
       return graphedNodes;
@@ -419,16 +419,16 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
     };
 
   	//makes a cyclic peptide after determining if there are any linear and cyclic combo
-	$scope.makeCyclicPeptide = function (sequence, dir, seqType, pos, seqName, connectionArray, sequenceArray) {
+	$scope.makeGraphWithCycles = function (sequence, dir, seqType, pos, seqName, connectionArray, sequenceArray) {
 
 		var graphedNodes = [];  //array of all nodes created and graphed
 	    var currSubGraph;
 	    var prevSubGraph;
 		  
 		  //separate the sequence into linear and cyclical slices
-			var slicedSequenceArr =  $scope.separateSequences(sequence, seqName, connectionArray);
+		var slicedSequenceArr =  $scope.separateSequences(sequence, seqName, connectionArray);
 
-			for (var i=0;i<slicedSequenceArr.length;i++) {	    	
+		for (var i=0;i<slicedSequenceArr.length;i++) {	    	
 	    	var slice = slicedSequenceArr[i];
 
 	    	if (slice.flow === 'linear') {    		

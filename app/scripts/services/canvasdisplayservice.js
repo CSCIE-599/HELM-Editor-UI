@@ -29,7 +29,6 @@ angular.module('helmeditor2App')
 	var radiusX = 3;
 	var radiusY = 3;
 
-
 	self.createRibose = function (nodeName,  nodeColor, xPos, yPos) {
 		//console.log('adding ribose node ' + nodeName +' at: (' + xPos + ',' +yPos +')');
 	 	return self.createNode(nodeName, 'NUCLEOTIDE', 'lightgrey', false, xPos, yPos, 'r');
@@ -86,9 +85,18 @@ angular.module('helmeditor2App')
 			transformDegree:rotateDegree,
 			seqVisible:	'hidden',
 			nodeVisible: 'hidden',
+			annotationVisible: 'hidden',
 			textColor: textColor,
-			nodeType:nodeType
+			nodeType:nodeType,
+			annotationText:''
 		};
+
+		if (sequenceType === 'PEPTIDE') {
+			 newNode.annotationText = 'n';
+		}
+		else if (sequenceType === 'NUCLEOTIDE') {
+			newNode.annotationText = '5\'' ;
+		}
 
 		//number nodes if Peptide, or if Nucleotide and a base node
         if ((sequenceType === 'PEPTIDE') || (sequenceType === 'NUCLEOTIDE' && nodeType === 'b')){
@@ -102,6 +110,10 @@ angular.module('helmeditor2App')
         	newNode.lowery = newNode.lowery-150;
         }
         nodeId++;
+
+        if(newNode.num === 1){
+        	newNode.annotationVisible = 'visible';
+        }
 		return newNode;
 	};
 
@@ -183,6 +195,7 @@ angular.module('helmeditor2App')
 		return color;		
     };
 
+	/* helper method to calculate width of a node*/
     self.getNodeWidth = function(nodeName, isRotate){
 		if(!isRotate){
 	    	if(nodeName.length === 3){
@@ -194,6 +207,7 @@ angular.module('helmeditor2App')
 		return 25;
     };
 
+    /*getter/setter for nodeNum*/
 	self.getNodeNum = function(){
 		return nodeNum;
 	};
@@ -203,7 +217,6 @@ angular.module('helmeditor2App')
 	};
 
 	/*helper method for creating cyclical nodes, only supports cyclical peptides now*/
-	// TO-DO Extend to support cyclical nucleotides
 	self.makeCycle = function(sequence, seqType, pos, dir){
 
 		var cycleNodesArray = [];
@@ -243,7 +256,7 @@ angular.module('helmeditor2App')
 	};
 
 
-	//helper function to get a new pos to create a new row, increments y
+	/*helper function to get a new pos to create a new row, increments y*/
 	self.getNewRowPos = function(pos, i){
 
 		if(!pos){//starting pos
@@ -260,7 +273,7 @@ angular.module('helmeditor2App')
 		}
 	};
 
-	/*zoom related functions*/
+	/*zoom and pan related functions*/
 
 	var transMatrix = [1,0,0,1,0,0];//identity matrix 
 	var mapMatrix, newMatrix, width, height;	
@@ -300,7 +313,9 @@ angular.module('helmeditor2App')
 	};
 
 
-	// View model for the chart.
+	/*data models for canvas, node and connection */
+
+	// View for the canvas.
 	self.CanvasView = function (dataModel) {
 
 		// Reference to the underlying data.
@@ -309,7 +324,7 @@ angular.module('helmeditor2App')
 		this.nodes = [];
 		this.connections = [];
 
-		// Add a node to the view model.
+		// Add a node to the canvas view.
 		this.addNode = function (nodeDataModel) {
 
 			if (!this.data.nodes) {
@@ -398,11 +413,6 @@ angular.module('helmeditor2App')
 			return this.data.height;
 		};
 
-		// id of node from which this node links horizontally
-		this.horizSource = function(){
-			return this.data.horizDest || '';
-		};
-
 		//xpos of the node after rotation
 		this.transformx = function () {
 			return this.data.transformx;
@@ -433,22 +443,29 @@ angular.module('helmeditor2App')
 			return this.data.textColor;
 		};
 
+		//(x,y) position of a node 
 		this.position = function(){
 			return { x: this.x(),
 					 y: this.y()
 				   };
 		};
 
+		//visibility of the annotation
+		this.annotationVisible = function () {
+			return this.data.annotationVisible;
+		};
+
+		//visibility of the annotation
+		this.annotationText = function () {
+			return this.data.annotationText;
+		};		
 	};
 
 	// View for a connection.
 	self.ConnectionView= function (connectionDataModel) {
 
-		this.data = connectionDataModel;
 		this.source = connectionDataModel.source;
 		this.dest = connectionDataModel.dest;
-
-		this.type = connectionDataModel.type;//horizontal or vertical connection
 
 		this.sourceCoordX = function () {
 			return this.source.x + this.source.width/2;
@@ -458,42 +475,27 @@ angular.module('helmeditor2App')
 			return this.source.y + this.source.height/2;
 		};
 
-		this.sourceCoord = function () {
-			return {
-				x: this.sourceCoordX(),
-				y: this.sourceCoordY()
-			};
-		};
-
 		this.destCoordX = function () {
 			return this.dest.x + this.dest.width/2;
 		};
 
 		this.destCoordY = function () {
 			return this.dest.y + this.dest.height/2;
-		};
-
-		this.destCoord = function () {
-			return {
-				x: this.destCoordX(),
-				y: this.destCoordY()
-			};
-		};
+		};		
 	};
 
-
+	//model for a sequence
 	self.Sequence = function(seqType, childrenArr, dir){
 		this.type = seqType;//PEPTIDE, NUCLEOTIDE, CHEM
 		this.children = childrenArr;//array of ChildSequence
-		// store dir for now
-		this.dir = dir;
+		this.dir = dir;//direction
 	};
 
+	//model for a sub-sequence, which renders a cyclical or linear shape,based on the 'flow'
 	self.ChildSequence = function(childFlow, monomerArr){
 		this.flow = childFlow;//linear, cyclical
 		this.monomers = monomerArr;//array of monomers,e.g: [A,R]
 	};
-
 
 	//represents a mini graph, like a graph of linear nodes or cyclic nodes
 	self.SubGraph = function(fir, las, nodesArr){
