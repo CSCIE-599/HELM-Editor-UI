@@ -154,7 +154,6 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 
 	//function which takes in a HELM notation, converts to sequence and draws graphical image on the canvas
 	$scope.displayOnCanvas = function (notation) {
-      console.log(notation);
 	    //from HELM Notation, get requested sequences and connections between sequences
       var helmTranslation = HelmConversionService.convertHelmNotationToSequence(notation);
       var sequenceArray = helmTranslation[0];   //each element has .name and .sequence (array of letters)
@@ -587,7 +586,6 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 		main.result = '';
 		main.seqtype = '';
 		main.helm = '';
-    HELMNotationService.setHelm('');
 		main.molecularweight = '';
 		main.molecularformula = '';
 		main.extcoefficient = '';
@@ -708,17 +706,16 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
     var currentMonomer = MonomerSelectionService.getSelectedMonomer();
     // if we have a monomer selected, we need to add it
     if (currentMonomer._name) {
-      console.log(currentMonomer);
       var type = currentMonomer.encodedMonomer ? currentMonomer.encodedMonomer.PolymerType : convertTitle(currentMonomer._title);
       var notation = currentMonomer._notation ? currentMonomer._notation : currentMonomer._name;
       HELMNotationService.addNewSequence(type, notation);
-      HELMNotationService.addNewSequence(type, notation);
 
+      // and update (for now, until it's all linked together correctly)
       var out = HELMNotationService.getHelm();
       console.log(out);
-      // and update (for now, until it's all linked together correctly)
       $scope.resetCanvas();
-      //$scope.displayOnCanvas(out);
+      main.helm = out;
+      $scope.displayOnCanvas(out);
     }
   };
 }]);
