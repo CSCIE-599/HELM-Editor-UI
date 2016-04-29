@@ -106,8 +106,49 @@ angular.module('helmeditor2App')
     };
 
     // add the new sequence to the current HELM string
-    var addNewSequence = function (sequence) {
-      console.log(sequence);
+    // type - must be RNA, PEPTIDE, or CHEM
+    // notation should be the sequence of characters
+    var addNewSequence = function (type, notation) {
+      // see what label we need to add to the type for the new sequence
+      var postfix = 1; // start at 1
+      for (var i = 0; i < sequences.length; i++) {
+        if (sequences[i].name.indexOf(type) === 0) {
+          var num = parseInt(sequences[i].name.substring(type.length));
+          postfix = postfix > num ? postfix : num + 1;
+        }
+      }
+
+      // create our new sequence
+      var sequence = {
+        name: type + postfix,
+        notation: notation
+      };
+
+      sequences.push(sequence);
+
+      // and generate the new HELM notation
+      updateHelm();
+    };
+
+    // private helper function to update the HELM notation from any added sequences
+    var updateHelm = function () {
+      // go through the sequences and generate the first blob
+      var res = '';
+      for (var i = 0; i < sequences.length; i++) {
+        res = res + sequences[i].name + '{' + sequences[i].notation + '}';
+        // only apply the | if there are more
+        if (i < (sequences.length - 1)) {
+          res = res + '|';
+        }
+      }
+
+      // and swap it in
+      if (helm === '') {
+        helm = res + '$$$$';
+      }
+      else {
+        helm = res + helm.substring(helm.indexOf('$'));
+      }
     };
 
     // make things global

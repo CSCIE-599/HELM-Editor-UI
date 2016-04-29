@@ -173,4 +173,80 @@ describe('Service: HELMNotationService', function () {
     });
   });
 
+  it('should be able to add a new RNA sequence to a null sequence', function () {
+    expect(HELMNotationService.getHelm()).toBe('');
+    expect(HELMNotationService.getSequences().length).toBe(0);
+    HELMNotationService.addNewSequence('RNA', 'P.R(A)P.R(G)');
+    expect(HELMNotationService.getSequences().length).toBe(1);
+    expect(HELMNotationService.getSequences()[0].name).toBe('RNA1');
+    expect(HELMNotationService.getSequences()[0].notation).toBe('P.R(A)P.R(G)');
+    expect(HELMNotationService.getHelm()).toBe('RNA1{P.R(A)P.R(G)}$$$$');
+  });
+
+  it('should be able to add a new CHEM sequence to a null sequence', function () {
+    expect(HELMNotationService.getHelm()).toBe('');
+    expect(HELMNotationService.getSequences().length).toBe(0);
+    HELMNotationService.addNewSequence('CHEM', 'SS3');
+    expect(HELMNotationService.getSequences().length).toBe(1);
+    expect(HELMNotationService.getSequences()[0].name).toBe('CHEM1');
+    expect(HELMNotationService.getSequences()[0].notation).toBe('SS3');
+    expect(HELMNotationService.getHelm()).toBe('CHEM1{SS3}$$$$');
+  });
+
+  it('should be able to add a new PEPTIDE sequence to a null sequence', function () {
+    expect(HELMNotationService.getHelm()).toBe('');
+    expect(HELMNotationService.getSequences().length).toBe(0);
+    HELMNotationService.addNewSequence('PEPTIDE', 'A.R.C.A.A');
+    expect(HELMNotationService.getSequences().length).toBe(1);
+    expect(HELMNotationService.getSequences()[0].name).toBe('PEPTIDE1');
+    expect(HELMNotationService.getSequences()[0].notation).toBe('A.R.C.A.A');
+    expect(HELMNotationService.getHelm()).toBe('PEPTIDE1{A.R.C.A.A}$$$$');
+  });
+
+  it('should be able to add a new RNA sequence (RNA1) if there is no other RNA sequences', function () {
+    expect(HELMNotationService.getHelm()).toBe('');
+    expect(HELMNotationService.getSequences().length).toBe(0);
+    HELMNotationService.setHelm('CHEM1{SS3}|PEPTIDE1{A.R.C.A}$$$$');
+    expect(HELMNotationService.getSequences().length).toBe(2);
+    HELMNotationService.addNewSequence('RNA', 'P.R(A)P.R(G)');
+    expect(HELMNotationService.getSequences().length).toBe(3);
+    expect(HELMNotationService.getSequences()[0].name).toBe('CHEM1');
+    expect(HELMNotationService.getSequences()[0].notation).toBe('SS3');
+    expect(HELMNotationService.getSequences()[1].name).toBe('PEPTIDE1');
+    expect(HELMNotationService.getSequences()[1].notation).toBe('A.R.C.A');
+    expect(HELMNotationService.getSequences()[2].name).toBe('RNA1');
+    expect(HELMNotationService.getSequences()[2].notation).toBe('P.R(A)P.R(G)');
+    expect(HELMNotationService.getHelm()).toBe('CHEM1{SS3}|PEPTIDE1{A.R.C.A}|RNA1{P.R(A)P.R(G)}$$$$');
+  });
+
+  it('should be able to add a new sequence at the next logical number', function () {
+    expect(HELMNotationService.getHelm()).toBe('');
+    expect(HELMNotationService.getSequences().length).toBe(0);
+    HELMNotationService.setHelm('PEPTIDE3{A.R.C.A}$$$$');
+    expect(HELMNotationService.getSequences().length).toBe(1);
+    HELMNotationService.addNewSequence('PEPTIDE', 'A.R.C.A');
+    expect(HELMNotationService.getSequences().length).toBe(2);
+    expect(HELMNotationService.getSequences()[0].name).toBe('PEPTIDE3');
+    expect(HELMNotationService.getSequences()[0].notation).toBe('A.R.C.A');
+    expect(HELMNotationService.getSequences()[1].name).toBe('PEPTIDE4');
+    expect(HELMNotationService.getSequences()[1].notation).toBe('A.R.C.A');
+    expect(HELMNotationService.getHelm()).toBe('PEPTIDE3{A.R.C.A}|PEPTIDE4{A.R.C.A}$$$$');
+  });
+
+  it('should be able to add a new sequence and not mess with current connections', function () {
+    expect(HELMNotationService.getHelm()).toBe('');
+    expect(HELMNotationService.getSequences().length).toBe(0);
+    HELMNotationService.setHelm('RNA1{P.R(A)P.R(G)}|CHEM1{SS3}$RNA1,CHEM1,1:R1-1:R1$$$');
+    expect(HELMNotationService.getSequences().length).toBe(2);
+    HELMNotationService.addNewSequence('CHEM', 'Alexa');
+    expect(HELMNotationService.getSequences().length).toBe(3);
+    expect(HELMNotationService.getSequences()[0].name).toBe('RNA1');
+    expect(HELMNotationService.getSequences()[0].notation).toBe('P.R(A)P.R(G)');
+    expect(HELMNotationService.getSequences()[1].name).toBe('CHEM1');
+    expect(HELMNotationService.getSequences()[1].notation).toBe('SS3');
+    expect(HELMNotationService.getSequences()[2].name).toBe('CHEM2');
+    expect(HELMNotationService.getSequences()[2].notation).toBe('Alexa');
+    expect(HELMNotationService.getHelm()).toBe('RNA1{P.R(A)P.R(G)}|CHEM1{SS3}|CHEM2{Alexa}$RNA1,CHEM1,1:R1-1:R1$$$');
+  });
+
 });
