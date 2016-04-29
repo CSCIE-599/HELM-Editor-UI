@@ -124,6 +124,8 @@ angular.module('helmeditor2App')
         notation: notation
       };
 
+      console.log(sequence);
+
       sequences.push(sequence);
 
       // and generate the new HELM notation

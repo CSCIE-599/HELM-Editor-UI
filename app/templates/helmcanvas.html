@@ -1,6 +1,6 @@
 <svg class="draggable-container"
-  xmlns="http://www.w3.org/2000/svg" id ="mainCanvas"
-  ng-click="svgClicked()">
+  xmlns="http://www.w3.org/2000/svg" id="mainCanvas"
+  ng-click="$parent.svgClicked()">
 
   <!-- zoom and pan buttons -->   
   <circle class="zoombtn"  cx="40" cy="31" r="8" ng-click="zoom(0.8, $event)"></circle>

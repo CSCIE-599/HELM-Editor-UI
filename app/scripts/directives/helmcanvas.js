@@ -20,7 +20,7 @@ angular.module('helmeditor2App')
       },
       replace: true,
       scope: {
-         graph: '=graph',
+         graph: '=graph'
       },
       controller: 'MainCtrl',
     };

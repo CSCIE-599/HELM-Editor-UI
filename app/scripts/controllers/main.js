@@ -154,6 +154,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 
 	//function which takes in a HELM notation, converts to sequence and draws graphical image on the canvas
 	$scope.displayOnCanvas = function (notation) {
+      console.log(notation);
 	    //from HELM Notation, get requested sequences and connections between sequences
       var helmTranslation = HelmConversionService.convertHelmNotationToSequence(notation);
       var sequenceArray = helmTranslation[0];   //each element has .name and .sequence (array of letters)
@@ -688,13 +689,36 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
     MonomerSelectionService.toggleSelectedMonomer(monomer, evt);
   };
 
+  // helper function to convert from titles to types
+  var convertTitle = function (title) {
+    switch (title) {
+      case 'Nucleic Acid':
+        return 'RNA';
+      case 'Peptide':
+        return 'PEPTIDE';
+      case 'Chemical Modifier':
+        return 'CHEM';
+      default:
+        return 'RNA';
+    }
+  };
+
   // hanlde the clicks on the SVG itself
   $scope.svgClicked = function () {
     var currentMonomer = MonomerSelectionService.getSelectedMonomer();
     // if we have a monomer selected, we need to add it
     if (currentMonomer._name) {
-      console.log(HELMNotationService.getHelm());
       console.log(currentMonomer);
+      var type = currentMonomer.encodedMonomer ? currentMonomer.encodedMonomer.PolymerType : convertTitle(currentMonomer._title);
+      var notation = currentMonomer._notation ? currentMonomer._notation : currentMonomer._name;
+      HELMNotationService.addNewSequence(type, notation);
+      HELMNotationService.addNewSequence(type, notation);
+
+      var out = HELMNotationService.getHelm();
+      console.log(out);
+      // and update (for now, until it's all linked together correctly)
+      $scope.resetCanvas();
+      //$scope.displayOnCanvas(out);
     }
   };
 }]);
