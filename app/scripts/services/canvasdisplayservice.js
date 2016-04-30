@@ -257,7 +257,7 @@ angular.module('helmeditor2App')
 
 	
 	/*helper function to get a new pos to create a new row, increments y*/
-	self.getNewRowPos = function(pos, i, seqType,prevSeqType){
+	self.getNewRowPos = function(pos,seqType,prevSeqType){
 	
 		if(!pos){//starting pos
 			return {

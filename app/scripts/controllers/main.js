@@ -161,7 +161,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
       for (var i = 0; i < sequenceArray.length; i++){
         var seqType = $scope.getType(sequenceArray[i].name); //PEPTIDE, NUCLEOTIDE, or CHEM
        	main.seqtype = seqType;
-       	pos = CanvasDisplayService.getNewRowPos(pos, i, seqType, prevSeqType);     //add a new row for a every iteration
+       	pos = CanvasDisplayService.getNewRowPos(pos, seqType, prevSeqType);     //add a new row for a every iteration
        	prevSeqType = seqType;
         graphedNodes.push({
           name : sequenceArray[i].name,
