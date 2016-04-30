@@ -22,7 +22,8 @@ describe('Service: helmeditor2App.webService', function () {
   var result = '';
   var inputSequence = 'A';
   var helmSequence = 'RNA1{R(A)}$$$$V2.0';
-    
+   var fullUrl = '';
+   
   it('should return the base url', function () {
     baseUrl = webService.getBaseUrl();
     expect(baseUrl).not.toBe('');
