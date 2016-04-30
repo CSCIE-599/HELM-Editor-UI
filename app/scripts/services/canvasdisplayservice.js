@@ -299,6 +299,10 @@ angular.module('helmeditor2App')
 	  mapMatrix.setAttributeNS(null, 'transform', newMatrix);
 	};
 
+	var selectedNodeID;
+	self.getSelectedNodeID = function(){
+   		return selectedNodeID;
+    }
 
 	// View model for the chart.
 	self.CanvasView = function (dataModel) {
@@ -308,6 +312,7 @@ angular.module('helmeditor2App')
 
 		this.nodes = [];
 		this.connections = [];
+		selectedNodeID = {};
 
 		// Add a node to the view model.
 		this.addNode = function (nodeDataModel) {
@@ -330,8 +335,27 @@ angular.module('helmeditor2App')
 			// Update the view
 			this.connections.push(new self.ConnectionView(connectionDataModel));
 		};
-	};
 
+		// sets the current selected node to be what was clicked
+   		this.toggleSelectedNode = function (nodeDataModel, evt) {
+   			console.log(nodeDataModel.id());
+      		// un-select if it was previously selected
+      		if (selectedNodeID === nodeDataModel.id()) {
+        		selectedNodeID = {};
+      		}
+      		else {
+        		selectedNodeID = nodeDataModel.id();
+        		console.log("ok");
+        		console.log(selectedNodeID);
+      		}
+      		evt.stopPropagation();
+    	};
+
+    	this.getSelectedNodeID = function(){
+    		return selectedNodeID;
+    	}
+	};
+	
 	// View for a node.
 	self.NodeView = function (nodeDataModel) {
 

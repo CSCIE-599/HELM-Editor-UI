@@ -905,4 +905,15 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 		]]
 	];
 
+  // "remove" button is clicked -- should parse current HELM string, removing the HELM substring
+  // associated with the selected node and generate new HELM string(s) and graph
+  //TODO
+  main.trashClicked = function(){
+  	console.log("trash clicked");
+
+    var currentNodeID = CanvasDisplayService.getSelectedNodeID();
+    console.log(currentNodeID);
+
+  }
+
 }]);
