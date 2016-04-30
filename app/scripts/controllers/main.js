@@ -111,7 +111,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 	    };
 	    var errorCallback = function(response) {
 	      console.log(response.data);
-	      if(response.status === '400') {
+	      if(response.status === 400) {
 	       	main.chelm = response.data;
 	      }
 	    };
