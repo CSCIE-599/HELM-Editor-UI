@@ -29,23 +29,43 @@ describe('Service: helmeditor2App.webService', function () {
   });
 
   it('should return the Monomer Image URL with no showRgroups', function () {
-    result = webService.getMonomerImageUrl('A', 'RNA', '');
-    expect(result).toBe(baseUrl + 'Image/Monomer?monomerId=A&polymerType=RNA');
+    fullUrl = baseUrl + 'Image/Monomer?monomerId=A&polymerType=RNA';
+    $httpBackend.expect('GET', fullUrl)
+      .respond(200, []);
+    webService.getMonomerImageUrl('A', 'RNA', '').then(function(response) {
+      expect(response).toBe(fullUrl);
+    });
+    $httpBackend.flush();
   });
 
   it('should return the Monomer Image URL with showRgroups true', function () {
-    result = webService.getMonomerImageUrl('A', 'RNA', true);
-    expect(result).toBe(baseUrl + 'Image/Monomer?monomerId=A&polymerType=RNA&showRgroups=true');
+    fullUrl = baseUrl + 'Image/Monomer?monomerId=A&polymerType=RNA&showRgroups=true';
+    $httpBackend.expect('GET', fullUrl)
+      .respond(200, []);
+    webService.getMonomerImageUrl('A', 'RNA', true).then(function(response) {
+      expect(response).toBe(fullUrl);
+    });
+    $httpBackend.flush();
   });
 
   it('should return the Monomer Image URL with showRgroups false', function () {
-    result = webService.getMonomerImageUrl('A', 'RNA', false);
-    expect(result).toBe(baseUrl + 'Image/Monomer?monomerId=A&polymerType=RNA&showRgroups=false');
+    fullUrl = baseUrl + 'Image/Monomer?monomerId=A&polymerType=RNA&showRgroups=false';
+    $httpBackend.expect('GET', fullUrl)
+      .respond(200, []);
+    webService.getMonomerImageUrl('A', 'RNA', false).then(function(response) {
+      expect(response).toBe(fullUrl);
+    });
+    $httpBackend.flush();
   });
 
   it('should return the Helm Image URL', function () {
-    result = webService.getHelmImageUrl(helmSequence);
-    expect(result).toBe(baseUrl + 'Image/HELM/' + encodeURIComponent(helmSequence));
+    fullUrl = baseUrl + 'Image/HELM/' + encodeURIComponent(helmSequence);
+    $httpBackend.expect('GET', fullUrl)
+      .respond(200, []);
+    webService.getHelmImageUrl(helmSequence).then(function(response) {
+      expect(response).toBe(fullUrl);
+    });
+    $httpBackend.flush();
   });
 
   it('should return a HELM string for getHelmNotationRna for a valid sequence', function() {

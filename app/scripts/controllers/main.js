@@ -111,6 +111,9 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 	    };
 	    var errorCallback = function(response) {
 	      console.log(response.data);
+	      if(response.status === '400') {
+	       	main.chelm = response.data;
+	      }
 	    };
 	    webService.getConversionCanonical(inputSequence).then(successCallback, errorCallback);
 	 };
@@ -667,24 +670,44 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 	/*
 	* Begin code for showing Image Modal
 	*/
-	main.imageModalShown = false;
 	/* Invoke factory function to get the HELM Image */
 	$scope.showHelmImage = function () {
-		$scope.imageUrl = '';
-		if (main.helm !== '') {
-		    $scope.imageUrl = webService.getHelmImageUrl(main.helm);
-		    main.imageModalShown = !main.imageModalShown;
+		$scope.requestedview = '';	
+		$scope.imageMessage = '';
+		var successCallback = function (result) {
+		  $scope.requestedview = result;
+	      $scope.imageMessage = '';
+	    };
+	    var errorCallback = function(response) {
+	     $scope.imageMessage = 'Image not available. See console for more information.';
+	     $scope.requestedview = '';
+	     console.log(response);
+	    };
+	    if (main.helm !== '') {
+		    webService.getHelmImageUrl(main.helm).then(successCallback, errorCallback);
+		} else {
+			$scope.imageMessage = 'Structure is empty!';
 		}
+		$scope.openImageView();
 	};
 
 	/* Invoke factory function to get the Monomer Image */
 	$scope.showMonomerImage = function (monomerId, polymerType) {
-		console.log(monomerId +'f' + polymerType);
-		$scope.imageUrl = '';
-		$scope.imageUrl = webService.getMonomerImageUrl(monomerId, polymerType, '');
-		console.log($scope.imageUrl);
-
-		main.imageModalShown = !main.imageModalShown;
+		$scope.requestedview = '';	
+		$scope.imageMessage = '';
+		var successCallback = function (result) {
+		  $scope.requestedview = result;
+	      $scope.imageMessage = '';
+	    };
+	    var errorCallback = function(response) {
+	     $scope.imageMessage = 'Image not available. See console for more information.';
+	     $scope.requestedview = '';
+	     console.log(response);
+	    };
+	    if (monomerId !== '' && polymerType !== '') {
+		    webService.getMonomerImageUrl(monomerId, polymerType, '').then(successCallback, errorCallback);
+		}
+		$scope.openImageView();
 	};
 
 	// Create the view for the canvas and attach to the scope.
@@ -773,9 +796,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 	$scope.menuOptions = [
 
 		['Show Molecular Structure', function () {
-			//TODO - this is only an example image
-			$scope.requestedview = webService.getHelmImageUrl(main.helm);
-			$scope.openImageView();
+			$scope.showHelmImage();
 		}],
 		null,
 		['View', function (){

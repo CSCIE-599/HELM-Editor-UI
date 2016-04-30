@@ -1,5 +1,6 @@
 <div class="modal-body">
-    <img ng-src="{{requestedview}}" alt="image" style="height:200px;width:auto;"> </a>
+	<div ng-show="imageMessage">{{imageMessage}}</div>
+    <img ng-show="requestedview" ng-src="{{requestedview}}" alt="image" style="height:200px;width:auto;"> </a>
 </div>
 <div class="modal-footer">
     <button class="btn btn-primary" ng-click="close()">close</button>
