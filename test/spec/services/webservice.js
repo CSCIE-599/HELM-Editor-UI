@@ -19,7 +19,6 @@ describe('Service: helmeditor2App.webService', function () {
   });
  
   var baseUrl = '';
-  var result = '';
   var inputSequence = 'A';
   var helmSequence = 'RNA1{R(A)}$$$$V2.0';
    var fullUrl = '';
