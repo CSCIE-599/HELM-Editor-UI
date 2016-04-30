@@ -56,12 +56,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 	    main.toggleModal();
 	};
 
-	/* clear the modal dialog text area*/
-	main.clear = function (){
-		//TO-DO - change this to angular selector
-		document.getElementById('input').value = '';		
-	};
-
+	
 	/* Invoke factory function to get HELM notation */   
 	main.getHelmNotation = function (polymerType, inputSequence) {
 	    var successCallback = function (helmNotation) {
@@ -144,7 +139,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 	var monomerSpacing = 50;
 
 	//length of a connection, between A and attacher node R
-	var connectionLength = 100;
+	var connectionLength = 70;
 
 	// Setup the data-model with nodes and connections
 	var helmDataModel = {
@@ -162,11 +157,12 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
       //make nodes and draw sequences
       var pos;
       var graphedNodes = [];
+      var prevSeqType;
       for (var i = 0; i < sequenceArray.length; i++){
         var seqType = $scope.getType(sequenceArray[i].name); //PEPTIDE, NUCLEOTIDE, or CHEM
        	main.seqtype = seqType;
-        pos = CanvasDisplayService.getNewRowPos(pos, i);     //add a new row for a every iteration
-
+       	pos = CanvasDisplayService.getNewRowPos(pos, i, seqType, prevSeqType);     //add a new row for a every iteration
+       	prevSeqType = seqType;
         graphedNodes.push({
           name : sequenceArray[i].name,
           nodes : $scope.generateGraph(sequenceArray[i].sequence, sequenceArray[i].name, connectionArray, pos, seqType, sequenceArray)
@@ -382,50 +378,14 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
       }
     };
 
-	//makes a cyclic peptide, with two stems on the left and a circle on the right
-    $scope.separateSequences = function (sequence, seqName, connectionArray) {
-            
-        //get the start and end points of cycle
-        var connectionPoints = $scope.getCyclicalSourceDest(seqName, connectionArray);
-        var cycleStartId =  connectionPoints[1];
-        var cycleEndId = connectionPoints[0];
-        var slicedSeqArr  =  [];
-        var beforeArr = [];
-        var afterArr = [];
-        var cycle = [];
-
-        for (var i=0;i<sequence.length;i++) {
-        	if (i < cycleStartId) {
-				beforeArr.push(sequence[i]);
-        	}
-        	else if (i>= cycleStartId && i<=cycleEndId) {
-				cycle.push(sequence[i]);
-        	}
-        	else if (i>cycleEndId) {
-        		afterArr.push(sequence[i]);
-        	}
-        }
-
-        if (beforeArr.length !== 0) {
-	        slicedSeqArr.push(new CanvasDisplayService.ChildSequence('linear', beforeArr));
-	  	}
-   		if (cycle.length !== 0) {
-  			slicedSeqArr.push(new CanvasDisplayService.ChildSequence('cyclic',cycle));
-		}
-		if (afterArr.length !== 0) {
-        	slicedSeqArr.push(new CanvasDisplayService.ChildSequence('linear', afterArr));
-    	}        
-        return slicedSeqArr;               
-    };
-
+	
   	//makes a cyclic peptide after determining if there are any linear and cyclic combo
 	$scope.makeGraphWithCycles = function (sequence, dir, seqType, pos, seqName, connectionArray, sequenceArray) {
-
 		var graphedNodes = [];  //array of all nodes created and graphed
 	    var currSubGraph;
 	    var prevSubGraph;
 		  
-		  //separate the sequence into linear and cyclical slices
+	    //separate the sequence into linear and cyclical slices
 		var slicedSequenceArr =  $scope.separateSequences(sequence, seqName, connectionArray);
 
 		for (var i=0;i<slicedSequenceArr.length;i++) {	    	
@@ -460,6 +420,43 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 	    }
 	    return graphedNodes;
 	};
+
+	//slice the sequence into cycles and linear sub-sequences
+	$scope.separateSequences = function (sequence, seqName, connectionArray) {
+            
+        //get the start and end points of cycle
+        var connectionPoints = $scope.getCyclicalSourceDest(seqName, connectionArray);
+        var cycleStartId =  connectionPoints[1];
+        var cycleEndId = connectionPoints[0];
+        var slicedSeqArr  =  [];
+        var beforeArr = [];
+        var afterArr = [];
+        var cycle = [];
+
+        for (var i=0;i<sequence.length;i++) {
+        	if (i < cycleStartId) {
+				beforeArr.push(sequence[i]);
+        	}
+        	else if (i>= cycleStartId && i<=cycleEndId) {
+				cycle.push(sequence[i]);
+        	}
+        	else if (i>cycleEndId) {
+        		afterArr.push(sequence[i]);
+        	}
+        }
+
+        if (beforeArr.length !== 0) {
+	        slicedSeqArr.push(new CanvasDisplayService.ChildSequence('linear', beforeArr));
+	  	}
+   		if (cycle.length !== 0) {
+  			slicedSeqArr.push(new CanvasDisplayService.ChildSequence('cyclic',cycle));
+		}
+		if (afterArr.length !== 0) {
+        	slicedSeqArr.push(new CanvasDisplayService.ChildSequence('linear', afterArr));
+    	}        
+        return slicedSeqArr;               
+    };
+
 
 	//helper function for drawing the cycle portion of a cyclical graph
 	$scope.makeCyclicalGraph = function (monomerArr, seqType, pos, dir) {
@@ -568,6 +565,13 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
       }
     };
 
+    /* clear the modal dialog text area*/
+	main.clear = function (){
+		//TO-DO - change this to angular selector
+		document.getElementById('input').value = '';		
+	};
+
+
 	// create a new node and add to the view.
 	$scope.addNewNode = function (nodeName, seqType, nodeColor, isRotate, xpos, ypos, nodeType) {
 		var node = CanvasDisplayService.createNode(nodeName, seqType, nodeColor, 
@@ -599,6 +603,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 		main.molecularformula = '';
 		main.extcoefficient = '';
 		main.helmImageLink = ''; 
+		main.clear();
 	};
 
 	/* zoom and pan functions */
@@ -612,9 +617,9 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 	
 	$scope.pan = function (dx, dy, evt){		
 		CanvasDisplayService.pan(dx, dy, evt);
-    if (evt) {
-      evt.stopPropagation();
-    }
+    	if (evt) {
+      		evt.stopPropagation();
+    	}
 	};
 
 	/*
@@ -632,7 +637,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 	$scope.moleculeprops = false;	
 	main.result = '';
 	main.helm = '';
-  HELMNotationService.setHelm('');
+  	HELMNotationService.setHelm('');
 	main.componenttype = '';
 	main.molecularweight = '';
 	main.molecularformula = '';

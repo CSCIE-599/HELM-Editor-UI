@@ -255,21 +255,32 @@ angular.module('helmeditor2App')
 		return cycleNodesArray;
 	};
 
-
+	
 	/*helper function to get a new pos to create a new row, increments y*/
-	self.getNewRowPos = function(pos, i){
-
+	self.getNewRowPos = function(pos, i, seqType,prevSeqType){
+	
 		if(!pos){//starting pos
 			return {
 				x: 200, //TO-DO make this relative to the length of sequence
-				y: 100
+				y: 75
 			};
 		}
 		else {//for new row, increment y
-			return {
-				x: pos.x,
-				y: pos.y + (i * 150)
-			};
+			
+			if(prevSeqType){			
+				if(prevSeqType === 'CHEM' || prevSeqType === 'PEPTIDE' ){
+					return {
+						x: pos.x,
+						y: pos.y + 70
+					};
+				}
+				else {
+					return {
+						x: pos.x,
+						y: pos.y + 120
+					};
+				}
+			}			
 		}
 	};
 
