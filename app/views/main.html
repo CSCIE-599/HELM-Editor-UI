@@ -152,8 +152,10 @@
       <div class='col-md-9 canvas-column'>
         <div class='row canvas-row-top'>
           <p><span><b>View:</b> Detailed Sequence</span><span class="message-span">{{main.result}}</span></p>
-          <div class='canvas-container'>
-            <helm-canvas graph='canvasView' canvastype='upper'>
+          <div class='canvas-container' id= 'canvas'>
+            <!-- canvas view with right-click context menu -->
+            <helm-canvas context-menu="menuOptions" model="expression" graph='canvasView' canvastype='upper'>
+            <script type="text/ng-template" id="viewmodal.html"></script>
           </div>
         </div>
         <div class='row canvas-row-bottom'>
@@ -173,11 +175,6 @@
       </div>
     </div>
   </div>
-
-  <!-- modal dialog for image display-->
-  <modal-dialog show='main.imageModalShown'>
-    <div>Chemical Structure</div><div><img ng-src="{{imageUrl}}"/></div>
-  </modal-dialog>
 
   <!-- modal dialog form -->
   <modal-dialog show='main.modalShown'>
