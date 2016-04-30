@@ -39,6 +39,10 @@ angular.module('helmeditor2App')
                 dest : self.getDest(connectionArray[i]),
             });
         }
+
+        //if user input has link b/w different cyclical sequences, issues alert warning
+        self.checkCyclicalSequences(processedConnections);
+
         return [ processedSequences, processedConnections ];
     };
 
@@ -164,5 +168,31 @@ angular.module('helmeditor2App')
         };
 
         return destPoint;
+    };
+
+    //issue alert warning if user input has a link between different cyclical sequences
+    self.checkCyclicalSequences = function(processedConnections){
+        var cyclicalSequences = [];
+
+        //make an array of cyclical sequences
+        for (var i = 0; i < processedConnections.length; i ++){
+            if (processedConnections[i].source.name === processedConnections[i].dest.name){
+                cyclicalSequences.push(processedConnections[i].source.name);
+            }
+        }
+
+        //check for links between different cyclical sequences
+        for (i = 0; i < processedConnections.length; i ++){
+
+            //if source and dest nodes are in cyclical sequences
+            if (cyclicalSequences.indexOf(processedConnections[i].source.name) > -1 &&
+                cyclicalSequences.indexOf(processedConnections[i].dest.name) > -1){
+
+                //but they are not in the same cyclical sequence
+                if (processedConnections[i].source.name !== processedConnections[i].dest.name){
+                    window.alert('Warning. The HELM Editor does not handle links between different cyclical sequences.');
+                }
+            }
+        }
     };
 });
