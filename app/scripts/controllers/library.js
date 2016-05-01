@@ -8,8 +8,8 @@
  * Controller of the helmeditor2App
  */
 angular.module('helmeditor2App')
-  .controller('LibraryCtrl', ['MonomerLibraryService', 'MonomerSelectionService',   
-    function (MonomerLibraryService, MonomerSelectionService) {
+  .controller('LibraryCtrl', ['MonomerLibraryService', 'MonomerSelectionService', '$uibModal',   
+    function (MonomerLibraryService, MonomerSelectionService, $uibModal) {
       
       var self = this;
       // the serach box
@@ -145,6 +145,18 @@ angular.module('helmeditor2App')
         MonomerSelectionService.toggleSelectedMonomer(monomer, evt);
       };
 
+      // handle when the user double clicks on a monomer
+      var monomerDblClicked = function (monomer, evt) {
+        // select it to be sure
+        MonomerSelectionService.setSelectedMonomer(monomer, evt);
+
+        // load the modal with the detail view
+        $uibModal.open({
+          templateUrl: 'templates/monomerdetails.html',
+          controller: 'modal as modal'
+        });
+      };
+
       // retrieve the class appropriate to display if selected
       var monomerSelectedClass = function (monomer) {
         var currentMonomer = MonomerSelectionService.getSelectedMonomer();
@@ -163,5 +175,6 @@ angular.module('helmeditor2App')
       self.categoryActive = categoryActive;
       self.subCategoryActive = subCategoryActive;
       self.monomerClicked = monomerClicked;
+      self.monomerDblClicked = monomerDblClicked;
       self.monomerSelectedClass = monomerSelectedClass;
   }]);
