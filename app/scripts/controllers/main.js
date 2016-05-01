@@ -10,8 +10,8 @@
 
 var app = angular.module('helmeditor2App');
 
-app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'CanvasDisplayService', 'FileSaver', 'Blob', '$uibModal',
-	function ($scope, webService, HelmConversionService, CanvasDisplayService, FileSaver, Blob, $uibModal) {
+app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'CanvasDisplayService', 'MonomerSelectionService', 'HELMNotationService', 'FileSaver', 'Blob', '$uibModal', 
+	function ($scope, webService, HelmConversionService, CanvasDisplayService, MonomerSelectionService, HELMNotationService, FileSaver, Blob, $uibModal) {
 		var main = this;
 
 		/* Toggle modal dialogue display */
@@ -22,7 +22,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 
 		/* Variables for loadsequence view */
 		main.polyTypes = [
-		{ value: 'HELM', label:'HELM' },
+		  { value: 'HELM', label:'HELM' },
 	    { value: 'RNA', label:'RNA/DNA' },
 	    { value: 'PEPTIDE', label:'PEPTIDE' },
 		];
@@ -55,7 +55,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 	    }
 	    main.toggleModal();
 	};
-
+	
 	/* clear the modal dialog text area*/
 	main.clear = function (){
 		//TO-DO - change this to angular selector
@@ -66,6 +66,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 	main.getHelmNotation = function (polymerType, inputSequence) {
 	    var successCallback = function (helmNotation) {
 	      main.helm = helmNotation;
+        HELMNotationService.setHelm(helmNotation);
 	      $scope.displayOnCanvas(helmNotation);
 	      main.getCanonicalHelmNotation(main.helm);
 	    };
@@ -88,6 +89,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 		var successCallback = function (valid) {
 		  if (valid) {
 		  	main.helm = inputSequence;
+        HELMNotationService.setHelm(inputSequence);
 		  	$scope.displayOnCanvas(inputSequence);
 		  	main.getCanonicalHelmNotation(main.helm);
 		  }
@@ -159,14 +161,14 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 	var monomerSpacing = 50;
 
 	//length of a connection, between A and attacher node R
-	var connectionLength = 100;
+	var connectionLength = 70;
 
 	// Setup the data-model with nodes and connections
 	var helmDataModel = {
 		nodes: [],
 		connections: []
 	};
-
+	var zoomCount = 0;
 	//function which takes in a HELM notation, converts to sequence and draws graphical image on the canvas
 	$scope.displayOnCanvas = function (notation) {
 	    //from HELM Notation, get requested sequences and connections between sequences
@@ -177,15 +179,17 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
       //make nodes and draw sequences
       var pos;
       var graphedNodes = [];
+      var prevSeqType;
       for (var i = 0; i < sequenceArray.length; i++){
         var seqType = $scope.getType(sequenceArray[i].name); //PEPTIDE, NUCLEOTIDE, or CHEM
-        main.seqtype = seqType;
-        pos = CanvasDisplayService.getNewRowPos(pos, i);     //add a new row for a every iteration
-
+       	main.seqtype = seqType;
+       	pos = CanvasDisplayService.getNewRowPos(pos, seqType, prevSeqType);     //add a new row for a every iteration
+       	prevSeqType = seqType;
         graphedNodes.push({
           name : sequenceArray[i].name,
           nodes : $scope.generateGraph(sequenceArray[i].sequence, sequenceArray[i].name, connectionArray, pos, seqType, sequenceArray)
         });
+
         CanvasDisplayService.setNodeNum(0); //reset node numbering
       }
 
@@ -194,7 +198,9 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
         $scope.makeRequestedConnections(connectionArray, graphedNodes);
       }
 
-      $scope.zoom(0.8);//zoomin the default view by 20%
+	  if(zoomCount === 0){
+        $scope.zoom(0.8);//zoomin the default view by 20%
+  	  }
     };
 
     //Parse the sequence, and generate the graph
@@ -205,12 +211,12 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
       var graphedNodes = [];  //all nodes created and graphed
       var dir = 'forward';    //'forward' places nodes left to right, 'reverse' places them right to left
 
-      if (!$scope.isCyclical(seqName, connectionArray)){  //if the sequence is not cyclical,
+      if (!$scope.isCyclical(seqName, connectionArray)){  //if sequence is linear, no cycle found
         currSubGraph = $scope.makeLinearGraph(sequence, dir, seqType, pos, seqName, connectionArray, sequenceArray);
         graphedNodes.push(currSubGraph.nodes);
       }
       else {
-        var nodes = $scope.makeCyclicPeptide(sequence, dir, seqType, pos, seqName, connectionArray, sequenceArray);
+        var nodes = $scope.makeGraphWithCycles(sequence, dir, seqType, pos, seqName, connectionArray, sequenceArray);
         graphedNodes.push(nodes);
       }
       return graphedNodes;
@@ -342,8 +348,14 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 
       //get x position, whether to the far left or right side of canvas
       var x = $scope.getCHEMXPosition(connectionArray, chemSequenceName, sequenceArray);
-      var y = 190;  //TO-DO: this is hard coded to be slightly below the previous, first sequence
-
+      var y;
+      if(!x){
+      	x = pos.x;
+      	y = pos.y;
+      }
+      else {
+      	y = 190;  //TO-DO: this is hard coded to be slightly below the previous, first sequence
+	  }
 	  var allNodes = [];
       var currNode = CanvasDisplayService.createNode(monomerArr[0], 'CHEM', 'purple', false, x , y);
       allNodes.push(currNode);
@@ -387,7 +399,6 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
         return ((length-4) * monomerSpacing); //position CHEM node to right
       }
     };
-
 	//makes a cyclic peptide, with two stems on the left and a circle on the right
     $scope.separateSequences = function (sequence, seqName, connectionArray) {
 
@@ -425,8 +436,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
     };
 
   	//makes a cyclic peptide after determining if there are any linear and cyclic combo
-	$scope.makeCyclicPeptide = function (sequence, dir, seqType, pos, seqName, connectionArray, sequenceArray) {
-
+	$scope.makeGraphWithCycles = function (sequence, dir, seqType, pos, seqName, connectionArray, sequenceArray) {
 		var graphedNodes = [];  //array of all nodes created and graphed
 	    var currSubGraph;
 	    var prevSubGraph;
@@ -466,6 +476,43 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 	    }
 	    return graphedNodes;
 	};
+
+	//slice the sequence into cycles and linear sub-sequences
+	$scope.separateSequences = function (sequence, seqName, connectionArray) {
+            
+        //get the start and end points of cycle
+        var connectionPoints = $scope.getCyclicalSourceDest(seqName, connectionArray);
+        var cycleStartId =  connectionPoints[1];
+        var cycleEndId = connectionPoints[0];
+        var slicedSeqArr  =  [];
+        var beforeArr = [];
+        var afterArr = [];
+        var cycle = [];
+
+        for (var i=0;i<sequence.length;i++) {
+        	if (i < cycleStartId) {
+				beforeArr.push(sequence[i]);
+        	}
+        	else if (i>= cycleStartId && i<=cycleEndId) {
+				cycle.push(sequence[i]);
+        	}
+        	else if (i>cycleEndId) {
+        		afterArr.push(sequence[i]);
+        	}
+        }
+
+        if (beforeArr.length !== 0) {
+	        slicedSeqArr.push(new CanvasDisplayService.ChildSequence('linear', beforeArr));
+	  	}
+   		if (cycle.length !== 0) {
+  			slicedSeqArr.push(new CanvasDisplayService.ChildSequence('cyclic',cycle));
+		}
+		if (afterArr.length !== 0) {
+        	slicedSeqArr.push(new CanvasDisplayService.ChildSequence('linear', afterArr));
+    	}        
+        return slicedSeqArr;               
+    };
+
 
 	//helper function for drawing the cycle portion of a cyclical graph
 	$scope.makeCyclicalGraph = function (monomerArr, seqType, pos, dir) {
@@ -574,6 +621,13 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
       }
     };
 
+    /* clear the modal dialog text area*/
+	main.clear = function (){
+		//TO-DO - change this to angular selector
+		document.getElementById('input').value = '';		
+	};
+
+
 	// create a new node and add to the view.
 	$scope.addNewNode = function (nodeName, seqType, nodeColor, isRotate, xpos, ypos, nodeType) {
 		var node = CanvasDisplayService.createNode(nodeName, seqType, nodeColor,
@@ -601,20 +655,29 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 		main.result = '';
 		main.seqtype = '';
 		main.helm = '';
+    HELMNotationService.setHelm('');
 		main.chelm = '';
 		main.molecularweight = '';
 		main.molecularformula = '';
 		main.extcoefficient = '';
-		main.helmImageLink = '';
+
+		main.helmImageLink = ''; 		
 	};
 
 	/* zoom and pan functions */
 	$scope.zoom = function (scale, evt){
 		CanvasDisplayService.zoom(scale, evt);
+		zoomCount++;
+    	if (evt) {
+      		evt.stopPropagation();
+    	}
 	};
 
 	$scope.pan = function (dx, dy, evt){
 		CanvasDisplayService.pan(dx, dy, evt);
+    	if (evt) {
+      		evt.stopPropagation();
+    	}
 	};
 
 	/*
@@ -632,6 +695,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 	$scope.moleculeprops = false;
 	main.result = '';
 	main.helm = '';
+  HELMNotationService.setHelm('');
 	main.chelm = '';
 	main.componenttype = '';
 	main.molecularweight = '';
@@ -712,6 +776,72 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 
 	// Create the view for the canvas and attach to the scope.
 	$scope.canvasView = new CanvasDisplayService.CanvasView(helmDataModel);
+
+  // Methods used by the monomer library to add/drag elements to the 
+  // sets the current selected monomer to be what was clicked
+  main.toggleSelectedMonomer = function (monomer, evt) {
+    MonomerSelectionService.toggleSelectedMonomer(monomer, evt);
+  };
+
+  // helper function to convert from titles to types
+  var convertTitle = function (title) {
+    switch (title) {
+      case 'Nucleic Acid':
+        return 'RNA';
+      case 'Peptide':
+        return 'PEPTIDE';
+      case 'Chemical Modifier':
+        return 'CHEM';
+      default:
+        return 'RNA';
+    }
+  };
+
+  // helper method just to clear the canvas
+  var clearCanvas = function () {
+    var emptyData = {
+      nodes: [],
+      connections: []
+    };
+    CanvasDisplayService.setNodeNum(0);
+    $scope.canvasView = new CanvasDisplayService.CanvasView(emptyData);
+  };
+
+  // adds the monomer to what already exists
+  var addMonomer = function (monomer) {
+    // if we have a monomer selected, we need to add it
+    if (monomer._name) {
+      var type = monomer.encodedMonomer ? monomer.encodedMonomer.PolymerType : convertTitle(monomer._title);
+      var notation;
+      if (monomer._notation) {
+        notation = monomer._notation;
+      }
+      else {
+        // make sure to encapsulate multi-character names with []
+        notation = monomer._name.length > 1 ? '[' + monomer._name + ']' : monomer._name;
+      }
+
+      HELMNotationService.addNewSequence(type, notation);
+
+      // and update (for now, until it's all linked together correctly)
+      var out = HELMNotationService.getHelm();
+      clearCanvas();
+      main.helm = out;
+      $scope.displayOnCanvas(out);
+    }
+  };
+
+  // hanlde the clicks on the SVG itself
+  $scope.svgClicked = function () {
+    var currentMonomer = MonomerSelectionService.getSelectedMonomer();
+    addMonomer(currentMonomer);
+  };
+
+  // handle the dropping
+  $scope.elementDropped = function (evt, data) {
+    console.log('dropping');
+    addMonomer(data);
+  };
 
 	/*****************/
 	/*  right-click  */
@@ -904,5 +1034,4 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 			}]*/
 		]]
 	];
-
 }]);

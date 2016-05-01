@@ -259,7 +259,7 @@ describe('Directive: helmCanvas', function () {
     // go through each one
     for (var i = 0; i < children.length; i++) {
       var g = children.eq(i);
-      expect(g.children().length).toBe(3);
+      expect(g.children().length).toBe(5);
       var rect = g.children().eq(0);
       var nameText = g.children().eq(1);
       var numText = g.children().eq(2);
@@ -407,7 +407,7 @@ describe('Directive: helmCanvas', function () {
     // go through each one
     for (var i = 0; i < children.length; i++) {
       var g = children.eq(i);
-      expect(g.children().length).toBe(2);
+      expect(g.children().length).toBe(4);
       var nameText = g.children().eq(0);
       var numText = g.children().eq(1);
 

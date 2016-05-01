@@ -1,0 +1,15 @@
+<div 
+  class='monomer-directive'
+  ui-draggable="true"
+  drag="monomer">
+  <div
+    ng-class="library.convertBackgroundColorClass(monomer._backgroundColor) + ' ' + library.convertShapeClass(monomer._shape)"
+    class="monomer">
+  </div>
+  <span 
+    class="monomer-name noselect"
+    ng-class="library.convertFontColorClass(monomer._fontColor) + ' ' + library.monomerSelectedClass(monomer)"
+    ng-click="library.monomerClicked(monomer, $event)">
+    {{monomer._name}}
+  </span>
+</div>
