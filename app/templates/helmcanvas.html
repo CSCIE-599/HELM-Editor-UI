@@ -33,7 +33,7 @@
   <!-- loop thru all the nodes in the graph -->
     <g ng-repeat="node in graph.nodes">
       <rect ng-click="graph.toggleSelectedNode(node, $event)"
-            ng-attr-class="{{node.id()==graph.getSelectedNodeID() ? 'selected-node-rect':'node-rect'}}"
+            ng-attr-class="{{node.id()==graph.getSelectedNode().data.id ? 'selected-node-rect':'node-rect'}}"
             ng-attr-width="{{node.width()}}"
             ng-attr-height="{{node.height()}}"
             ng-attr-fill="{{node.colour()}}"

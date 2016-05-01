@@ -909,10 +909,10 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
   // associated with the selected node and generate new HELM string(s) and graph
   //TODO
   main.trashClicked = function(){
-  	console.log("trash clicked");
+  	console.log("trash clicked...");
 
-    var currentNodeID = CanvasDisplayService.getSelectedNodeID();
-    console.log(currentNodeID);
+    var currentNode = CanvasDisplayService.getSelectedNode();
+    console.log(currentNode);
 
   }
 
