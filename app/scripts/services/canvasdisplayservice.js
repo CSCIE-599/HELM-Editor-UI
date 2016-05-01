@@ -299,6 +299,7 @@ angular.module('helmeditor2App')
 	  mapMatrix.setAttributeNS(null, 'transform', newMatrix);
 	};
 
+	// for selecting nodes to be deleted
 	var selectedNode = {};
 	var selectedNodeID = {};
 	self.getSelectedNode = function(){

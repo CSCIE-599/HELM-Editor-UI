@@ -158,10 +158,54 @@ angular.module('helmeditor2App')
       parseHelm(helm);
     };
 
+    // returns an updated HELM notation string, removing the currently selected graph node
+    // elements: the array of polymers in the currently displayed helm
+    // helmString: the current helm  notation string
+    // nodeToRemove: the canvas node currently selected
+    var helmNodeRemoved = function(elements, helmString, nodeToRemove){
+
+      var helmSubString = helmString.substring(helmString.indexOf('{')+1, helmString.indexOf('}'));
+      var workingHelmString = helmSubString;
+      var updatedHelmString;
+
+      var wrkHlmStart = 0;
+
+      for (var elem in elements){
+
+        var val = elements[elem];
+
+        var re = new RegExp('[\\[\\(]*'+val+'[\\]\\)]*');
+        var matchIndex = workingHelmString.search(re);
+        var matchLength = workingHelmString.match(re)[0].length;
+
+        if (elem != nodeToRemove.data.id){
+          wrkHlmStart += matchIndex + matchLength;
+          workingHelmString = helmSubString.substring(wrkHlmStart, helmSubString.length);
+        }
+        else {
+          if (workingHelmString[matchIndex]=='('){
+            // just remove the element from the sequence
+            var updatedHelmSubString = helmSubString.substring(0, wrkHlmStart) 
+            + helmSubString.substring((wrkHlmStart+matchIndex+matchLength), helmSubString.length);
+
+            updatedHelmString = helmString.replace(helmSubString, updatedHelmSubString);
+            console.log(updatedHelmString);
+            return updatedHelmString;
+          }
+          //TODO
+         // else {
+            // need to split string into two helm sequences
+         // }
+        }
+
+      }
+    }
+
     // make things global
     self.getHelm = getHelm;
     self.setHelm = setHelm;
     self.getSequences = getSequences;
     self.getConnections = getConnections;
     self.addNewSequence = addNewSequence;
+    self.helmNodeRemoved = helmNodeRemoved;
   });

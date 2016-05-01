@@ -131,7 +131,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 	    webService.getMolecularWeight(inputSequence).then(successCallback, errorCallback);
 	 };
 
-	 /* Invoke factory function to get milecular formula */
+	 /* Invoke factory function to get molecular formula */
 	main.getMolecularFormula = function (inputSequence) {
 		var successCallback = function (result) {
 	      main.molecularformula = result;
@@ -908,18 +908,43 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 		]]
 	];
 
+   // helper method just to clear the canvas
+  var clearCanvas = function () {
+    var emptyData = {
+      nodes: [],
+      connections: []
+    };
+    CanvasDisplayService.setNodeNum(0);
+    $scope.canvasView = new CanvasDisplayService.CanvasView(emptyData);
+  };
+
   // "remove" button is clicked -- should parse current HELM string, removing the HELM substring
   // associated with the selected node and generate new HELM string(s) and graph
-  //TODO
   main.trashClicked = function(){
-  	console.log("trash clicked...");
+  	console.log("trash clicked!");
 
     var currentNode = CanvasDisplayService.getSelectedNode();
-    console.log(currentNode);
+    if (currentNode == {}){
+    	console.log("No node to delete");
+    }
+    else{
+    	console.log("Deleting node: "+ currentNode.data.id);
 
-    var helmString = HELMNotationService.getHelm();
-    console.log(helmString);
+	    var helmString = HELMNotationService.getHelm();
 
+	    var helmName = HelmConversionService.getName(helmString);
+
+	    var polymers = HelmConversionService.getPolymers(helmName, helmString);
+
+	    console.log("Calling remove...");
+
+	    var newHELM = HELMNotationService.helmNodeRemoved(polymers, helmString, currentNode);
+
+	    console.log("Generating new graph...");
+	    clearCanvas();
+      	main.helm = newHELM;
+      	$scope.displayOnCanvas(newHELM);
+	}
   }
 
 }]);
