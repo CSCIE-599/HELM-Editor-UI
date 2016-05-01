@@ -64,10 +64,15 @@ angular.module('helmeditor2App.webService', [])
         if (angular.isDefined(showRgroups) && showRgroups !== '') {
           fullUrl = fullUrl + '&showRgroups=' + showRgroups;
         }
-        return fullUrl;
+        return getHttpUrl(fullUrl).then(function(response) {
+          return response.data ? fullUrl : null;
+        });
       }, 
       getHelmImageUrl: function (inputSequence) {
-        return this.getFullUrl(wsConfig.getHelmImagePath, inputSequence);
+        var fullUrl = this.getFullUrl(wsConfig.getHelmImagePath, inputSequence);
+        return getHttpUrl(fullUrl).then(function(response) {
+          return response.data ? fullUrl : null;
+        });
       },   
       // returns a promise that resolves with the HELMNotation as a string if valid, or null if unknown response
       getHelmNotationPeptide: function (inputSequence) {
