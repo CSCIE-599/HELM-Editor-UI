@@ -6,6 +6,7 @@
  * @description
  * # helmCanvas
  */
+ 
 angular.module('helmeditor2App')
   .directive('helmCanvas', function () {
     return {
@@ -20,7 +21,7 @@ angular.module('helmeditor2App')
       },
       replace: true,
       scope: {
-         graph: '=graph',
+         graph: '=graph'
       },
       controller: 'MainCtrl',
     };

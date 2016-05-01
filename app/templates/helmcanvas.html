@@ -1,5 +1,7 @@
 <svg class="draggable-container"
-  xmlns="http://www.w3.org/2000/svg" id ="mainCanvas">
+  xmlns="http://www.w3.org/2000/svg" id="mainCanvas"
+  ng-click="$parent.svgClicked()"
+  ui-on-drop="$parent.elementDropped($event, $data)">
 
   <!-- zoom and pan buttons -->   
   <circle class="zoombtn"  cx="40" cy="31" r="8" ng-click="zoom(0.8, $event)"></circle>
@@ -24,10 +26,11 @@
     <g ng-repeat="connection in graph.connections">
       <path 
         ng-attr-d="M{{connection.sourceCoordX()}}, {{connection.sourceCoordY()}} L{{connection.destCoordX()}}, {{connection.destCoordY()}}"
-        ng-attr-class="{{'path-style'}}">
+        ng-attr-class="{{'path-style'}}"
+        ng-click="$event.stopPropagation();">
       </path>
     </g>
-
+    
   <!-- loop thru all the nodes in the graph -->
     <g ng-repeat="node in graph.nodes">
       <rect ng-attr-class={{'node-rect'}}    
@@ -38,7 +41,8 @@
             ng-attr-y="{{node.y()}}"
             ng-attr-rx="{{node.rx()}}"
             ng-attr-ry="{{node.ry()}}"
-            ng-attr-transform="rotate({{node.transformDegree()}}, {{node.transformx()}}, {{node.transformy()}})">
+            ng-attr-transform="rotate({{node.transformDegree()}}, {{node.transformx()}}, {{node.transformy()}})"
+            ng-click="$event.stopPropagation();">
       </rect>
 
       <text
@@ -46,7 +50,8 @@
         ng-attr-y="{{(node.height()/2)+node.y()}}"
         text-anchor="middle"
         alignment-baseline="middle"
-        ng-attr-fill = "{{node.textColor()}}">
+        ng-attr-fill = "{{node.textColor()}}"
+        ng-click="$event.stopPropagation();">
         {{node.name()}}
       </text>
 
@@ -55,8 +60,22 @@
         ng-attr-y="{{(node.y()-5)}}"
         text-anchor="middle"
         alignment-baseline="middle"
-        ng-attr-visibility="{{node.seqVisible()}}">
+        ng-attr-visibility="{{node.seqVisible()}}"
+        ng-click="$event.stopPropagation();">
         {{node.num()}}
+      </text>
+
+      <!-- annotation node and text inside it-->
+       <rect width="15" height="15" fill = "yellow"  
+       ng-attr-x="{{node.x() - 25}}"
+       ng-attr-y="{{node.y() - 20}}"
+       ng-attr-visibility="{{node.annotationVisible()}}"
+      />
+      <text
+        ng-attr-x="{{node.x() - 22}}" 
+        ng-attr-y="{{node.y() - 10}}"
+        ng-attr-visibility="{{node.annotationVisible()}}">
+        {{node.annotationText()}}
       </text>
     </g>
   </g>

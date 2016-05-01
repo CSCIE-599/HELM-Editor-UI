@@ -18,7 +18,11 @@ angular
     'ngSanitize',
     'ngTouch',
     'helmeditor2App.webService',
-    'helmeditor2App.MonomerLibrary'
+    'helmeditor2App.MonomerLibrary',
+    'ngFileSaver',
+    'ui.bootstrap',
+    'ui.bootstrap.tpls',
+    'ang-drag-drop'
   ])
   .config(function ($routeProvider) {
     $routeProvider
