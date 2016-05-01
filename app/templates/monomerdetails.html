@@ -1,0 +1,48 @@
+<div class="modal-body">
+    <h4>Monomer Details</h4>
+    <table class='table-full'>
+        <tr>
+            <td class='table-label'>ID</td>
+            <td class='table-data'>{{modal.currentMonomer._name}}</td>
+        </tr>
+        <tr>
+            <td class='table-label'>Type</td>
+            <td class='table-data'>{{modal.currentMonomer._title}}</td>
+        </tr>
+        <tr ng-show="modal.currentMonomer._notation">
+            <td class='table-label'>HELM Notation</td>
+            <td class='table-data'>{{modal.currentMonomer._notation}}</td>
+        </tr>
+        <tr ng-show="modal.currentMonomer.encodedMonomer.MonomerName">
+            <td class='table-label'>Name</td>
+            <td class='table-data'>{{modal.currentMonomer.encodedMonomer.MonomerName}}</td>
+        </tr>
+        <tr ng-show="modal.currentMonomer.encodedMonomer.MonomerSmiles">
+            <td class='table-label'>Smiles</td>
+            <td class='table-data'>{{modal.currentMonomer.encodedMonomer.MonomerSmiles}}</td>
+        </tr>
+        <tr ng-show="modal.currentMonomer.encodedMonomer.MonomerType">
+            <td class='table-label'>Monomer Type</td>
+            <td class='table-data'>{{modal.currentMonomer.encodedMonomer.MonomerType}}</td>
+        </tr>
+        <tr ng-show="modal.currentMonomer.encodedMonomer.NaturalAnalog">
+            <td class='table-label'>Natural Analog</td>
+            <td class='table-data'>{{modal.currentMonomer.encodedMonomer.NaturalAnalog}}</td>
+        </tr>
+        <tr ng-show="modal.currentMonomer.encodedMonomer.PolymerType">
+            <td class='table-label'>Polymer Type</td>
+            <td class='table-data'>{{modal.currentMonomer.encodedMonomer.PolymerType}}</td>
+        </tr>
+        <tr ng-show="modal.currentMonomer.encodedMonomer.MonomerMolFile">
+            <td class='table-label'>MolFile</td>
+            <td class='table-data'><div class='table-max-height'>{{modal.currentMonomer.encodedMonomer.MonomerMolFile}}</div></td>
+        </tr>
+        <tr ng-show="modal.currentMonomerImageUrl">
+            <td class='table-label'>Molecular Image</td>
+            <td class='table-data'><img ng-src="{{modal.currentMonomerImageUrl}}"></img></td>
+        </tr>
+    </table>
+</div>
+<div class="modal-footer">
+    <button class="btn btn-primary" ng-click="close()">close</button>
+</div>

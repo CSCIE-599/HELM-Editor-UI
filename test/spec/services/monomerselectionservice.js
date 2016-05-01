@@ -50,4 +50,17 @@ describe('Service: MonomerSelectionService', function () {
     expect(MonomerSelectionService.getSelectedMonomer()).toEqual({});
   });
 
+  it('should set the selected monomer regardless of whether it was selected before', function () {
+    var evt = {
+      stopPropagation: function () {}
+    };
+    var monomerA = {
+      _name: 'mA'
+    };
+    MonomerSelectionService.setSelectedMonomer(monomerA, evt);
+    expect(MonomerSelectionService.getSelectedMonomer()).toEqual(monomerA);
+    MonomerSelectionService.setSelectedMonomer(monomerA, evt);
+    expect(MonomerSelectionService.getSelectedMonomer()).toEqual(monomerA);
+  });
+
 });

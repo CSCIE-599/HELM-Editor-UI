@@ -837,9 +837,8 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
     addMonomer(currentMonomer);
   };
 
-  // handle the dropping
+  // handle the dropping -- only supports dropping monomers right now
   $scope.elementDropped = function (evt, data) {
-    console.log('dropping');
     addMonomer(data);
   };
 

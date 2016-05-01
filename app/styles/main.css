@@ -552,3 +552,27 @@ caption {
     display: table-caption;
     text-align: center;
 }
+
+.table-full {
+  table-layout: fixed;
+  width: 100%;
+}
+
+.table-label {
+  width: 25%;
+  font-weight: bold;
+}
+
+.table-data {
+  width: 75%;
+}
+
+.table-max-height {
+  overflow-wrap: break-word;
+  overflow-y: auto;
+  max-height: 80px;
+}
+
+.table-data img {
+  max-height: 120px;
+}
