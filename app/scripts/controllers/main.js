@@ -748,11 +748,13 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
     // if we have a monomer selected, we need to add it
     if (currentMonomer._name) {
       var type = currentMonomer.encodedMonomer ? currentMonomer.encodedMonomer.PolymerType : convertTitle(currentMonomer._title);
-      var notation = currentMonomer._notation ? currentMonomer._notation : currentMonomer._name;
-
-      // make sure to enclose mulit-character IDs in []
-      if (notation.length > 1) {
-        notation = '[' + notation + ']';
+      var notation;
+      if (currentMonomer._notation) {
+        notation = currentMonomer._notation;
+      }
+      else {
+        // make sure to encapsulate multi-character names with []
+        notation = currentMonomer._name.length > 1 ? '[' + currentMonomer._name + ']' : currentMonomer._name;
       }
 
       HELMNotationService.addNewSequence(type, notation);
