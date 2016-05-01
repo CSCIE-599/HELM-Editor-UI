@@ -75,17 +75,24 @@ describe('Service: CanvasDisplayService', function () {
     expect(angular.equals(cyclicalNodes.length, 3)).toBe(true);
   });
   
-  it('should start graph from (200, 100) position', function () {
+  it('should start graph from (200, 75) position', function () {
     var pos;
     var startPos = CanvasDisplayService.getNewRowPos(pos, 0);
-    expect(angular.equals(startPos.x, 200) && angular.equals(startPos.y, 100) ).toBe(true);
+    expect(angular.equals(startPos.x, 200) && angular.equals(startPos.y, 75) ).toBe(true);
   });
   
-  it('should increment every new row position by 150', function () {
+  it('should increment every new row position by 70 if previous sequence is a peptide sequence', function () {
     var pos;
-    var startPos = CanvasDisplayService.getNewRowPos(pos, 0);
-    var newRowPos = CanvasDisplayService.getNewRowPos(startPos, 1);
-    expect(angular.equals(newRowPos.x, 200) && angular.equals(newRowPos.y, startPos.y + 150)).toBe(true);
+    var startPos = CanvasDisplayService.getNewRowPos(pos, 'PEPTIDE');
+    var newRowPos = CanvasDisplayService.getNewRowPos(startPos, 'NUCLEOTIDE', 'PEPTIDE' );
+    expect(angular.equals(newRowPos.x, 200) && angular.equals(newRowPos.y, startPos.y + 70)).toBe(true);
+  });
+
+   it('should increment every new row position by 120 if previous sequence is a Nucleotide sequence', function () {
+    var pos;
+    var startPos = CanvasDisplayService.getNewRowPos(pos, 'NUCLEOTIDE');
+    var newRowPos = CanvasDisplayService.getNewRowPos(startPos, 'PEPTIDE', 'NUCLEOTIDE' );
+    expect(angular.equals(newRowPos.x, 200) && angular.equals(newRowPos.y, startPos.y + 120)).toBe(true);
   });
   
   it('should zoom in by 20 percent', function () {
