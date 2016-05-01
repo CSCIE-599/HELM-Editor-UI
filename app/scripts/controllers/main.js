@@ -10,8 +10,8 @@
 
 var app = angular.module('helmeditor2App');
 
-app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'CanvasDisplayService', 'FileSaver', 'Blob', '$uibModal',
-	function ($scope, webService, HelmConversionService, CanvasDisplayService, FileSaver, Blob, $uibModal) {
+app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'CanvasDisplayService', 'HELMNotationService', 'FileSaver', 'Blob', '$uibModal',
+	function ($scope, webService, HelmConversionService, CanvasDisplayService, HELMNotationService, FileSaver, Blob, $uibModal) {
 		var main = this;
 
 		/* Toggle modal dialogue display */
@@ -66,6 +66,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 	main.getHelmNotation = function (polymerType, inputSequence) {
 	    var successCallback = function (helmNotation) {
 	      main.helm = helmNotation;
+	      HELMNotationService.setHelm(helmNotation);
 	      $scope.displayOnCanvas(helmNotation);
 	      main.getCanonicalHelmNotation(main.helm);
 	    };
@@ -88,6 +89,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 		var successCallback = function (valid) {
 		  if (valid) {
 		  	main.helm = inputSequence;
+		  	HELMNotationService.setHelm(inputSequence);
 		  	$scope.displayOnCanvas(inputSequence);
 		  	main.getCanonicalHelmNotation(main.helm);
 		  }
@@ -601,6 +603,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 		main.result = '';
 		main.seqtype = '';
 		main.helm = '';
+		HELMNotationService.setHelm('');
 		main.chelm = '';
 		main.molecularweight = '';
 		main.molecularformula = '';
@@ -913,6 +916,9 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 
     var currentNode = CanvasDisplayService.getSelectedNode();
     console.log(currentNode);
+
+    var helmString = HELMNotationService.getHelm();
+    console.log(helmString);
 
   }
 
