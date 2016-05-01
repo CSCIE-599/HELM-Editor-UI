@@ -35,6 +35,7 @@ module.exports = function(config) {
       'bower_components/angular-file-saver/dist/angular-file-saver.bundle.js',
       'bower_components/x2js/xml2json.min.js',
       'bower_components/angular-x2js/dist/x2js.min.js',
+      'bower_components/angular-native-dragdrop/draganddrop.js',
       'bower_components/angular-mocks/angular-mocks.js',
       // endbower
       'app/scripts/**/*.js',

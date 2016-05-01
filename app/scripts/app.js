@@ -21,7 +21,8 @@ angular
     'helmeditor2App.MonomerLibrary',
     'ngFileSaver',
     'ui.bootstrap',
-    'ui.bootstrap.tpls'
+    'ui.bootstrap.tpls',
+    'ang-drag-drop'
   ])
   .config(function ($routeProvider) {
     $routeProvider

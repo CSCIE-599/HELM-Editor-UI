@@ -17,7 +17,8 @@
         <div 
           class="full-height" 
           ng-show="library.libraryService.initComplete"
-          ng-click="main.toggleSelectedMonomer({}, $event)">
+          ng-click="main.toggleSelectedMonomer({}, $event)"
+          ui-on-drop="library.monomerDropped($event, $data)">
           <div class="btn-group btn-group-sm btn-group-justified button-row" role="group" aria-label="Type selection">
             <div 
               class="btn-group btn-group-sm" 

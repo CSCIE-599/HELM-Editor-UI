@@ -807,19 +807,18 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
     $scope.canvasView = new CanvasDisplayService.CanvasView(emptyData);
   };
 
-  // hanlde the clicks on the SVG itself
-  $scope.svgClicked = function () {
-    var currentMonomer = MonomerSelectionService.getSelectedMonomer();
+  // adds the monomer to what already exists
+  var addMonomer = function (monomer) {
     // if we have a monomer selected, we need to add it
-    if (currentMonomer._name) {
-      var type = currentMonomer.encodedMonomer ? currentMonomer.encodedMonomer.PolymerType : convertTitle(currentMonomer._title);
+    if (monomer._name) {
+      var type = monomer.encodedMonomer ? monomer.encodedMonomer.PolymerType : convertTitle(monomer._title);
       var notation;
-      if (currentMonomer._notation) {
-        notation = currentMonomer._notation;
+      if (monomer._notation) {
+        notation = monomer._notation;
       }
       else {
         // make sure to encapsulate multi-character names with []
-        notation = currentMonomer._name.length > 1 ? '[' + currentMonomer._name + ']' : currentMonomer._name;
+        notation = monomer._name.length > 1 ? '[' + monomer._name + ']' : monomer._name;
       }
 
       HELMNotationService.addNewSequence(type, notation);
@@ -830,6 +829,18 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
       main.helm = out;
       $scope.displayOnCanvas(out);
     }
+  };
+
+  // hanlde the clicks on the SVG itself
+  $scope.svgClicked = function () {
+    var currentMonomer = MonomerSelectionService.getSelectedMonomer();
+    addMonomer(currentMonomer);
+  };
+
+  // handle the dropping
+  $scope.elementDropped = function (evt, data) {
+    console.log('dropping');
+    addMonomer(data);
   };
 
 	/*****************/
