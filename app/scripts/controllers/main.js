@@ -10,8 +10,8 @@
 
 var app = angular.module('helmeditor2App');
 
-app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'CanvasDisplayService', 'MonomerSelectionService', 'HELMNotationService', 
-	function ($scope, webService, HelmConversionService, CanvasDisplayService, MonomerSelectionService, HELMNotationService) {
+app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'CanvasDisplayService', 'MonomerSelectionService', 'HELMNotationService', 'FileSaver', 'Blob', '$uibModal', 
+	function ($scope, webService, HelmConversionService, CanvasDisplayService, MonomerSelectionService, HELMNotationService, FileSaver, Blob, $uibModal) {
 		var main = this;
 
 		/* Toggle modal dialogue display */
@@ -55,14 +55,20 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 	    }
 	    main.toggleModal();
 	};
-
 	
-	/* Invoke factory function to get HELM notation */   
+	/* clear the modal dialog text area*/
+	main.clear = function (){
+		//TO-DO - change this to angular selector
+		document.getElementById('input').value = '';
+	};
+
+	/* Invoke factory function to get HELM notation */
 	main.getHelmNotation = function (polymerType, inputSequence) {
 	    var successCallback = function (helmNotation) {
 	      main.helm = helmNotation;
         HELMNotationService.setHelm(helmNotation);
 	      $scope.displayOnCanvas(helmNotation);
+	      main.getCanonicalHelmNotation(main.helm);
 	    };
 	    var errorCallback = function(response) {
 	      main.result = response.data;
@@ -78,13 +84,14 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 	    }
 	};
 
-	/* Invoke factory function to validate the HELM notation */   
+	/* Invoke factory function to validate the HELM notation */
 	main.validateHelmNotation = function (inputSequence) {
 		var successCallback = function (valid) {
 		  if (valid) {
 		  	main.helm = inputSequence;
         HELMNotationService.setHelm(inputSequence);
-		  	$scope.displayOnCanvas(inputSequence);	
+		  	$scope.displayOnCanvas(inputSequence);
+		  	main.getCanonicalHelmNotation(main.helm);
 		  }
 		  else {
 		  	main.result = 'INVALID HELM SEQUENCE';
@@ -98,7 +105,22 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
     webService.validateHelmNotation(inputSequence).then(successCallback, errorCallback);
 	};
 
-	/* Invoke factory function to get molecular weight */   
+	/* Invoke factory function to get canonical helm notation */
+	main.getCanonicalHelmNotation = function (inputSequence) {
+		var successCallback = function (result) {
+	      main.chelm = result;
+	      console.log(result);
+	    };
+	    var errorCallback = function(response) {
+	      console.log(response.data);
+	      if(response.status === 400) {
+	       	main.chelm = response.data;
+	      }
+	    };
+	    webService.getConversionCanonical(inputSequence).then(successCallback, errorCallback);
+	 };
+
+	 /* Invoke factory function to get molecular weight */
 	main.getMolecularWeight = function (inputSequence) {
 		var successCallback = function (result) {
 	      main.molecularweight = result;
@@ -108,8 +130,8 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 	    };
 	    webService.getMolecularWeight(inputSequence).then(successCallback, errorCallback);
 	 };
-	 
-	 /* Invoke factory function to get milecular formula */   
+
+	 /* Invoke factory function to get milecular formula */
 	main.getMolecularFormula = function (inputSequence) {
 		var successCallback = function (result) {
 	      main.molecularformula = result;
@@ -119,8 +141,8 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 	    };
 	    webService.getMolecularFormula(inputSequence).then(successCallback, errorCallback);
 	 };
-	 
-	 /* Invoke factory function to get the extinction coefficient */   
+
+	 /* Invoke factory function to get the extinction coefficient */
 	main.getExtinctionCoefficient = function (inputSequence) {
 		var successCallback = function (result) {
 	      main.extcoefficient = result;
@@ -131,7 +153,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 	    };
 	    webService.getExtinctionCoefficient(inputSequence).then(successCallback, errorCallback);
 	 };
-	
+
 	/*
 	* Begin code for Canvas
 	*/
@@ -211,7 +233,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 		}
 		else if (seqType === 'PEPTIDE') {
 			subGraph = $scope.processPeptides(monomerArr, pos, dir);
-		} 
+		}
 		else if (seqType === 'CHEM') {//chemical modifiers
 			subGraph = $scope.processChemicalModifiers(monomerArr, sequenceName, pos, connectionArray, sequenceArray);
 		}
@@ -225,7 +247,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 		var x = pos.x;
 		var y = pos.y;
 		var allNodes = [];
-		
+
 		angular.forEach(monomerArr, function(value, key) {
 			color = CanvasDisplayService.getNodeColor(value);
 
@@ -251,7 +273,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 				riboseNode = currNode;
 				if (key === 0){
 					firstNode = currNode;
-				}				
+				}
 				allNodes.push(currNode);
 				$scope.canvasView.addNode(currNode);
 				if (prevNode){
@@ -338,7 +360,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
       var currNode = CanvasDisplayService.createNode(monomerArr[0], 'CHEM', 'purple', false, x , y);
       allNodes.push(currNode);
       var firstNode = currNode;
-     
+
       $scope.canvasView.addNode(currNode);
 	  return new CanvasDisplayService.SubGraph(firstNode,currNode,allNodes);
 	};
@@ -377,23 +399,57 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
         return ((length-4) * monomerSpacing); //position CHEM node to right
       }
     };
+	//makes a cyclic peptide, with two stems on the left and a circle on the right
+    $scope.separateSequences = function (sequence, seqName, connectionArray) {
 
-	
+        //get the start and end points of cycle
+        var connectionPoints = $scope.getCyclicalSourceDest(seqName, connectionArray);
+        var cycleStartId =  connectionPoints[1];
+        var cycleEndId = connectionPoints[0];
+        var slicedSeqArr  =  [];
+        var beforeArr = [];
+        var afterArr = [];
+        var cycle = [];
+
+        for (var i=0;i<sequence.length;i++) {
+        	if (i < cycleStartId) {
+				beforeArr.push(sequence[i]);
+        	}
+        	else if (i>= cycleStartId && i<=cycleEndId) {
+				cycle.push(sequence[i]);
+        	}
+        	else if (i>cycleEndId) {
+        		afterArr.push(sequence[i]);
+        	}
+        }
+
+        if (beforeArr.length !== 0) {
+	        slicedSeqArr.push(new CanvasDisplayService.ChildSequence('linear', beforeArr));
+	  	}
+   		if (cycle.length !== 0) {
+  			slicedSeqArr.push(new CanvasDisplayService.ChildSequence('cyclic',cycle));
+		}
+		if (afterArr.length !== 0) {
+        	slicedSeqArr.push(new CanvasDisplayService.ChildSequence('linear', afterArr));
+    	}
+        return slicedSeqArr;
+    };
+
   	//makes a cyclic peptide after determining if there are any linear and cyclic combo
 	$scope.makeGraphWithCycles = function (sequence, dir, seqType, pos, seqName, connectionArray, sequenceArray) {
 		var graphedNodes = [];  //array of all nodes created and graphed
 	    var currSubGraph;
 	    var prevSubGraph;
-		  
-	    //separate the sequence into linear and cyclical slices
-		var slicedSequenceArr =  $scope.separateSequences(sequence, seqName, connectionArray);
 
-		for (var i=0;i<slicedSequenceArr.length;i++) {	    	
+		  //separate the sequence into linear and cyclical slices
+			var slicedSequenceArr =  $scope.separateSequences(sequence, seqName, connectionArray);
+
+			for (var i=0;i<slicedSequenceArr.length;i++) {
 	    	var slice = slicedSequenceArr[i];
 
-	    	if (slice.flow === 'linear') {    		
+	    	if (slice.flow === 'linear') {
 	    		currSubGraph = $scope.makeLinearGraph(slice.monomers, dir, seqType, pos, seqName, connectionArray, sequenceArray);
-	    		graphedNodes.push(currSubGraph.nodes); 
+	    		graphedNodes.push(currSubGraph.nodes);
 	    	}
 	    	else {
 	    		currSubGraph = $scope.makeCyclicalGraph(slice.monomers, seqType, pos, dir);
@@ -404,7 +460,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 				$scope.addNewConnection(prevSubGraph.last, currSubGraph.first);
 			}
 			prevSubGraph = currSubGraph;
-			
+
 			if (dir === 'reverse') {
 				pos = {
 	      			x: prevSubGraph.last.x - monomerSpacing,
@@ -416,7 +472,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 	      			x: prevSubGraph.last.x + monomerSpacing,
 	      			y: prevSubGraph.last.y
 	    		};
-			}    		
+			}
 	    }
 	    return graphedNodes;
 	};
@@ -574,7 +630,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 
 	// create a new node and add to the view.
 	$scope.addNewNode = function (nodeName, seqType, nodeColor, isRotate, xpos, ypos, nodeType) {
-		var node = CanvasDisplayService.createNode(nodeName, seqType, nodeColor, 
+		var node = CanvasDisplayService.createNode(nodeName, seqType, nodeColor,
 													isRotate, xpos, ypos, nodeType);
 		$scope.canvasView.addNode(node);
 		return node;
@@ -599,22 +655,24 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 		main.result = '';
 		main.seqtype = '';
 		main.helm = '';
+		main.chelm = '';
 		main.molecularweight = '';
 		main.molecularformula = '';
 		main.extcoefficient = '';
+
 		main.helmImageLink = ''; 		
 	};
 
 	/* zoom and pan functions */
-	$scope.zoom = function (scale, evt){		
+	$scope.zoom = function (scale, evt){
 		CanvasDisplayService.zoom(scale, evt);
 		zoomCount++;
     	if (evt) {
       		evt.stopPropagation();
     	}
 	};
-	
-	$scope.pan = function (dx, dy, evt){		
+
+	$scope.pan = function (dx, dy, evt){
 		CanvasDisplayService.pan(dx, dy, evt);
     	if (evt) {
       		evt.stopPropagation();
@@ -633,14 +691,17 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 	$scope.viewType = main.viewTypes[0];
 	$scope.helm = true;
 	$scope.sequence = false;
-	$scope.moleculeprops = false;	
+	$scope.moleculeprops = false;
 	main.result = '';
 	main.helm = '';
-  	HELMNotationService.setHelm('');
+  HELMNotationService.setHelm('');
+	main.chelm = '';
 	main.componenttype = '';
 	main.molecularweight = '';
 	main.molecularformula = '';
 	main.extcoefficient = '';
+	main.helmImageLink = '';
+
 	/* view type selection event handler */
 	$scope.updateLower = function(selectedView) {
 		$scope.viewType = selectedView;
@@ -658,38 +719,58 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 				main.getMolecularWeight(main.helm);
 				main.getMolecularFormula(main.helm);
 				main.getExtinctionCoefficient(main.helm);
-				main.helmImageLink = 'Show'; 
+				main.helmImageLink = 'Show';
 			}
 	        break;
 	      case 'Sequence':
 	      	$scope.helm = false;
 	      	$scope.moleculeprops = false;
-			$scope.sequence = true;			
-	        break;   
+			$scope.sequence = true;
+	        break;
 	    }
 	};
 
 	/*
 	* Begin code for showing Image Modal
 	*/
-	main.imageModalShown = false;
-	/* Invoke factory function to get the HELM Image */   
+	/* Invoke factory function to get the HELM Image */
 	$scope.showHelmImage = function () {
-		$scope.imageUrl = '';
-		if (main.helm !== '') {
-		    $scope.imageUrl = webService.getHelmImageUrl(main.helm);
-		    main.imageModalShown = !main.imageModalShown;
+		$scope.requestedview = '';	
+		$scope.imageMessage = '';
+		var successCallback = function (result) {
+		  $scope.requestedview = result;
+	      $scope.imageMessage = '';
+	    };
+	    var errorCallback = function(response) {
+	     $scope.imageMessage = 'Image not available. See console for more information.';
+	     $scope.requestedview = '';
+	     console.log(response);
+	    };
+	    if (main.helm !== '') {
+		    webService.getHelmImageUrl(main.helm).then(successCallback, errorCallback);
+		} else {
+			$scope.imageMessage = 'Structure is empty!';
 		}
+		$scope.openImageView();
 	};
 
-	/* Invoke factory function to get the Monomer Image */   
+	/* Invoke factory function to get the Monomer Image */
 	$scope.showMonomerImage = function (monomerId, polymerType) {
-		console.log(monomerId +'f' + polymerType);
-		$scope.imageUrl = '';
-		$scope.imageUrl = webService.getMonomerImageUrl(monomerId, polymerType, '');
-		console.log($scope.imageUrl);
-		
-		main.imageModalShown = !main.imageModalShown;
+		$scope.requestedview = '';	
+		$scope.imageMessage = '';
+		var successCallback = function (result) {
+		  $scope.requestedview = result;
+	      $scope.imageMessage = '';
+	    };
+	    var errorCallback = function(response) {
+	     $scope.imageMessage = 'Image not available. See console for more information.';
+	     $scope.requestedview = '';
+	     console.log(response);
+	    };
+	    if (monomerId !== '' && polymerType !== '') {
+		    webService.getMonomerImageUrl(monomerId, polymerType, '').then(successCallback, errorCallback);
+		}
+		$scope.openImageView();
 	};
 
 	// Create the view for the canvas and attach to the scope.
@@ -732,4 +813,195 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
       $scope.displayOnCanvas(out);
     }
   };
+	/*****************/
+	/*  right-click  */
+	/*****************/
+
+	//helper function - download file to user's browser
+	$scope.downloadFile = function(){
+
+		//make filename - eg, "HELM.04.21.2016.txt"
+		var now = new Date();
+		var date = (now.getMonth()+1) + '.' + now.getDate() + '.' + now.getFullYear();
+		var filename = 'HELM.' + date + $scope.fileExtension;
+
+		//Safari - can't add filename
+		//http://stackoverflow.com/questions/12802109/download-blobs-locally-using-safari
+		if (typeof safari !== 'undefined'){
+			//alert("When downloading from Safari, filenames are not provided.  Please rename the file.");
+			window.open('data:attachment/csv;charset=utf-8,' + encodeURI($scope.requestednotation));
+		}
+		//Chrome, Firefox (should work in IE, but not tested)
+		//FileSaver: https://github.com/alferov/angular-file-saver#filesaver
+		//Supported browsers: https://github.com/eligrey/FileSaver.js/#supported-browsers
+		else {
+			var blob = new Blob([$scope.requestednotation], {type: 'text/plain;charset=utf-8'});
+			FileSaver.saveAs(blob, filename);
+		}
+	};
+
+	//helper function - show notation in modal
+	//ui-bootstrap modal doc: https://angular-ui.github.io/bootstrap/
+	$scope.open = function(){
+      	$uibModal.open({
+        	templateUrl: '/templates/viewmodal.html',
+        	controller: 'modal',
+			scope: $scope,
+		});
+    };
+
+	//wider modal
+	$scope.openWideModal = function(){
+		$uibModal.open({
+			templateUrl: '/templates/viewmodal.html',
+			controller: 'modal',
+			windowClass: 'wide-modal',
+			scope: $scope,
+		});
+	};
+
+	//helper function - show molecular properties table in modal
+	//TODO - should show Mass
+	$scope.openMolecularPropertiesModal = function(){
+		$uibModal.open({
+			templateUrl: '/templates/tablemodal.html',
+			controller: 'modal',
+			scope: $scope,
+		});
+	};
+
+	//helper function - show image in modal
+	$scope.openImageView = function(){
+		$uibModal.open({
+			templateUrl: '/templates/imagemodal.html',
+			controller: 'modal',
+			scope: $scope,
+		});
+	};
+
+	//helper function - copy string to user's clipboard
+	//source: http://stackoverflow.com/questions/25099409/copy-to-clipboard-as-plain-text
+	$scope.copyToClipboard = function(){
+		var input = document.createElement('textarea');
+		document.body.appendChild(input);
+		input.value = $scope.requestednotation;
+		input.focus();
+		input.select();
+		document.execCommand('Copy');
+		input.remove();
+	};
+
+	//options for right-click context-menu
+	//contextMenu doc: https://github.com/Templarian/ui.bootstrap.contextMenu
+	$scope.menuOptions = [
+
+		['Show Molecular Structure', function () {
+			$scope.showHelmImage();
+		}],
+		null,
+		['View', function (){
+		},[
+			['HELM Notation', function () {
+				$scope.requestedview = main.helm;
+				if (main.helm.length > 100){    //for long sequences,
+					$scope.openWideModal();			//use wider modal
+				}
+				else {
+					$scope.open();
+				}
+
+			}],
+			['Canonical HELM Notation', function (){
+				$scope.requestedview = main.chelm;
+				if (main.helm.length > 100){
+					$scope.openWideModal();
+				}
+				else {
+					$scope.open();
+				}
+			}],
+			/*,
+			['xHELM Notation', function (){
+				$scope.requestedview = 'TO-DO: xHELM NOTATION';
+				$scope.open();
+			}],
+			['SMILES', function () {
+				$scope.requestedview = 'TO-DO: SMILES NOTATION';
+				$scope.open();
+			}],
+			['MDL Molfile', function (){
+				$scope.requestedview = 'TO-DO: MDL MOLFILE NOTATION';
+				$scope.open();
+			}],
+			['PDB Format', function (){
+				$scope.requestedview = 'TO-DO: PDB FORMAT';
+				$scope.open();
+			}]*/
+			['Molecule Properties', function (){
+				main.getMolecularWeight(main.helm);       //sets main.molecularweight
+				main.getMolecularFormula(main.helm);      //sets main.molecularformula
+				main.getExtinctionCoefficient(main.helm); //sets main.extcoefficient
+				$scope.openMolecularPropertiesModal();
+			}]
+		]],
+		null,
+		['Copy', function (){
+		},[
+				/*['Image', function ($itemScope){
+				$scope.requestednotation = webService.getHelmImageUrl(main.helm);
+				$scope.copyToClipboard();
+			}],*/
+			['HELM Notation', function () {
+				$scope.requestednotation = main.helm;
+				$scope.copyToClipboard();
+			}],
+			['Canonical HELM Notation', function (){
+				$scope.requestednotation = main.chelm;
+				$scope.copyToClipboard();
+			}]
+			/*,
+			['xHELM Notation', function (){
+				$scope.requestednotation = 'TODO: GET xHELM';
+				$scope.copyToClipboard();
+			}],
+			['SMILES', function () {
+				$scope.requestednotation = 'TODO: GET SMILES';
+				$scope.copyToClipboard();
+			}],
+			['MDL Molfile', function (){
+				$scope.requestednotation = 'TODO: GET MDL MOLFILE';
+				$scope.copyToClipboard();
+			}]*/
+		]],
+		null,
+		['Save', function (){
+		},[
+			['HELM Notation', function () {
+				$scope.requestednotation = main.helm;
+				$scope.fileExtension = '.helm';
+				$scope.downloadFile();
+			}],
+			['Canonical HELM Notation', function (){
+				$scope.requestednotation = main.chelm;
+				$scope.fileExtension = '.chelm';
+				$scope.downloadFile();
+			}]
+			/*,
+			['xHELM Notation', function (){
+				$scope.requestednotation = 'TODO:_GET_xHELM';
+				$scope.fileExtension = '.xhelm';
+				$scope.downloadFile();
+			}],
+			['SMILES', function () {
+				$scope.requestednotation = 'TODO:_GET_SMILES';
+				$scope.fileExtension = '.smi';
+				$scope.downloadFile();
+			}],
+			['MDL Molfile', function (){
+				$scope.requestednotation = 'TODO:_MDL_Molfile';
+				$scope.fileExtension = '.mol';
+				$scope.downloadFile();
+			}]*/
+		]]
+	];
 }]);

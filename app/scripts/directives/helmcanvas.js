@@ -6,6 +6,7 @@
  * @description
  * # helmCanvas
  */
+ 
 angular.module('helmeditor2App')
   .directive('helmCanvas', function () {
     return {
