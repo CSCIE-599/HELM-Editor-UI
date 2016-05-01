@@ -708,6 +708,12 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
     if (currentMonomer._name) {
       var type = currentMonomer.encodedMonomer ? currentMonomer.encodedMonomer.PolymerType : convertTitle(currentMonomer._title);
       var notation = currentMonomer._notation ? currentMonomer._notation : currentMonomer._name;
+
+      // make sure to enclose mulit-character IDs in []
+      if (notation.length > 1) {
+        notation = '[' + notation + ']';
+      }
+
       HELMNotationService.addNewSequence(type, notation);
 
       // and update (for now, until it's all linked together correctly)
