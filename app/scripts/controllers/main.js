@@ -602,8 +602,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 		main.molecularweight = '';
 		main.molecularformula = '';
 		main.extcoefficient = '';
-		main.helmImageLink = ''; 
-		main.clear();
+		main.helmImageLink = ''; 		
 	};
 
 	/* zoom and pan functions */
