@@ -202,6 +202,10 @@ angular.module('helmeditor2App')
 		nodeNum = num;
 	};
 
+	self.setNodeID = function(id){
+		nodeId = id;
+	};
+
 	/*helper method for creating cyclical nodes, only supports cyclical peptides now*/
 	// TO-DO Extend to support cyclical nucleotides
 	self.makeCycle = function(sequence, seqType, pos, dir){
@@ -299,11 +303,14 @@ angular.module('helmeditor2App')
 	  mapMatrix.setAttributeNS(null, 'transform', newMatrix);
 	};
 
-	// for selecting nodes to be deleted
 	var selectedNode = {};
 	var selectedNodeID = {};
 	self.getSelectedNode = function(){
    		return selectedNode;
+    }
+    self.clearSelectedNode = function(){
+	   	selectedNode = {};
+		selectedNodeID = {};
     }
 
 	// View model for the chart.
@@ -347,7 +354,7 @@ angular.module('helmeditor2App')
       			console.log("unselecting node...:");
       			console.log(selectedNode);
         		selectedNode = {};
-        		selectedNodeID = {};
+        		selectedNodeID = newDataModel.id();
       		}
       		else {
         		selectedNode = nodeDataModel;

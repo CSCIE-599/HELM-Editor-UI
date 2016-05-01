@@ -186,10 +186,10 @@ angular.module('helmeditor2App')
           if (workingHelmString[matchIndex]=='('){
             // just remove the element from the sequence
             var updatedHelmSubString = helmSubString.substring(0, wrkHlmStart) 
-            + helmSubString.substring((wrkHlmStart+matchIndex+matchLength), helmSubString.length);
+            +helmSubString.substring((wrkHlmStart+matchIndex+matchLength), helmSubString.length);
 
             updatedHelmString = helmString.replace(helmSubString, updatedHelmSubString);
-            console.log(updatedHelmString);
+            console.log("Updated helm string:" +updatedHelmString);
             return updatedHelmString;
           }
           //TODO
@@ -199,6 +199,9 @@ angular.module('helmeditor2App')
         }
 
       }
+      // for now, if can't process changes, just return original helm notation
+      console.log("returning original string");
+      return helmString;
     }
 
     // make things global

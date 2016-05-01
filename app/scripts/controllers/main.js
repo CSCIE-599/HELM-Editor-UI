@@ -915,6 +915,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
       connections: []
     };
     CanvasDisplayService.setNodeNum(0);
+    CanvasDisplayService.setNodeID(0);
     $scope.canvasView = new CanvasDisplayService.CanvasView(emptyData);
   };
 
@@ -929,21 +930,25 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
     }
     else{
     	console.log("Deleting node: "+ currentNode.data.id);
-
 	    var helmString = HELMNotationService.getHelm();
-
 	    var helmName = HelmConversionService.getName(helmString);
-
 	    var polymers = HelmConversionService.getPolymers(helmName, helmString);
+	    console.log(polymers);
 
-	    console.log("Calling remove...");
+	  //  if (currentNode.data.seqType=="NUCLEOTIDE"){
 
-	    var newHELM = HELMNotationService.helmNodeRemoved(polymers, helmString, currentNode);
+		    console.log("Calling remove...");
 
-	    console.log("Generating new graph...");
-	    clearCanvas();
-      	main.helm = newHELM;
-      	$scope.displayOnCanvas(newHELM);
+		    var newHELM = HELMNotationService.helmNodeRemoved(polymers, helmString, currentNode);
+
+		    console.log("Generating new graph...");
+		    console.log("new helm: "+ newHELM);
+		    currentNode = {};
+		    CanvasDisplayService.clearSelectedNode();
+		    clearCanvas();
+		    main.validateHelmNotation(newHELM);
+	      	//$scope.displayOnCanvas(newHELM);
+	  //  }
 	}
   }
 
