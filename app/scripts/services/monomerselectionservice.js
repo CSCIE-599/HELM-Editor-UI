@@ -14,7 +14,7 @@ angular.module('helmeditor2App')
     // Methods used by the monomer library to add/drag elements to the 
     self.currentMonomer = {};
 
-    // sets the current selected monomer to be what was clicked
+    // toggles the current selected monomer to be what was clicked
     self.toggleSelectedMonomer = function (monomer, evt) {
       // un-select if it was previously selected
       if (self.currentMonomer._name === monomer._name) {
@@ -23,6 +23,12 @@ angular.module('helmeditor2App')
       else {
         self.currentMonomer = monomer;
       }
+      evt.stopPropagation();
+    };
+
+    // sets the current selected monomer to be what was clicked
+    self.setSelectedMonomer = function (monomer, evt) {
+      self.currentMonomer = monomer;
       evt.stopPropagation();
     };
 
