@@ -603,6 +603,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 		main.result = '';
 		main.seqtype = '';
 		main.helm = '';
+    HELMNotationService.setHelm('');
 		main.chelm = '';
 		main.molecularweight = '';
 		main.molecularformula = '';
@@ -742,6 +743,16 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
     }
   };
 
+  // helper method just to clear the canvas
+  var clearCanvas = function () {
+    var emptyData = {
+      nodes: [],
+      connections: []
+    };
+    CanvasDisplayService.setNodeNum(0);
+    $scope.canvasView = new CanvasDisplayService.CanvasView(emptyData);
+  };
+
   // hanlde the clicks on the SVG itself
   $scope.svgClicked = function () {
     var currentMonomer = MonomerSelectionService.getSelectedMonomer();
@@ -762,7 +773,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
       // and update (for now, until it's all linked together correctly)
       var out = HELMNotationService.getHelm();
       console.log(out);
-      $scope.resetCanvas();
+      clearCanvas();
       main.helm = out;
       $scope.displayOnCanvas(out);
     }
