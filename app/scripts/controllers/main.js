@@ -835,6 +835,8 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
   $scope.svgClicked = function () {
     var currentMonomer = MonomerSelectionService.getSelectedMonomer();
     addMonomer(currentMonomer);
+    // and clear the selection so we don't keep adding over and over again
+    MonomerSelectionService.toggleSelectedMonomer(currentMonomer);
   };
 
   // handle the dropping -- only supports dropping monomers right now
