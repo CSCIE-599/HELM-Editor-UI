@@ -179,7 +179,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
       //make nodes and draw sequences
       var pos;
       var graphedNodes = [];
-      CanvasDisplayService.setNodeID(0);
+      CanvasDisplayService.setNodeID(0); // want node IDs to start at 0 for each new graph
       for (var i = 0; i < sequenceArray.length; i++){
         var seqType = $scope.getType(sequenceArray[i].name); //PEPTIDE, NUCLEOTIDE, or CHEM
         main.seqtype = seqType;
@@ -938,6 +938,25 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 
 	    var helmString = HELMNotationService.getHelm();
 
+	    // if node is part of a CHEM sequence, just delete the chem sequence
+	    if (currentNode.data.seqType === "CHEM"){
+	    	// nodeType for chem nodes is actually a sequence name like "CHEM1"
+	    	// and seqName is "undefined" for chem nodes (TODO: check why / fix?)
+
+	    	HELMNotationService.removeSequence(currentNode.data.nodeType);
+
+	    	var connections = HELMNotationService.getConnections();
+	    	console.log(connections);
+
+	    	var updatedHelm = HELMNotationService.getHelm();
+	    	//clearCanvas();
+	    	//main.validateHelmNotation(updatedHelm);
+
+	    	//TODO: check existing connections and remove any that contain this CHEM sequence
+	    	//generate new helm string with any other connections
+	    	return;
+	    }
+
 	    var sequences = HELMNotationService.getSequences();
 
 	  	var priorSeqNodes = 0;
@@ -945,12 +964,10 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 	    for (var i = 0; i < sequences.length; i++){
 	    	var sequenceName = sequences[i].name;
 	    	var sequenceNotation = sequences[i].notation;
-	    	var sequenceType = sequences[i].type;
 
 	    	//delete logs
 	    	console.log("Sequence "+i+" name: "+ sequenceName);
 	    	console.log("Sequence "+i+" notation: "+ sequenceNotation);
-	    	console.log("Sequence "+i+" type: "+ sequenceType);
 	    	console.log("Sequence elements:");
 
 	    	var polymers = HelmConversionService.getPolymers(sequenceName, sequenceNotation);
@@ -962,29 +979,16 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 	    		nodeID -= priorSeqNodes;
 	    		console.log("number of elements in prior sequences: "+ priorSeqNodes);
 	    		console.log("node should be at index: "+nodeID+" in this sequence");
-	    		HELMNotationService.helmNodeRemoved(polymers, sequences[i], currentNode, nodeID);
+	    		var updatedHELM = HELMNotationService.helmNodeRemoved(polymers, sequences[i], currentNode, nodeID);
+	    		
+	  			clearCanvas();
+	    		main.validateHelmNotation(updatedHELM);
 	    	}
 	    	else{
 	    		// track number of elements in sequences not containing the node-to-delete
 	    		priorSeqNodes += (polymers.length);
 	    	}
 	    }
-
-	    //var helmName = HelmConversionService.getName(helmString);
-	    /*
-	    console.log("Calling remove...");
-
-	    var newHELM = HELMNotationService.helmNodeRemoved(polymers, helmString, currentNode);
-
-	    console.log("new helm: "+ newHELM);
-
-	    console.log("Generating new graph...");
-	    currentNode = {};
-	    CanvasDisplayService.clearSelectedNode();
-	    main.validateHelmNotation(newHELM);*/
-	      	//$scope.displayOnCanvas(newHELM);
-	  //  }
-	  	//clearCanvas();
 	}
   }
 

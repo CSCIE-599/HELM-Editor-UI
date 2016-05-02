@@ -139,6 +139,29 @@ angular.module('helmeditor2App')
       updateHelm();
     };
 
+    // change the notation for the specified sequence 
+    var replaceSequence = function(seqName, notation){
+      for (var i = 0; i < sequences.length; i++){
+        if (sequences[i].name == seqName){
+          sequences[i].notation = notation;
+        }
+      }
+      updateHelm();
+    }
+
+    var removeSequence = function(seqName){
+      var index = -1;
+      for (var i = 0; i < sequences.length; i++){
+        if (sequences[i].name == seqName){
+          index = i;
+        }
+      }
+      if (index > -1){
+        sequences.splice(index, 1);
+      }
+      updateHelm(); 
+    }
+
     // private helper function to update the HELM notation from any added sequences
     var updateHelm = function () {
       // go through the sequences and generate the first blob
@@ -167,20 +190,15 @@ angular.module('helmeditor2App')
     };
 
     // returns an updated HELM notation string, removing the currently selected graph node
-    // elements: the array of polymers contained in the sequence
-    // sequence: the helm notation sequence containing the element to be removed 
-    // nodeToRemove: the canvas node currently selected
     var helmNodeRemoved = function(elements, sequence, nodeToRemove, nodeIndex){
-
       var seqNotation = sequence.notation; // the sequence characters contained within {}
       var tmpSeq = seqNotation; // copy of sequence notation to step through, chopping off start
       var tmpSeqStrt = 0; // index pointing to start of tmpSeq in the actual seqNotation string
 
-      // step through polymers contained in this sequence
       for (var elem in elements){
         var val = elements[elem]; // polymer name 
         var re = new RegExp('[\\[\\(]*'+val+'[\\]\\)]*');
-        var matchIndex = tmpSeq.search(re); // the index where the current polymer's notation begins
+        var matchIndex = tmpSeq.search(re); // index where the current polymer's notation begins
         var matchLength = tmpSeq.match(re)[0].length; // length of polymer notation
 
         if (elem != nodeIndex){
@@ -189,47 +207,51 @@ angular.module('helmeditor2App')
           tmpSeq = seqNotation.substring(tmpSeqStrt, seqNotation.length);
         }
         // found node to be removed
-        // TODO: replace sequence with modified sequence(s) and then create new helm string from
-        // the altered array of sequences
         else {
-          // for elements like '(A)', just need to remove it from the sequence
-          if (tmpSeq[matchIndex]=='('){
+          // can just remove node from the sequence
+          if ((nodeIndex == 0) || (nodeIndex == elements.length - 1) || (tmpSeq[matchIndex]=='(')){
             var updatedSeq = seqNotation.substring(0, tmpSeqStrt) 
             + seqNotation.substring((tmpSeqStrt+matchIndex+matchLength), seqNotation.length);
 
-           // updatedHelmString = sequence.replace(helmSubString, updatedHelmSubString);
-          //  console.log("Updated helm string:" +updatedHelmString);
-
+            console.log("Old sequence:" + seqNotation);
             console.log("Modified sequence: "+ updatedSeq);
-            return updatedSeq;
+
+            // if the first node is now an orphaned child e.g. '(P)' take it out
+            if (updatedSeq[0] == '(')
+              updatedSeq = updatedSeq.substring(updatedSeq.indexOf(')')+1, updatedSeq.length);
+            if (updatedSeq[0]=='.')
+              updatedSeq = updatedSeq.substring(1, rest.length);
+
+            replaceSequence(sequence.name, updatedSeq);
+            var updatedHelm = getHelm();
+            console.log("New HELM string: "+updatedHelm);
+            return updatedHelm;
           }
-          // need to split the sequence into two
+          // need to split the sequence into two sequences
           else {
-            var firstSequenceString = seqNotation.substring(0, tmpSeqStrt);
-            console.log("First sequence:" + firstSequenceString);
+            console.log("Old sequence: "+ seqNotation);
+            var firstSequence = seqNotation.substring(0, tmpSeqStrt);
 
-            //var firstSequenceString = sequenceName + '{' + firstSequenceString + '}|';
+            console.log("First sequence:" + firstSequence);
+            replaceSequence(sequence.name, firstSequence);
 
-            var secondSequenceString = seqNotation.substring((tmpSeqStrt+matchIndex+matchLength), seqNotation.length);
-            if (secondSequenceString[0]=='.')
-              secondSequenceString = secondSequenceString.substring(1, secondSequenceString.length);
-            console.log("Second sequence: " +secondSequenceString);
+            var secondSequence = seqNotation.substring((tmpSeqStrt+matchIndex+matchLength), seqNotation.length);
+            if (secondSequence[0] == '(')
+              secondSequence = secondSequence.substring(secondSequence.indexOf(')')+1,secondSequence.length);
+            if (secondSequence[0]=='.')
+              secondSequence = secondSequence.substring(1, secondSequence.length);
 
-           // var secondSequenceString = sequenceType + (sequenceNum+1) + '{' + secondSequenceString + '}';
-           // console.log(firstSequenceString);
-           // console.log(secondSequenceString);
-           // var combinedSequences = firstSequenceString + secondSequenceString;
-           // var newHelm = combinedSequences + "$$$$";
-           // console.log("new helm string: "+ newHelm);
-
-            return firstSequenceString; //fix
+            console.log("Second sequence: " + secondSequence);
+            addNewSequence(sequence.type, secondSequence);
+            var updatedHelm = getHelm();
+            console.log("New HELM string: "+updatedHelm);
+            return updatedHelm;
           }
         }
-
       }
       // for now, if can't process changes, just return original helm notation
-      console.log("returning original string");
-      return sequence;
+      console.log("could not find node to remove");
+      return updatedHelm;
     }
 
     // make things global
@@ -239,4 +261,5 @@ angular.module('helmeditor2App')
     self.getConnections = getConnections;
     self.addNewSequence = addNewSequence;
     self.helmNodeRemoved = helmNodeRemoved;
+    self.removeSequence = removeSequence;
   });
