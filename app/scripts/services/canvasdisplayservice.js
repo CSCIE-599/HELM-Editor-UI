@@ -105,9 +105,10 @@ angular.module('helmeditor2App')
             newNode.seqVisible = 'visible';
             newNode.nodeVisible = 'visible';
         }
-        // adjust the positioning of base nodes in lower pane
-    	if ((nodeType === 'b')){
-        	newNode.lowery = newNode.lowery-150;
+        // adjust the positioning and viisbility of base and chem nodes in lower pane
+    	if ((sequenceType === 'CHEM') || (sequenceType === 'NUCLEOTIDE' && nodeType === 'b')){
+        	newNode.lowery = newNode.lowery-120;
+        	newNode.nodeVisible = 'visible';
         }
         nodeId++;
 
