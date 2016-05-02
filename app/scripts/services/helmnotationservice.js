@@ -119,7 +119,6 @@ angular.module('helmeditor2App')
     // type - must be RNA, PEPTIDE, or CHEM
     // notation should be the sequence of characters
     var addNewSequence = function (type, notation) {
-      console.log(sequences);
       // see what label we need to add to the type for the new sequence
       var postfix = 1; // start at 1
       for (var i = 0; i < sequences.length; i++) {
@@ -229,7 +228,6 @@ angular.module('helmeditor2App')
         }
       }
 
-      console.log(res);
 
       // and swap it in
       if (helm === '') {
@@ -239,7 +237,6 @@ angular.module('helmeditor2App')
         helm = res + helm.substring(helm.indexOf('$'));
       }
 
-      console.log(helm);
       // make sure to parse connections
       parseHelm(helm);
     };

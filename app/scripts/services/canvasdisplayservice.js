@@ -31,6 +31,7 @@ angular.module('helmeditor2App')
 
 
 	self.createRibose = function (nodeName,  nodeColor, xPos, yPos, sequenceName) {
+
 		//console.log('adding ribose node ' + nodeName +' at: (' + xPos + ',' +yPos +')');
 	 	return self.createNode(nodeName, 'NUCLEOTIDE', 'lightgrey', false, xPos, yPos, 'r', sequenceName);
 	};
@@ -55,7 +56,7 @@ angular.module('helmeditor2App')
 		var textColor;
 
 		nodeWidth = self.getNodeWidth(nodeName, isRotate);
-		
+
 		if(isRotate){
 			rotateDegree = '45';
 		}
@@ -87,9 +88,18 @@ angular.module('helmeditor2App')
 			transformDegree:rotateDegree,
 			seqVisible:	'hidden',
 			nodeVisible: 'hidden',
+			annotationVisible: 'hidden',
 			textColor: textColor,
-			nodeType:nodeType
+			nodeType:nodeType,
+			annotationText:''
 		};
+
+		if (sequenceType === 'PEPTIDE') {
+			 newNode.annotationText = 'n';
+		}
+		else if (sequenceType === 'NUCLEOTIDE') {
+			newNode.annotationText = '5\'' ;
+		}
 
 		//number nodes if Peptide, or if Nucleotide and a base node
         if ((sequenceType === 'PEPTIDE') || (sequenceType === 'NUCLEOTIDE' && nodeType === 'b')){
@@ -98,11 +108,16 @@ angular.module('helmeditor2App')
             newNode.seqVisible = 'visible';
             newNode.nodeVisible = 'visible';
         }
-        // adjust the positioning of base nodes in lower pane
-    	if ((nodeType === 'b')){
-        	newNode.lowery = newNode.lowery-150;
+        // adjust the positioning and viisbility of base and chem nodes in lower pane
+    	if ((sequenceType === 'CHEM') || (sequenceType === 'NUCLEOTIDE' && nodeType === 'b')){
+        	newNode.lowery = newNode.lowery-120;
+        	newNode.nodeVisible = 'visible';
         }
         nodeId++;
+
+        if(newNode.num === 1){
+        	newNode.annotationVisible = 'visible';
+        }
 		return newNode;
 	};
 
@@ -184,17 +199,19 @@ angular.module('helmeditor2App')
 		return color;		
     };
 
+	/* helper method to calculate width of a node*/
     self.getNodeWidth = function(nodeName, isRotate){
 		if(!isRotate){
 	    	if(nodeName.length === 3){
 				return 30;
 			}else if(nodeName.length >= 4){ 
-				return 40;
+				return 55;
 			}
 		}
 		return 25;
     };
 
+    /*getter/setter for nodeNum*/
 	self.getNodeNum = function(){
 		return nodeNum;
 	};
@@ -212,7 +229,6 @@ angular.module('helmeditor2App')
 	};
 
 	/*helper method for creating cyclical nodes, only supports cyclical peptides now*/
-	// TO-DO Extend to support cyclical nucleotides
 	self.makeCycle = function(sequence, seqType, pos, dir){
 
 		var cycleNodesArray = [];
@@ -251,61 +267,77 @@ angular.module('helmeditor2App')
 		return cycleNodesArray;
 	};
 
-
-	//helper function to get a new pos to create a new row, increments y
-	self.getNewRowPos = function(pos, i){
-
+	
+	/*helper function to get a new pos to create a new row, increments y*/
+	self.getNewRowPos = function(pos,seqType,prevSeqType){
+	
 		if(!pos){//starting pos
 			return {
 				x: 200, //TO-DO make this relative to the length of sequence
-				y: 100
+				y: 75
 			};
 		}
 		else {//for new row, increment y
-			return {
-				x: pos.x,
-				y: pos.y + (i * 150)
-			};
+			
+			if(prevSeqType){			
+				if(prevSeqType === 'CHEM' || prevSeqType === 'PEPTIDE' ){
+					return {
+						x: pos.x,
+						y: pos.y + 70
+					};
+				}
+				else {
+					return {
+						x: pos.x,
+						y: pos.y + 120
+					};
+				}
+			}			
 		}
 	};
 
-	/*zoom related functions*/
+	/*zoom and pan related functions*/
 
 	var transMatrix = [1,0,0,1,0,0];//identity matrix 
 	var mapMatrix, newMatrix, width, height;	
 
-	self.zoom = function (scale, evt){
+	self.zoom = function (scale, evt, svgCanvas){
 		var svgDoc;
 
 		if(evt){
 			svgDoc = evt.target.parentNode;//keep track of which canvas is being zoomed
 		}
 		else {
-			svgDoc = document.getElementById('mainCanvas');//for zoom onload
+			svgDoc = svgCanvas;//for zoom onload
 		}
-		//get canvas width and height
-		 width = svgDoc.clientWidth;
-		 height = svgDoc.clientHeight;
-		 mapMatrix = svgDoc.getElementById('map-matrix');
 
-		 for (var i=0; i<transMatrix.length; i++){
-		   transMatrix[i] *= scale;
-		 }
+		if(svgDoc){
+			//get canvas width and height
+			 width = svgDoc.clientWidth;
+			 height = svgDoc.clientHeight;
+			 mapMatrix = svgDoc.getElementById('map-matrix');
 
-		 transMatrix[4] += (1-scale)*width/2;
-		 transMatrix[5] += (1-scale)*height/2;				        
-		 newMatrix = 'matrix(' +  transMatrix.join(' ') + ')';
-		 mapMatrix.setAttributeNS(null, 'transform', newMatrix);
+			 for (var i=0; i<transMatrix.length; i++){
+			   transMatrix[i] *= scale;
+			 }
+
+			 transMatrix[4] += (1-scale)*width/2;
+			 transMatrix[5] += (1-scale)*height/2;				        
+			 newMatrix = 'matrix(' +  transMatrix.join(' ') + ')';
+			 mapMatrix.setAttributeNS(null, 'transform', newMatrix);
+		}
 	};
 
 	self.pan = function(dx, dy, evt){
-	  var svgDoc = evt.target.parentNode;//keep track of which canvas is being panned     	
-	  transMatrix[4] += dx;
-	  transMatrix[5] += dy;
-	  mapMatrix = svgDoc.getElementById('map-matrix');
-	            
-	  newMatrix = 'matrix(' +  transMatrix.join(' ') + ')';
-	  mapMatrix.setAttributeNS(null, 'transform', newMatrix);
+	  var svgDoc = evt.target.parentNode;//keep track of which canvas is being panned  
+	  if(svgDoc){   	
+		  transMatrix[4] += dx;
+		  transMatrix[5] += dy;
+		  mapMatrix = svgDoc.getElementById('map-matrix');
+		            
+		  newMatrix = 'matrix(' +  transMatrix.join(' ') + ')';
+		  mapMatrix.setAttributeNS(null, 'transform', newMatrix);
+	  }
 	};
 
 	var selectedNode = {};
@@ -318,7 +350,9 @@ angular.module('helmeditor2App')
 		selectedNodeID = {};
   };
 
-	// View model for the chart.
+	/*data models for canvas, node and connection */
+
+	// View for the canvas.
 	self.CanvasView = function (dataModel) {
 
 		// Reference to the underlying data.
@@ -328,7 +362,7 @@ angular.module('helmeditor2App')
 		this.connections = [];
 		selectedNode = {};
 
-		// Add a node to the view model.
+		// Add a node to the canvas view.
 		this.addNode = function (nodeDataModel) {
 
 			if (!this.data.nodes) {
@@ -436,11 +470,6 @@ angular.module('helmeditor2App')
 			return this.data.height;
 		};
 
-		// id of node from which this node links horizontally
-		this.horizSource = function(){
-			return this.data.horizDest || '';
-		};
-
 		//xpos of the node after rotation
 		this.transformx = function () {
 			return this.data.transformx;
@@ -471,22 +500,29 @@ angular.module('helmeditor2App')
 			return this.data.textColor;
 		};
 
+		//(x,y) position of a node 
 		this.position = function(){
 			return { x: this.x(),
 					 y: this.y()
 				   };
 		};
 
+		//visibility of the annotation
+		this.annotationVisible = function () {
+			return this.data.annotationVisible;
+		};
+
+		//visibility of the annotation
+		this.annotationText = function () {
+			return this.data.annotationText;
+		};		
 	};
 
 	// View for a connection.
 	self.ConnectionView= function (connectionDataModel) {
 
-		this.data = connectionDataModel;
 		this.source = connectionDataModel.source;
 		this.dest = connectionDataModel.dest;
-
-		this.type = connectionDataModel.type;//horizontal or vertical connection
 
 		this.sourceCoordX = function () {
 			return this.source.x + this.source.width/2;
@@ -496,42 +532,27 @@ angular.module('helmeditor2App')
 			return this.source.y + this.source.height/2;
 		};
 
-		this.sourceCoord = function () {
-			return {
-				x: this.sourceCoordX(),
-				y: this.sourceCoordY()
-			};
-		};
-
 		this.destCoordX = function () {
 			return this.dest.x + this.dest.width/2;
 		};
 
 		this.destCoordY = function () {
 			return this.dest.y + this.dest.height/2;
-		};
-
-		this.destCoord = function () {
-			return {
-				x: this.destCoordX(),
-				y: this.destCoordY()
-			};
-		};
+		};		
 	};
 
-
+	//model for a sequence
 	self.Sequence = function(seqType, childrenArr, dir){
 		this.type = seqType;//PEPTIDE, NUCLEOTIDE, CHEM
 		this.children = childrenArr;//array of ChildSequence
-		// store dir for now
-		this.dir = dir;
+		this.dir = dir;//direction
 	};
 
+	//model for a sub-sequence, which renders a cyclical or linear shape,based on the 'flow'
 	self.ChildSequence = function(childFlow, monomerArr){
 		this.flow = childFlow;//linear, cyclical
 		this.monomers = monomerArr;//array of monomers,e.g: [A,R]
 	};
-
 
 	//represents a mini graph, like a graph of linear nodes or cyclic nodes
 	self.SubGraph = function(fir, las, nodesArr){

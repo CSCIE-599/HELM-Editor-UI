@@ -192,6 +192,11 @@ body {
   padding: 10px 0px;
 }
 
+.right-controls input {
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
 .row {
   margin: 0px;
 }
@@ -219,10 +224,10 @@ body {
   height: 100%;
 }
 
-input {
+/*input {
   margin-top: 5px;
   margin-bottom: 5px;
-}
+}*/
 
 #input {
   margin-top: 5px;
@@ -302,6 +307,7 @@ svg {
   width: 100%;
   display: table;
   table-layout: fixed;
+  margin-top: 2px;
 }
 
 .input-row input {
@@ -309,6 +315,7 @@ svg {
   display: table-cell;
   vertical-align: middle;
   width: 100%;
+  height: 100%;
 }
 
 .input-row label {
@@ -347,7 +354,6 @@ svg {
   line-height: 30px;
   width: 100%;
   height: 100%;
-  padding-top: 11px;
 }
 
 .monomer-name {
@@ -512,6 +518,16 @@ svg {
   border: solid 1px #707070;
 }
 
+.monomer-directive {
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+}
+
+.monomer-selected {
+  border: dashed 1px #f00000;
+}
+
 .myModal{
   height:700px;
   padding:5px;
@@ -535,4 +551,28 @@ th, td {
 caption {
     display: table-caption;
     text-align: center;
+}
+
+.table-full {
+  table-layout: fixed;
+  width: 100%;
+}
+
+.table-label {
+  width: 25%;
+  font-weight: bold;
+}
+
+.table-data {
+  width: 75%;
+}
+
+.table-max-height {
+  overflow-wrap: break-word;
+  overflow-y: auto;
+  max-height: 80px;
+}
+
+.table-data img {
+  max-height: 120px;
 }
