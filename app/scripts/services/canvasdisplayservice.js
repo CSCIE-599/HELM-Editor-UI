@@ -355,17 +355,12 @@ angular.module('helmeditor2App')
    			console.log(nodeDataModel.id());
       		// un-select if it was previously selected
       		if (selectedNodeID === nodeDataModel.id()) {
-      			console.log("currently selected:" + selectedNode.data.id);
-      			console.log("unselecting node...:");
-      			console.log(selectedNode);
         		selectedNode = {};
         		selectedNodeID = newDataModel.id();
       		}
       		else {
         		selectedNode = nodeDataModel;
         		selectedNodeID = nodeDataModel.id();
-        		console.log("selected node is now "+selectedNode.data.id);
-        		console.log(selectedNode);
       		}
       		evt.stopPropagation();
     	};

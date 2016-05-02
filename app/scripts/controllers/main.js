@@ -942,18 +942,11 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 	    if (currentNode.data.seqType === "CHEM"){
 	    	// nodeType for chem nodes is actually a sequence name like "CHEM1"
 	    	// and seqName is "undefined" for chem nodes (TODO: check why / fix?)
-
 	    	HELMNotationService.removeSequence(currentNode.data.nodeType);
 
-	    	var connections = HELMNotationService.getConnections();
-	    	console.log(connections);
-
 	    	var updatedHelm = HELMNotationService.getHelm();
-	    	//clearCanvas();
-	    	//main.validateHelmNotation(updatedHelm);
-
-	    	//TODO: check existing connections and remove any that contain this CHEM sequence
-	    	//generate new helm string with any other connections
+	    	clearCanvas();
+	    	main.validateHelmNotation(updatedHelm);
 	    	return;
 	    }
 

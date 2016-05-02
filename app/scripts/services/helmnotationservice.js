@@ -139,7 +139,7 @@ angular.module('helmeditor2App')
       updateHelm();
     };
 
-    // change the notation for the specified sequence 
+    // change the notation for a specified sequence 
     var replaceSequence = function(seqName, notation){
       for (var i = 0; i < sequences.length; i++){
         if (sequences[i].name == seqName){
@@ -149,18 +149,70 @@ angular.module('helmeditor2App')
       updateHelm();
     }
 
+    // remove the specified sequence from the sequences array and update helm
     var removeSequence = function(seqName){
-      var index = -1;
+
+      var seqIndex = -1;
       for (var i = 0; i < sequences.length; i++){
         if (sequences[i].name == seqName){
-          index = i;
+          seqIndex = i;
         }
       }
-      if (index > -1){
-        sequences.splice(index, 1);
+      if (seqIndex > -1){
+        sequences.splice(seqIndex, 1); // remove sequence
+      // remove all connections to and from the sequence
+        var conIndices = [];
+        for (var j = 0; j < connections.length; j++){
+          if ((connections[j].source.sequenceName == seqName) || (connections[j].dest.sequenceName == seqName)){
+            connections.splice(j, 1);
+            j--;
+          }
+        }
       }
-      updateHelm(); 
+      updateHelmFromStrings(); 
     }
+
+// smaller functions that act similarly to the updateHelm function but include constructing connections string
+
+    var updateHelmFromStrings = function(){
+      var seqString = getUpdatedSequencesString();
+      var conString = getUpdatedConnectionsString();
+      helm = seqString + conString;
+      console.log(helm);
+      parseHelm(helm); // redundant?
+    }
+
+    // updates HELM notation to match what's in the connections array
+    var getUpdatedConnectionsString = function(){
+      var res = '';
+      for (var i = 0; i < connections.length; i++){
+        res = res + connections[i].source.sequenceName + ',' + connections[i].dest.sequenceName + ',' 
+        + connections[i].source.attachment.nodeNum + ':' + connections[i].source.attachment.point + '-'
+        + connections[i].dest.attachment.nodeNum + ':'+ connections[i].dest.attachment.point;
+        // only apply the | if there are more
+        if (i < (connections.length - 1)) {
+          res = res + '|';
+        }
+      }
+      var connectionsString = '$' + res + '$$$$';
+      console.log(connectionsString);
+      return connectionsString;
+    }
+
+    var getUpdatedSequencesString = function(){
+      // go through the sequences and generate the first blob
+      var res = '';
+      for (var i = 0; i < sequences.length; i++) {
+        res = res + sequences[i].name + '{' + sequences[i].notation + '}';
+        // only apply the | if there are more
+        if (i < (sequences.length - 1)) {
+          res = res + '|';
+        }
+      }
+      return res;
+    }
+
+// 
 
     // private helper function to update the HELM notation from any added sequences
     var updateHelm = function () {
@@ -262,4 +314,5 @@ angular.module('helmeditor2App')
     self.addNewSequence = addNewSequence;
     self.helmNodeRemoved = helmNodeRemoved;
     self.removeSequence = removeSequence;
+    self.parseHelm = parseHelm;
   });
