@@ -1065,11 +1065,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
     else{
     	var nodeID = currentNode.data.id;
 
-    	// delete logs
-    	console.log("Deleting node with id: "+ nodeID);
     	console.log(currentNode);
-
-	    var helmString = HELMNotationService.getHelm();
 
 	    // if node is part of a CHEM sequence, just delete the chem sequence
 	    if (currentNode.data.seqType === "CHEM"){
@@ -1091,19 +1087,11 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 	    	var sequenceName = sequences[i].name;
 	    	var sequenceNotation = sequences[i].notation;
 
-	    	//delete logs
-	    	console.log("Sequence "+i+" name: "+ sequenceName);
-	    	console.log("Sequence "+i+" notation: "+ sequenceNotation);
-	    	console.log("Sequence elements:");
-
 	    	var polymers = HelmConversionService.getPolymers(sequenceName, sequenceNotation);
-	    	//delete logs
-	    	console.log(polymers);
 
 	    	// found the sequence to modify (containing the node to be removed)
 	    	if (sequenceName === currentNode.data.seqName){
 	    		nodeID -= priorSeqNodes;
-	    		console.log("number of elements in prior sequences: "+ priorSeqNodes);
 	    		console.log("node should be at index: "+nodeID+" in this sequence");
 	    		var updatedHELM = HELMNotationService.helmNodeRemoved(polymers, sequences[i], currentNode, nodeID);
 	    		
