@@ -390,7 +390,7 @@ angular.module('helmeditor2App')
       		// un-select if it was previously selected
       		if (selectedNodeID === nodeDataModel.id()) {
         		selectedNode = {};
-        		selectedNodeID = newDataModel.id();
+        		selectedNodeID = nodeDataModel.id();
       		}
       		else {
         		selectedNode = nodeDataModel;

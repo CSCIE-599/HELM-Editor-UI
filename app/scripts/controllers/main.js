@@ -809,6 +809,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
       connections: []
     };
     CanvasDisplayService.setNodeNum(0);
+    CanvasDisplayService.setNodeID(0);
     $scope.canvasView = new CanvasDisplayService.CanvasView(emptyData);
   };
 
@@ -1041,26 +1042,14 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 		]]
 	];
 
-
-   // helper method just to clear the canvas
-  var clearCanvas = function () {
-    var emptyData = {
-      nodes: [],
-      connections: []
-    };
-    CanvasDisplayService.setNodeNum(0);
-    CanvasDisplayService.setNodeID(0);
-    $scope.canvasView = new CanvasDisplayService.CanvasView(emptyData);
-  };
-
   // "remove" button is clicked -- should parse current HELM string, removing the HELM substring
   // associated with the selected node and generate new HELM string(s) and graph
   main.trashClicked = function(){
-  	console.log("trash clicked!");
+  	console.log('trash clicked!');
 
   	var currentNode = CanvasDisplayService.getSelectedNode();
     if (currentNode === {}){
-    	console.log("No node to delete");
+    	console.log('No node to delete');
     }
     else{
     	var nodeID = currentNode.data.id;
@@ -1068,7 +1057,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
     	console.log(currentNode);
 
 	    // if node is part of a CHEM sequence, just delete the chem sequence
-	    if (currentNode.data.seqType === "CHEM"){
+	    if (currentNode.data.seqType === 'CHEM'){
 	    	// nodeType for chem nodes is actually a sequence name like "CHEM1"
 	    	// and seqName is "undefined" for chem nodes (TODO: check why / fix?)
 	    	HELMNotationService.removeSequence(currentNode.data.nodeType);
@@ -1092,7 +1081,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 	    	// found the sequence to modify (containing the node to be removed)
 	    	if (sequenceName === currentNode.data.seqName){
 	    		nodeID -= priorSeqNodes;
-	    		console.log("node should be at index: "+nodeID+" in this sequence");
+	    		console.log('node should be at index: ' + nodeID + ' in this sequence');
 	    		var updatedHELM = HELMNotationService.helmNodeRemoved(polymers, sequences[i], currentNode, nodeID);
 	    		
 	  			clearCanvas();

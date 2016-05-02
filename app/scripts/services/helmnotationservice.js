@@ -59,18 +59,20 @@ angular.module('helmeditor2App')
     // parses a single sequence string into its parts
     var parseSequenceString = function (sequenceString) {
       var sequence = {};
-      sequence.name = sequenceString.substring(0, sequenceString.indexOf('{'));
+      sequence.name = sequenceString.substring(0, sequenceString.indexOf('{')).toUpperCase();
       sequence.notation = sequenceString.substring(sequenceString.indexOf('{') + 1 , sequenceString.indexOf('}'));
-      if (sequence.name.toUpperCase().startsWith("RNA")){
-        sequence.type = "RNA";
+      if (sequence.name.indexOf('RNA') >= 0) {
+        sequence.type = 'RNA';
       }
-      else if (sequence.name.toUpperCase().startsWith("CHEM")){
-        sequence.type = "CHEM";
+      else if (sequence.name.indexOf('CHEM') >= 0) {
+        sequence.type = 'CHEM';
       }
-      else if (sequence.name.toUpperCase().startsWith("PEPTIDE")){
-        sequence.type = "PEPTIDE";
+      else if (sequence.name.indexOf('PEPTIDE') >= 0) {
+        sequence.type = 'PEPTIDE';
       }
-      else { sequence.type = "UNKNOWN"; }
+      else { 
+        sequence.type = 'UNKNOWN'; 
+      }
       return sequence;
     };
 
@@ -162,8 +164,7 @@ angular.module('helmeditor2App')
       }
       if (seqIndex > -1){
         sequences.splice(seqIndex, 1); // remove sequence
-      // remove all connections to and from the sequence
-        var conIndices = [];
+        // remove all connections to and from the sequence
         for (var j = 0; j < connections.length; j++){
           if ((connections[j].source.sequenceName === seqName) || (connections[j].dest.sequenceName === seqName)){
             connections.splice(j, 1);
@@ -174,8 +175,7 @@ angular.module('helmeditor2App')
       updateHelmFromStrings(); 
     };
 
-// smaller functions that act similarly to the updateHelm function but include constructing connections string
-
+    // smaller functions that act similarly to the updateHelm function but include constructing connections string
     var updateHelmFromStrings = function(){
       var seqString = getUpdatedSequencesString();
       var conString = getUpdatedConnectionsString();
@@ -214,8 +214,6 @@ angular.module('helmeditor2App')
       return res;
     };
 
-// 
-
     // private helper function to update the HELM notation from any added sequences
     var updateHelm = function () {
       // go through the sequences and generate the first blob
@@ -253,7 +251,7 @@ angular.module('helmeditor2App')
         var matchIndex = tmpSeq.search(re); // index where the current polymer's notation begins
         var matchLength = tmpSeq.match(re)[0].length; // length of polymer notation
 
-        if (elem != nodeIndex){
+        if (elem !== nodeIndex){
           // chop the temp seq string to start after the current polymer's notation
           tmpSeqStrt += matchIndex + matchLength;
           tmpSeq = seqNotation.substring(tmpSeqStrt, seqNotation.length);
@@ -263,29 +261,28 @@ angular.module('helmeditor2App')
           // can just remove node from the sequence
           if ((nodeIndex === 0) || (nodeIndex === elements.length - 1) || (tmpSeq[matchIndex]==='(')){
             var updatedSeq = seqNotation.substring(0, tmpSeqStrt) + 
-              seqNotation.substring((tmpSeqStrt+matchIndex+matchLength), seqNotation.length);
+              seqNotation.substring((tmpSeqStrt + matchIndex + matchLength), seqNotation.length);
 
-            console.log("Old sequence:" + seqNotation);
-            console.log("Modified sequence: "+ updatedSeq);
+            console.log('Old sequence: ' + seqNotation);
+            console.log('Modified sequence: ' + updatedSeq);
 
             // if the first node is now an orphaned child e.g. '(P)' take it out
             if (updatedSeq[0] === '('){
-              updatedSeq = updatedSeq.substring(updatedSeq.indexOf(')')+1, updatedSeq.length);
+              updatedSeq = updatedSeq.substring(updatedSeq.indexOf(')') + 1, updatedSeq.length);
             }
-            if (updatedSeq[0]==='.'){
-              updatedSeq = updatedSeq.substring(1, rest.length);
+            if (updatedSeq[0] === '.'){
+              updatedSeq = updatedSeq.substring(1);
             }
             replaceSequence(sequence.name, updatedSeq);
-            var updatedHelm = getHelm();
-            console.log("New HELM string: "+updatedHelm);
-            return updatedHelm;
+            console.log('New HELM string: ' + getHelm());
+            return getHelm();
           }
           // need to split the sequence into two sequences
           else {
-            console.log("Old sequence: "+ seqNotation);
+            console.log('Old sequence: ' + seqNotation);
             var firstSequence = seqNotation.substring(0, tmpSeqStrt);
 
-            console.log("First sequence:" + firstSequence);
+            console.log('First sequence:' + firstSequence);
             replaceSequence(sequence.name, firstSequence);
 
             var secondSequence = seqNotation.substring((tmpSeqStrt+matchIndex+matchLength), seqNotation.length);
@@ -295,17 +292,17 @@ angular.module('helmeditor2App')
             if (secondSequence[0]==='.'){
               secondSequence = secondSequence.substring(1, secondSequence.length);
             }
-            console.log("Second sequence: " + secondSequence);
+            console.log('Second sequence: ' + secondSequence);
             addNewSequence(sequence.type, secondSequence);
-            var updatedHelm = getHelm();
-            console.log("New HELM string: "+updatedHelm);
-            return updatedHelm;
+            console.log('New HELM string: ' + getHelm());
+            return getHelm();
           }
         }
       }
+
       // for now, if can't process changes, just return original helm notation
-      console.log("could not find node to remove");
-      return updatedHelm;
+      console.log('could not find node to remove');
+      return getHelm();
     };
 
     // make things global

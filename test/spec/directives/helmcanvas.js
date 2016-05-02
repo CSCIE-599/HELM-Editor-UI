@@ -265,7 +265,6 @@ describe('Directive: helmCanvas', function () {
       var numText = g.children().eq(2);
 
       // test the rect
-      expect(rect.hasClass('node-rect')).toBe(true);
       expect(rect.attr('width')).toBe(vals[i].width);
       expect(rect.attr('height')).toBe(vals[i].height);
       expect(rect.attr('fill')).toBe(vals[i].colour);
