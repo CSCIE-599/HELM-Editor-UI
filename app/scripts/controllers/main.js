@@ -58,8 +58,10 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 	
 	/* clear the modal dialog text area*/
 	main.clear = function (){
-		//TO-DO - change this to angular selector
-		document.getElementById('input').value = '';
+		var modalInputField = document.getElementById('input');
+		if(modalInputField){
+			modalInputField.value = '';	
+		}	
 	};
 
 	/* Invoke factory function to get HELM notation */
@@ -197,10 +199,12 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
       if (connectionArray.length > 0){
         $scope.makeRequestedConnections(connectionArray, graphedNodes);
       }
-
+	  
+	//zoomin the default view by 20%
 	  if(zoomCount === 0){
-        $scope.zoom(0.8);//zoomin the default view by 20%
-  	  }
+	  	$scope.zoom(0.8, null, document.getElementById('mainCanvas'));
+        $scope.zoom(1.0, null, document.getElementById('lowerCanvas'));
+       }
     };
 
     //Parse the sequence, and generate the graph
@@ -621,13 +625,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
       }
     };
 
-    /* clear the modal dialog text area*/
-	main.clear = function (){
-		//TO-DO - change this to angular selector
-		document.getElementById('input').value = '';		
-	};
-
-
+    
 	// create a new node and add to the view.
 	$scope.addNewNode = function (nodeName, seqType, nodeColor, isRotate, xpos, ypos, nodeType) {
 		var node = CanvasDisplayService.createNode(nodeName, seqType, nodeColor,
@@ -655,18 +653,19 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 		main.result = '';
 		main.seqtype = '';
 		main.helm = '';
-    HELMNotationService.setHelm('');
+    	HELMNotationService.setHelm('');
 		main.chelm = '';
 		main.molecularweight = '';
 		main.molecularformula = '';
 		main.extcoefficient = '';
+		main.clear();
 
 		main.helmImageLink = ''; 		
 	};
 
 	/* zoom and pan functions */
-	$scope.zoom = function (scale, evt){
-		CanvasDisplayService.zoom(scale, evt);
+	$scope.zoom = function (scale, evt, svgCanvas){
+		CanvasDisplayService.zoom(scale, evt, svgCanvas);
 		zoomCount++;
     	if (evt) {
       		evt.stopPropagation();
