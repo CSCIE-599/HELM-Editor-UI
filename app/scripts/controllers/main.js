@@ -926,7 +926,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
   	console.log("trash clicked!");
 
   	var currentNode = CanvasDisplayService.getSelectedNode();
-    if (currentNode == {}){
+    if (currentNode === {}){
     	console.log("No node to delete");
     }
     else{
@@ -968,7 +968,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 	    	console.log(polymers);
 
 	    	// found the sequence to modify (containing the node to be removed)
-	    	if (sequenceName == currentNode.data.seqName){
+	    	if (sequenceName === currentNode.data.seqName){
 	    		nodeID -= priorSeqNodes;
 	    		console.log("number of elements in prior sequences: "+ priorSeqNodes);
 	    		console.log("node should be at index: "+nodeID+" in this sequence");
@@ -982,7 +982,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 	    		priorSeqNodes += (polymers.length);
 	    	}
 	    }
-	}
-  }
+	  }
+  };
 
 }]);

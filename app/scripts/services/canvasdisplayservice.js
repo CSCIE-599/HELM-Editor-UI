@@ -312,11 +312,11 @@ angular.module('helmeditor2App')
 	var selectedNodeID = {};
 	self.getSelectedNode = function(){
    		return selectedNode;
-    }
-    self.clearSelectedNode = function(){
-	   	selectedNode = {};
+  };
+  self.clearSelectedNode = function(){
+	  selectedNode = {};
 		selectedNodeID = {};
-    }
+  };
 
 	// View model for the chart.
 	self.CanvasView = function (dataModel) {
@@ -351,7 +351,7 @@ angular.module('helmeditor2App')
 		};
 
 		// sets the current selected node to be what was clicked
-   		this.toggleSelectedNode = function (nodeDataModel, evt) {
+   	this.toggleSelectedNode = function (nodeDataModel, evt) {
    			console.log(nodeDataModel.id());
       		// un-select if it was previously selected
       		if (selectedNodeID === nodeDataModel.id()) {
@@ -363,11 +363,11 @@ angular.module('helmeditor2App')
         		selectedNodeID = nodeDataModel.id();
       		}
       		evt.stopPropagation();
-    	};
+    };
 
-    	this.getSelectedNode = function(){
+    this.getSelectedNode = function(){
     		return selectedNode;
-    	}
+    };
 	};
 
 	// View for a node.
