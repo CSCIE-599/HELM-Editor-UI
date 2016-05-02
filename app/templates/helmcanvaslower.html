@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" >
+<svg xmlns="http://www.w3.org/2000/svg" id="lowerCanvas">
    <!-- zoom and pan buttons -->
   <circle class="zoombtn"  cx="40" cy="31" r="8" ng-click="zoom(0.8, $event)"></circle>
   <circle class="zoombtn"  cx="40" cy="49" r="8" ng-click="zoom(1.20, $event)"></circle>
@@ -40,12 +40,12 @@
       <!-- annotation node and text inside it-->
        <rect width="15" height="15" fill = "yellow"  
        ng-attr-x="{{node.x() - 25}}"
-       ng-attr-y="{{node.y() - 20}}"
+       ng-attr-y="{{node.lowery() - 20}}"
        ng-attr-visibility="{{node.annotationVisible()}}"
       />
       <text
         ng-attr-x="{{node.x() - 22}}" 
-        ng-attr-y="{{node.y() - 10}}"
+        ng-attr-y="{{node.lowery() - 10}}"
         ng-attr-visibility="{{node.annotationVisible()}}">
         {{node.annotationText()}}
       </text>

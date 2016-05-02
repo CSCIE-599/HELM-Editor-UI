@@ -289,38 +289,43 @@ angular.module('helmeditor2App')
 	var transMatrix = [1,0,0,1,0,0];//identity matrix 
 	var mapMatrix, newMatrix, width, height;	
 
-	self.zoom = function (scale, evt){
+	self.zoom = function (scale, evt, svgCanvas){
 		var svgDoc;
 
 		if(evt){
 			svgDoc = evt.target.parentNode;//keep track of which canvas is being zoomed
 		}
 		else {
-			svgDoc = document.getElementById('mainCanvas');//for zoom onload
+			svgDoc = svgCanvas;//for zoom onload
 		}
-		//get canvas width and height
-		 width = svgDoc.clientWidth;
-		 height = svgDoc.clientHeight;
-		 mapMatrix = svgDoc.getElementById('map-matrix');
 
-		 for (var i=0; i<transMatrix.length; i++){
-		   transMatrix[i] *= scale;
-		 }
+		if(svgDoc){
+			//get canvas width and height
+			 width = svgDoc.clientWidth;
+			 height = svgDoc.clientHeight;
+			 mapMatrix = svgDoc.getElementById('map-matrix');
 
-		 transMatrix[4] += (1-scale)*width/2;
-		 transMatrix[5] += (1-scale)*height/2;				        
-		 newMatrix = 'matrix(' +  transMatrix.join(' ') + ')';
-		 mapMatrix.setAttributeNS(null, 'transform', newMatrix);
+			 for (var i=0; i<transMatrix.length; i++){
+			   transMatrix[i] *= scale;
+			 }
+
+			 transMatrix[4] += (1-scale)*width/2;
+			 transMatrix[5] += (1-scale)*height/2;				        
+			 newMatrix = 'matrix(' +  transMatrix.join(' ') + ')';
+			 mapMatrix.setAttributeNS(null, 'transform', newMatrix);
+		}
 	};
 
 	self.pan = function(dx, dy, evt){
-	  var svgDoc = evt.target.parentNode;//keep track of which canvas is being panned     	
-	  transMatrix[4] += dx;
-	  transMatrix[5] += dy;
-	  mapMatrix = svgDoc.getElementById('map-matrix');
-	            
-	  newMatrix = 'matrix(' +  transMatrix.join(' ') + ')';
-	  mapMatrix.setAttributeNS(null, 'transform', newMatrix);
+	  var svgDoc = evt.target.parentNode;//keep track of which canvas is being panned  
+	  if(svgDoc){   	
+		  transMatrix[4] += dx;
+		  transMatrix[5] += dy;
+		  mapMatrix = svgDoc.getElementById('map-matrix');
+		            
+		  newMatrix = 'matrix(' +  transMatrix.join(' ') + ')';
+		  mapMatrix.setAttributeNS(null, 'transform', newMatrix);
+	  }
 	};
 
 

@@ -38,6 +38,15 @@ describe('Controller: MainCtrl', function () {
 
  });
 
+//It should draw graphical image on the canvas
+it('should parse the sequence, and generate the graph', function () {    
+  var notation = 'RNA1{R(A)P.[mR](U)[sP].R(G)P.R([5meC])P.[dR](T)P.[dR](T)}$$$$';
+  scope.displayOnCanvas(notation);
+  expect(angular.equals(scope.canvasView.connections.length, 16)).toBe(true);
+  expect(angular.equals(scope.canvasView.nodes.length, 17)).toBe(true);
+
+});
+
 it('should parse the sequence, and generate the graph', function () {    
     var pos = {x:200, y:70};
     var sequenceArr=[];
