@@ -61,6 +61,13 @@ angular.module('helmeditor2App')
       var sequence = {};
       sequence.name = sequenceString.substring(0, sequenceString.indexOf('{'));
       sequence.notation = sequenceString.substring(sequenceString.indexOf('{') + 1 , sequenceString.indexOf('}'));
+      if (sequence.name.toUpperCase().startsWith("RNA"))
+        sequence.type = "RNA";
+      else if (sequence.name.toUpperCase().startsWith("CHEM"))
+        sequence.type = "CHEM";
+      else if (sequence.name.toUpperCase().startsWith("PEPTIDE"))
+        sequence.type = "PEPTIDE";
+      else sequence.type = "UNKNOWN";
       return sequence;
     };
 
@@ -122,7 +129,8 @@ angular.module('helmeditor2App')
       // create our new sequence
       var sequence = {
         name: type + postfix,
-        notation: notation
+        notation: notation,
+        type: type
       };
 
       sequences.push(sequence);
@@ -159,49 +167,69 @@ angular.module('helmeditor2App')
     };
 
     // returns an updated HELM notation string, removing the currently selected graph node
-    // elements: the array of polymers in the currently displayed helm
-    // helmString: the current helm  notation string
+    // elements: the array of polymers contained in the sequence
+    // sequence: the helm notation sequence containing the element to be removed 
     // nodeToRemove: the canvas node currently selected
-    var helmNodeRemoved = function(elements, helmString, nodeToRemove){
+    var helmNodeRemoved = function(elements, sequence, nodeToRemove, nodeIndex){
 
-      var helmSubString = helmString.substring(helmString.indexOf('{')+1, helmString.indexOf('}'));
-      var workingHelmString = helmSubString;
-      var updatedHelmString;
+      var seqNotation = sequence.notation; // the sequence characters contained within {}
+      var tmpSeq = seqNotation; // copy of sequence notation to step through, chopping off start
+      var tmpSeqStrt = 0; // index pointing to start of tmpSeq in the actual seqNotation string
 
-      var wrkHlmStart = 0;
-
+      // step through polymers contained in this sequence
       for (var elem in elements){
-
-        var val = elements[elem];
-
+        var val = elements[elem]; // polymer name 
         var re = new RegExp('[\\[\\(]*'+val+'[\\]\\)]*');
-        var matchIndex = workingHelmString.search(re);
-        var matchLength = workingHelmString.match(re)[0].length;
+        var matchIndex = tmpSeq.search(re); // the index where the current polymer's notation begins
+        var matchLength = tmpSeq.match(re)[0].length; // length of polymer notation
 
-        if (elem != nodeToRemove.data.id){
-          wrkHlmStart += matchIndex + matchLength;
-          workingHelmString = helmSubString.substring(wrkHlmStart, helmSubString.length);
+        if (elem != nodeIndex){
+          // chop the temp seq string to start after the current polymer's notation
+          tmpSeqStrt += matchIndex + matchLength;
+          tmpSeq = seqNotation.substring(tmpSeqStrt, seqNotation.length);
         }
+        // found node to be removed
+        // TODO: replace sequence with modified sequence(s) and then create new helm string from
+        // the altered array of sequences
         else {
-          if (workingHelmString[matchIndex]=='('){
-            // just remove the element from the sequence
-            var updatedHelmSubString = helmSubString.substring(0, wrkHlmStart) 
-            +helmSubString.substring((wrkHlmStart+matchIndex+matchLength), helmSubString.length);
+          // for elements like '(A)', just need to remove it from the sequence
+          if (tmpSeq[matchIndex]=='('){
+            var updatedSeq = seqNotation.substring(0, tmpSeqStrt) 
+            + seqNotation.substring((tmpSeqStrt+matchIndex+matchLength), seqNotation.length);
 
-            updatedHelmString = helmString.replace(helmSubString, updatedHelmSubString);
-            console.log("Updated helm string:" +updatedHelmString);
-            return updatedHelmString;
+           // updatedHelmString = sequence.replace(helmSubString, updatedHelmSubString);
+          //  console.log("Updated helm string:" +updatedHelmString);
+
+            console.log("Modified sequence: "+ updatedSeq);
+            return updatedSeq;
           }
-          //TODO
-         // else {
-            // need to split string into two helm sequences
-         // }
+          // need to split the sequence into two
+          else {
+            var firstSequenceString = seqNotation.substring(0, tmpSeqStrt);
+            console.log("First sequence:" + firstSequenceString);
+
+            //var firstSequenceString = sequenceName + '{' + firstSequenceString + '}|';
+
+            var secondSequenceString = seqNotation.substring((tmpSeqStrt+matchIndex+matchLength), seqNotation.length);
+            if (secondSequenceString[0]=='.')
+              secondSequenceString = secondSequenceString.substring(1, secondSequenceString.length);
+            console.log("Second sequence: " +secondSequenceString);
+
+           // var secondSequenceString = sequenceType + (sequenceNum+1) + '{' + secondSequenceString + '}';
+           // console.log(firstSequenceString);
+           // console.log(secondSequenceString);
+           // var combinedSequences = firstSequenceString + secondSequenceString;
+           // var newHelm = combinedSequences + "$$$$";
+           // console.log("new helm string: "+ newHelm);
+
+            return firstSequenceString; //fix
+          }
         }
 
       }
       // for now, if can't process changes, just return original helm notation
       console.log("returning original string");
-      return helmString;
+      return sequence;
     }
 
     // make things global

@@ -30,24 +30,24 @@ angular.module('helmeditor2App')
 	var radiusY = 3;
 
 
-	self.createRibose = function (nodeName,  nodeColor, xPos, yPos) {
+	self.createRibose = function (nodeName,  nodeColor, xPos, yPos, sequenceName) {
 		//console.log('adding ribose node ' + nodeName +' at: (' + xPos + ',' +yPos +')');
-	 	return self.createNode(nodeName, 'NUCLEOTIDE', 'lightgrey', false, xPos, yPos, 'r');
+	 	return self.createNode(nodeName, 'NUCLEOTIDE', 'lightgrey', false, xPos, yPos, 'r', sequenceName);
 	};
 
-	self.createBase = function (nodeName,  nodeColor, xPos, yPos) {
+	self.createBase = function (nodeName,  nodeColor, xPos, yPos, sequenceName) {
 		//console.log('adding base node ' + nodeName +' at: (' + xPos + ',' +yPos +')');
-	 	return self.createNode(nodeName, 'NUCLEOTIDE', nodeColor, true, xPos, yPos, 'b');
+	 	return self.createNode(nodeName, 'NUCLEOTIDE', nodeColor, true, xPos, yPos, 'b', sequenceName);
 	};
 
-	self.createPhosphate = function (nodeName,  nodeColor, xPos, yPos) {
+	self.createPhosphate = function (nodeName,  nodeColor, xPos, yPos, sequenceName) {
 		//console.log('adding phosphate node ' + nodeName +' at: (' + xPos + ',' +yPos +')');
-	 	return self.createNode(nodeName, 'NUCLEOTIDE', nodeColor, false, xPos, yPos, 'p');
+	 	return self.createNode(nodeName, 'NUCLEOTIDE', nodeColor, false, xPos, yPos, 'p', sequenceName);
 	};
 
 
 	// create a new node
-	self.createNode = function (nodeName, sequenceType, nodeColor, isRotate, xpos, ypos, nodeType) {
+	self.createNode = function (nodeName, sequenceType, nodeColor, isRotate, xpos, ypos, nodeType, sequenceName) {
 
 		var rotateDegree = '0';
 		var rx = radiusX;
@@ -72,6 +72,7 @@ angular.module('helmeditor2App')
 		var newNode = {
 			name: nodeName,
             seqType : sequenceType,  //Nucleotide, Peptide, or Chem
+            seqName : sequenceName,
 			id: nodeId,
 			x: xpos,
 			y: ypos,
@@ -196,6 +197,10 @@ angular.module('helmeditor2App')
 
 	self.getNodeNum = function(){
 		return nodeNum;
+	};
+
+	self.getNodeID = function(){
+		return nodeId;
 	};
 
 	self.setNodeNum = function(num){
