@@ -23,7 +23,9 @@ angular.module('helmeditor2App')
       else {
         self.currentMonomer = monomer;
       }
-      evt.stopPropagation();
+      if(evt){
+        evt.stopPropagation();
+      }
     };
 
     // sets the current selected monomer to be what was clicked
