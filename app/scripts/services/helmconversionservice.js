@@ -109,7 +109,7 @@ angular.module('helmeditor2App')
         var inNonNaturalAminoAcid = false;
         var nonNaturalAminoAcid = '';      //multi-letter codes - inside '[]' in HELM
 
-        for (var i = 0; i < sequence.length-1; i++){
+        for (var i = 0; i < sequence.length; i++){
             if (sequence[i] === '}'){
                 break;
             }

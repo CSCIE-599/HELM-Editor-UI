@@ -29,24 +29,27 @@ angular.module('helmeditor2App')
 	var radiusX = 3;
 	var radiusY = 3;
 
-	self.createRibose = function (nodeName,  nodeColor, xPos, yPos) {
+
+	self.createRibose = function (nodeName,  nodeColor, xPos, yPos, sequenceName) {
+
 		//console.log('adding ribose node ' + nodeName +' at: (' + xPos + ',' +yPos +')');
-	 	return self.createNode(nodeName, 'NUCLEOTIDE', 'lightgrey', false, xPos, yPos, 'r');
+	 	//return self.createNode(nodeName, 'NUCLEOTIDE', 'lightgrey', false, xPos, yPos, 'r', sequenceName);
+	 	return self.createNode(nodeName, 'NUCLEOTIDE', '#c6c3fe', false, xPos, yPos, 'r', sequenceName);
 	};
 
-	self.createBase = function (nodeName,  nodeColor, xPos, yPos) {
+	self.createBase = function (nodeName,  nodeColor, xPos, yPos, sequenceName) {
 		//console.log('adding base node ' + nodeName +' at: (' + xPos + ',' +yPos +')');
-	 	return self.createNode(nodeName, 'NUCLEOTIDE', nodeColor, true, xPos, yPos, 'b');
+	 	return self.createNode(nodeName, 'NUCLEOTIDE', nodeColor, true, xPos, yPos, 'b', sequenceName);
 	};
 
-	self.createPhosphate = function (nodeName,  nodeColor, xPos, yPos) {
+	self.createPhosphate = function (nodeName,  nodeColor, xPos, yPos, sequenceName) {
 		//console.log('adding phosphate node ' + nodeName +' at: (' + xPos + ',' +yPos +')');
-	 	return self.createNode(nodeName, 'NUCLEOTIDE', nodeColor, false, xPos, yPos, 'p');
+	 	return self.createNode(nodeName, 'NUCLEOTIDE', nodeColor, false, xPos, yPos, 'p', sequenceName);
 	};
 
 
 	// create a new node
-	self.createNode = function (nodeName, sequenceType, nodeColor, isRotate, xpos, ypos, nodeType) {
+	self.createNode = function (nodeName, sequenceType, nodeColor, isRotate, xpos, ypos, nodeType, sequenceName) {
 
 		var rotateDegree = '0';
 		var rx = radiusX;
@@ -71,6 +74,7 @@ angular.module('helmeditor2App')
 		var newNode = {
 			name: nodeName,
             seqType : sequenceType,  //Nucleotide, Peptide, or Chem
+            seqName : sequenceName,
 			id: nodeId,
 			x: xpos,
 			y: ypos,
@@ -105,9 +109,10 @@ angular.module('helmeditor2App')
             newNode.seqVisible = 'visible';
             newNode.nodeVisible = 'visible';
         }
-        // adjust the positioning of base nodes in lower pane
-    	if ((nodeType === 'b')){
-        	newNode.lowery = newNode.lowery-150;
+        // adjust the positioning and viisbility of base and chem nodes in lower pane
+    	if ((sequenceType === 'CHEM') || (sequenceType === 'NUCLEOTIDE' && nodeType === 'b')){
+        	newNode.lowery = newNode.lowery-120;
+        	newNode.nodeVisible = 'visible';
         }
         nodeId++;
 
@@ -190,7 +195,8 @@ angular.module('helmeditor2App')
 			break;
 		
 			default: 
-			color = 'lightgrey';
+			//color = 'lightgrey';
+			color = '#c6c3fe';
 		}
 		return color;		
     };
@@ -212,8 +218,16 @@ angular.module('helmeditor2App')
 		return nodeNum;
 	};
 
+	self.getNodeID = function(){
+		return nodeId;
+	};
+
 	self.setNodeNum = function(num){
 		nodeNum = num;
+	};
+
+	self.setNodeID = function(id){
+		nodeId = id;
 	};
 
 	/*helper method for creating cyclical nodes, only supports cyclical peptides now*/
@@ -289,40 +303,54 @@ angular.module('helmeditor2App')
 	var transMatrix = [1,0,0,1,0,0];//identity matrix 
 	var mapMatrix, newMatrix, width, height;	
 
-	self.zoom = function (scale, evt){
+	self.zoom = function (scale, evt, svgCanvas){
 		var svgDoc;
 
 		if(evt){
 			svgDoc = evt.target.parentNode;//keep track of which canvas is being zoomed
 		}
 		else {
-			svgDoc = document.getElementById('mainCanvas');//for zoom onload
+			svgDoc = svgCanvas;//for zoom onload
 		}
-		//get canvas width and height
-		 width = svgDoc.clientWidth;
-		 height = svgDoc.clientHeight;
-		 mapMatrix = svgDoc.getElementById('map-matrix');
 
-		 for (var i=0; i<transMatrix.length; i++){
-		   transMatrix[i] *= scale;
-		 }
+		if(svgDoc){
+			//get canvas width and height
+			 width = svgDoc.clientWidth;
+			 height = svgDoc.clientHeight;
+			 mapMatrix = svgDoc.getElementById('map-matrix');
 
-		 transMatrix[4] += (1-scale)*width/2;
-		 transMatrix[5] += (1-scale)*height/2;				        
-		 newMatrix = 'matrix(' +  transMatrix.join(' ') + ')';
-		 mapMatrix.setAttributeNS(null, 'transform', newMatrix);
+			 for (var i=0; i<transMatrix.length; i++){
+			   transMatrix[i] *= scale;
+			 }
+
+			 transMatrix[4] += (1-scale)*width/2;
+			 transMatrix[5] += (1-scale)*height/2;				        
+			 newMatrix = 'matrix(' +  transMatrix.join(' ') + ')';
+			 mapMatrix.setAttributeNS(null, 'transform', newMatrix);
+		}
 	};
 
 	self.pan = function(dx, dy, evt){
-	  var svgDoc = evt.target.parentNode;//keep track of which canvas is being panned     	
-	  transMatrix[4] += dx;
-	  transMatrix[5] += dy;
-	  mapMatrix = svgDoc.getElementById('map-matrix');
-	            
-	  newMatrix = 'matrix(' +  transMatrix.join(' ') + ')';
-	  mapMatrix.setAttributeNS(null, 'transform', newMatrix);
+	  var svgDoc = evt.target.parentNode;//keep track of which canvas is being panned  
+	  if(svgDoc){   	
+		  transMatrix[4] += dx;
+		  transMatrix[5] += dy;
+		  mapMatrix = svgDoc.getElementById('map-matrix');
+		            
+		  newMatrix = 'matrix(' +  transMatrix.join(' ') + ')';
+		  mapMatrix.setAttributeNS(null, 'transform', newMatrix);
+	  }
 	};
 
+	var selectedNode = {};
+	var selectedNodeID = {};
+	self.getSelectedNode = function(){
+   		return selectedNode;
+  };
+  self.clearSelectedNode = function(){
+	  selectedNode = {};
+		selectedNodeID = {};
+  };
 
 	/*data models for canvas, node and connection */
 
@@ -334,6 +362,7 @@ angular.module('helmeditor2App')
 
 		this.nodes = [];
 		this.connections = [];
+		selectedNode = {};
 
 		// Add a node to the canvas view.
 		this.addNode = function (nodeDataModel) {
@@ -356,6 +385,25 @@ angular.module('helmeditor2App')
 			// Update the view
 			this.connections.push(new self.ConnectionView(connectionDataModel));
 		};
+
+		// sets the current selected node to be what was clicked
+   	this.toggleSelectedNode = function (nodeDataModel, evt) {
+      console.log(nodeDataModel.id());
+      // un-select if it was previously selected
+      if (selectedNodeID === nodeDataModel.id()) {
+        selectedNode = {};
+        selectedNodeID = {};
+      }
+      else {
+        selectedNode = nodeDataModel;
+        selectedNodeID = nodeDataModel.id();
+      }
+      evt.stopPropagation();
+    };
+
+    this.getSelectedNode = function(){
+    		return selectedNode;
+    };
 	};
 
 	// View for a node.

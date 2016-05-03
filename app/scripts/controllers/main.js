@@ -58,8 +58,10 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 	
 	/* clear the modal dialog text area*/
 	main.clear = function (){
-		//TO-DO - change this to angular selector
-		document.getElementById('input').value = '';
+		var modalInputField = document.getElementById('input');
+		if(modalInputField){
+			modalInputField.value = '';	
+		}	
 	};
 
 	/* Invoke factory function to get HELM notation */
@@ -72,6 +74,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 	    };
 	    var errorCallback = function(response) {
 	      main.result = response.data;
+        HELMNotationService.setHelm('');
 	      console.log(response.data);
 	    };
 
@@ -86,6 +89,14 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 
 	/* Invoke factory function to validate the HELM notation */
 	main.validateHelmNotation = function (inputSequence) {
+    // make sure that we have a string to even pass
+    console.log(inputSequence);
+    if (inputSequence === null || inputSequence.length === 0) {
+      main.helm = '';
+      HELMNotationService.setHelm('');
+      return;
+    }
+
 		var successCallback = function (valid) {
 		  if (valid) {
 		  	main.helm = inputSequence;
@@ -95,6 +106,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 		  }
 		  else {
 		  	main.result = 'INVALID HELM SEQUENCE';
+        HELMNotationService.setHelm('');
 		  }
 		};
 		var errorCallback = function (response) {
@@ -131,7 +143,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 	    webService.getMolecularWeight(inputSequence).then(successCallback, errorCallback);
 	 };
 
-	 /* Invoke factory function to get milecular formula */
+	 /* Invoke factory function to get molecular formula */
 	main.getMolecularFormula = function (inputSequence) {
 		var successCallback = function (result) {
 	      main.molecularformula = result;
@@ -179,7 +191,11 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
       //make nodes and draw sequences
       var pos;
       var graphedNodes = [];
+
+      CanvasDisplayService.setNodeID(0); // want node IDs to start at 0 for each new graph
+
       var prevSeqType;
+
       for (var i = 0; i < sequenceArray.length; i++){
         var seqType = $scope.getType(sequenceArray[i].name); //PEPTIDE, NUCLEOTIDE, or CHEM
        	main.seqtype = seqType;
@@ -197,10 +213,12 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
       if (connectionArray.length > 0){
         $scope.makeRequestedConnections(connectionArray, graphedNodes);
       }
-
+	  
+	//zoomin the default view by 20%
 	  if(zoomCount === 0){
-        $scope.zoom(0.8);//zoomin the default view by 20%
-  	  }
+	  	$scope.zoom(0.8, null, document.getElementById('mainCanvas'));
+        $scope.zoom(1.0, null, document.getElementById('lowerCanvas'));
+       }
     };
 
     //Parse the sequence, and generate the graph
@@ -229,10 +247,10 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 		var subGraph;
 
 		if (seqType === 'NUCLEOTIDE') {
-			subGraph = $scope.processNucleoTides(monomerArr, pos, dir);
+			subGraph = $scope.processNucleoTides(monomerArr, pos, dir, sequenceName);
 		}
 		else if (seqType === 'PEPTIDE') {
-			subGraph = $scope.processPeptides(monomerArr, pos, dir);
+			subGraph = $scope.processPeptides(monomerArr, pos, dir, sequenceName);
 		}
 		else if (seqType === 'CHEM') {//chemical modifiers
 			subGraph = $scope.processChemicalModifiers(monomerArr, sequenceName, pos, connectionArray, sequenceArray);
@@ -241,7 +259,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 	};
 
 	//helper function which draws nucleotide sequences
-	$scope.processNucleoTides = function (monomerArr, pos, dir) {
+	$scope.processNucleoTides = function (monomerArr, pos, dir, sequenceName) {
 
 		var prevNode, currNode,firstNode, riboseNode, baseNode, color;
 		var x = pos.x;
@@ -252,7 +270,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 			color = CanvasDisplayService.getNodeColor(value);
 
 			if (CanvasDisplayService.isPhosphateNode(value)) {//phosphate node, 'p' or 'sP'
-				currNode = CanvasDisplayService.createPhosphate(value, color, x, y);
+				currNode = CanvasDisplayService.createPhosphate(value, color, x, y, sequenceName);
 				if (key === 0){//keep track of first node
 					firstNode = currNode;
 				}
@@ -265,10 +283,10 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 			}
 			else if (CanvasDisplayService.isRiboseNode(value)) {//ribose node
 				if (prevNode){
-					currNode = CanvasDisplayService.createRibose(value, color, prevNode.x + monomerSpacing , y);
+					currNode = CanvasDisplayService.createRibose(value, color, prevNode.x + monomerSpacing, y, sequenceName);
 	          	}
 	          	else {
-					currNode = CanvasDisplayService.createRibose(value, color, x , y);
+					currNode = CanvasDisplayService.createRibose(value, color, x , y, sequenceName);
 	          	}
 				riboseNode = currNode;
 				if (key === 0){
@@ -283,7 +301,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 			else {//base node
 
 				if (riboseNode){
-					baseNode = CanvasDisplayService.createBase(value, color, riboseNode.x , riboseNode.y + connectionLength);
+					baseNode = CanvasDisplayService.createBase(value, color, riboseNode.x , riboseNode.y + connectionLength, sequenceName);
 					if (key === 0){
 						firstNode = currNode;
 					}
@@ -309,7 +327,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 	};
 
 	//helper function which draws peptide sequences
-	$scope.processPeptides = function (monomerArr, pos, dir) {
+	$scope.processPeptides = function (monomerArr, pos, dir, sequenceName) {
 
 		var prevNode, currNode, firstNode;
 		var x = pos.x;
@@ -318,7 +336,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 
 		angular.forEach(monomerArr, function(value, key) {
 
-			currNode = CanvasDisplayService.createNode(value, 'PEPTIDE', '#00C3FF', true, x , y);
+			currNode = CanvasDisplayService.createNode(value, 'PEPTIDE', '#00C3FF', true, x , y, '',sequenceName);
 			allNodes.push(currNode);
 			$scope.canvasView.addNode(currNode);
 			if (key === 0) {
@@ -357,7 +375,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
       	y = 190;  //TO-DO: this is hard coded to be slightly below the previous, first sequence
 	  }
 	  var allNodes = [];
-      var currNode = CanvasDisplayService.createNode(monomerArr[0], 'CHEM', 'purple', false, x , y);
+      var currNode = CanvasDisplayService.createNode(monomerArr[0], 'CHEM', 'purple', false, x , y, chemSequenceName);
       allNodes.push(currNode);
       var firstNode = currNode;
 
@@ -621,17 +639,11 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
       }
     };
 
-    /* clear the modal dialog text area*/
-	main.clear = function (){
-		//TO-DO - change this to angular selector
-		document.getElementById('input').value = '';		
-	};
-
-
+    
 	// create a new node and add to the view.
-	$scope.addNewNode = function (nodeName, seqType, nodeColor, isRotate, xpos, ypos, nodeType) {
+	$scope.addNewNode = function (nodeName, seqType, nodeColor, isRotate, xpos, ypos, nodeType, sequenceName) {
 		var node = CanvasDisplayService.createNode(nodeName, seqType, nodeColor,
-													isRotate, xpos, ypos, nodeType);
+													isRotate, xpos, ypos, nodeType, sequenceName);
 		$scope.canvasView.addNode(node);
 		return node;
 	};
@@ -655,18 +667,21 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 		main.result = '';
 		main.seqtype = '';
 		main.helm = '';
-    HELMNotationService.setHelm('');
+
+    	HELMNotationService.setHelm('');
+
 		main.chelm = '';
 		main.molecularweight = '';
 		main.molecularformula = '';
 		main.extcoefficient = '';
+		main.clear();
 
 		main.helmImageLink = ''; 		
 	};
 
 	/* zoom and pan functions */
-	$scope.zoom = function (scale, evt){
-		CanvasDisplayService.zoom(scale, evt);
+	$scope.zoom = function (scale, evt, svgCanvas){
+		CanvasDisplayService.zoom(scale, evt, svgCanvas);
 		zoomCount++;
     	if (evt) {
       		evt.stopPropagation();
@@ -804,11 +819,17 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
       connections: []
     };
     CanvasDisplayService.setNodeNum(0);
+    CanvasDisplayService.setNodeID(0);
     $scope.canvasView = new CanvasDisplayService.CanvasView(emptyData);
   };
 
   // adds the monomer to what already exists
   var addMonomer = function (monomer) {
+    // don't add it if it's a branch monomer
+    if (monomer.encodedMonomer && monomer.encodedMonomer.MonomerType === 'Branch') {
+      console.warn('Branch monomers cannot exist in their own sequence');
+      return;
+    }
     // if we have a monomer selected, we need to add it
     if (monomer._name) {
       var type = monomer.encodedMonomer ? monomer.encodedMonomer.PolymerType : convertTitle(monomer._title);
@@ -836,12 +857,13 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
     var currentMonomer = MonomerSelectionService.getSelectedMonomer();
     addMonomer(currentMonomer);
     // and clear the selection so we don't keep adding over and over again
-    MonomerSelectionService.toggleSelectedMonomer(currentMonomer);
+    MonomerSelectionService.clearSelectedMonomer();
   };
 
   // handle the dropping -- only supports dropping monomers right now
   $scope.elementDropped = function (evt, data) {
     addMonomer(data);
+    MonomerSelectionService.clearSelectedMonomer();
   };
 
 	/*****************/
@@ -1035,4 +1057,75 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 			}]*/
 		]]
 	];
+
+  // listen for the delete key being released and try to delete the node if possible
+  main.keyUp = function (evt) {
+    // only do it on the delete key (fn+delete on Macs)
+    if (evt.which === 46) {
+      main.trashClicked();
+    }
+  };
+
+  main.showTrash = function () {
+    var currentNode = CanvasDisplayService.getSelectedNode();
+    if (!currentNode || !currentNode.data){
+      return false;
+    }
+    return true;
+  };
+
+  // "remove" button is clicked -- should parse current HELM string, removing the HELM substring
+  // associated with the selected node and generate new HELM string(s) and graph
+  main.trashClicked = function () {
+
+  	var currentNode = CanvasDisplayService.getSelectedNode();
+    if (!currentNode || !currentNode.data){
+    	console.log('No node to delete');
+      return;
+    }
+    else{
+    	var nodeID = currentNode.data.id;
+
+    	console.log(currentNode);
+
+	    // if node is part of a CHEM sequence, just delete the chem sequence
+	    if (currentNode.data.seqType === 'CHEM'){
+	    	// nodeType for chem nodes is actually a sequence name like "CHEM1"
+	    	// and seqName is "undefined" for chem nodes (TODO: check why / fix?)
+	    	HELMNotationService.removeSequence(currentNode.data.nodeType);
+
+	    	var updatedHelm = HELMNotationService.getHelm();
+	    	clearCanvas();
+	    	main.validateHelmNotation(updatedHelm);
+	    	return;
+	    }
+
+	    var sequences = HELMNotationService.getSequences();
+
+	  	var priorSeqNodes = 0;
+
+	    for (var i = 0; i < sequences.length; i++){
+	    	var sequenceName = sequences[i].name;
+	    	var sequenceNotation = sequences[i].notation;
+
+	    	var polymers = HelmConversionService.getPolymers(sequenceName, sequenceNotation);
+
+	    	// found the sequence to modify (containing the node to be removed)
+	    	if (sequenceName === currentNode.data.seqName){
+	    		nodeID -= priorSeqNodes;
+	    		//console.log('node should be at index: ' + nodeID + ' in this sequence');
+	    		var updatedHELM = HELMNotationService.helmNodeRemoved(polymers, sequences[i], currentNode, nodeID);
+	    		
+	  			clearCanvas();
+	    		main.validateHelmNotation(updatedHELM);
+	    	}
+	    	else{
+	    		// track number of elements in sequences not containing the node-to-delete
+	    		priorSeqNodes += (polymers.length);
+	    	}
+	    }
+	  }
+  };
+
+
 }]);

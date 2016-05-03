@@ -17,13 +17,15 @@ angular.module('helmeditor2App')
     // toggles the current selected monomer to be what was clicked
     self.toggleSelectedMonomer = function (monomer, evt) {
       // un-select if it was previously selected
-      if (self.currentMonomer._name === monomer._name) {
+      if (self.currentMonomer === monomer) {
         self.currentMonomer = {};
       }
       else {
         self.currentMonomer = monomer;
       }
-      evt.stopPropagation();
+      if(evt){
+        evt.stopPropagation();
+      }
     };
 
     // sets the current selected monomer to be what was clicked
@@ -35,5 +37,10 @@ angular.module('helmeditor2App')
     // retrieves the current selected monomer
     self.getSelectedMonomer = function () {
       return self.currentMonomer;
+    };
+
+    // clears the current selected monomer
+    self.clearSelectedMonomer = function () {
+      self.currentMonomer = {};
     };
   });
