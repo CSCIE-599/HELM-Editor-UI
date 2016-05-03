@@ -134,7 +134,7 @@ angular.module('helmeditor2App')
 	self.isRiboseNode = function(node){
 	 	var riboseArr = ['R', 'dR', 'sR', 'mR', 'fR', 'LR', 'MOE', 'FMOE',
 	 					 'mph', 'PONA','qR', 'RGNA', 'SGNA'	,'12ddR', '25R',
-	 					 '4sR' , 'aFR', 'aR', 'eR', 'FR', 'hx', 'ILR', 'tR',
+	 					 '4sR' , 'aFR', 'aR', 'eR', 'FR', 'hx', 'lLR', 'tR',
 	 					 'UNA', '3A6','3FAM', '3SS6', '5A6','5cGT','5FAM',
 	 					 '5FBC6', 'am12', 'am6'];
 
@@ -147,7 +147,12 @@ angular.module('helmeditor2App')
 
 	/*Identify a phosphate node*/
 	self.isPhosphateNode = function(node){
-		if(node === 'P' || node === 'sP' || node === 'naP' ||  node === 'nasP'){
+		if(node === 'P' || 
+			 node === 'sP' || 
+			 node === 'naP' || 
+			 node === 'nasP' || 
+			 node === 'bP' || 
+			 node === 'dier'){
 			return true;
         }
 		return false;
