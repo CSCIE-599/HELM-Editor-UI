@@ -538,7 +538,7 @@ svg {
 }
 
 .modal {
-display: block;
+  display: block;
 }
 
 .btn {
@@ -581,4 +581,6 @@ caption {
   max-height: 120px;
 }
 
-
+.node-cover {
+  cursor: pointer;
+}
