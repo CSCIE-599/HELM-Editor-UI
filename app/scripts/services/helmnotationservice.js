@@ -245,13 +245,13 @@ angular.module('helmeditor2App')
       var tmpSeq = seqNotation; // copy of sequence notation to step through, chopping off start
       var tmpSeqStrt = 0; // index pointing to start of tmpSeq in the actual seqNotation string
 
-      for (var elem in elements){
-        var val = elements[elem]; // polymer name 
+      for (var i = 0; i < elements.length; i++){
+        var val = elements[i]; // polymer name 
         var re = new RegExp('[\\[\\(]*'+val+'[\\]\\)]*');
         var matchIndex = tmpSeq.search(re); // index where the current polymer's notation begins
         var matchLength = tmpSeq.match(re)[0].length; // length of polymer notation
 
-        if (elem !== nodeIndex){
+        if (i !== nodeIndex){
           // chop the temp seq string to start after the current polymer's notation
           tmpSeqStrt += matchIndex + matchLength;
           tmpSeq = seqNotation.substring(tmpSeqStrt, seqNotation.length);
