@@ -19,6 +19,9 @@ angular.module('helmeditor2App')
     //number printed by node
     var nodeNum = 0;
 
+   
+    var paramNum = 0;
+
 	//node height
 	var nodeHeight = 25;
 
@@ -106,6 +109,14 @@ angular.module('helmeditor2App')
             newNode.seqVisible = 'visible';
             newNode.nodeVisible = 'visible';
         }
+
+
+        if ((sequenceType === 'PEPTIDE') || (sequenceType === 'NUCLEOTIDE')){
+            paramNum++;
+            newNode.paramNum = paramNum;
+            
+        }
+
         // adjust the positioning and viisbility of base and chem nodes in lower pane
     	if ((sequenceType === 'CHEM') || (sequenceType === 'NUCLEOTIDE' && nodeType === 'b')){
         	newNode.lowery = newNode.lowery-120;
@@ -113,7 +124,7 @@ angular.module('helmeditor2App')
         }
         nodeId++;
 
-        if(newNode.num === 1){
+        if(newNode.paramNum === 1){
         	newNode.annotationVisible = 'visible';
         }
 		return newNode;
@@ -217,6 +228,11 @@ angular.module('helmeditor2App')
 
 	self.setNodeNum = function(num){
 		nodeNum = num;
+	};
+
+
+	self.setParamNum = function(num){
+		paramNum = num;
 	};
 
 	/*helper method for creating cyclical nodes, only supports cyclical peptides now*/
@@ -381,6 +397,9 @@ angular.module('helmeditor2App')
 			return this.data.num || '';
 		};
 
+		this.paramNum = function () {
+			return this.data.paramNum || '';
+		};
 		// Name of the node.
 		this.name = function () {
 			return this.data.name || '';
@@ -477,7 +496,9 @@ angular.module('helmeditor2App')
 		//visibility of the annotation
 		this.annotationText = function () {
 			return this.data.annotationText;
-		};		
+		};
+
+
 	};
 
 	// View for a connection.
