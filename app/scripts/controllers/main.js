@@ -825,6 +825,11 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 
   // adds the monomer to what already exists
   var addMonomer = function (monomer) {
+    // don't add it if it's a branch monomer
+    if (monomer.encodedMonomer && monomer.encodedMonomer.MonomerType === 'Branch') {
+      console.warn('Branch monomers cannot exist in their own sequence');
+      return;
+    }
     // if we have a monomer selected, we need to add it
     if (monomer._name) {
       var type = monomer.encodedMonomer ? monomer.encodedMonomer.PolymerType : convertTitle(monomer._title);

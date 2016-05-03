@@ -238,7 +238,7 @@ angular.module('helmeditor2App.MonomerLibrary', ['cb.x2js'])
         for (var i = 0; i < list.length; i++) {
           // console.log(monomer.MonomerID);
           // it was found, so add the details and return true
-          if (list[i]._name.match(monomer.MonomerID)) {
+          if (!list[i]._notation && list[i]._name === monomer.MonomerID) {
             list[i].encodedMonomer = monomer;
             return true;
           }
@@ -248,7 +248,7 @@ angular.module('helmeditor2App.MonomerLibrary', ['cb.x2js'])
       // also need to handle the case where there's a single element, not an array
       if ((group.Monomer && group.Monomer._name) || (group.Fragment && group.Fragment._name)) {
         var el = group.Monomer || group.Fragment;
-        if (el._name.match(monomer.MonomerID)) {
+        if (el._name === monomer.MonomerID) {
           el.encodedMonomer = monomer;
           return true;
         }
@@ -281,7 +281,7 @@ angular.module('helmeditor2App.MonomerLibrary', ['cb.x2js'])
 
       // the other should be the last one in the group, but search just to be safe
       for (var i = 0; i < current.length; i++) {
-        if (current[i]._name.match('Other')) {
+        if (current[i]._name === 'Other') {
           current[i].Monomer.push({
             _backgroundColor: 'White',
             _fontColor: 'Black',

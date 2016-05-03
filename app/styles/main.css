@@ -500,6 +500,10 @@ svg {
   margin-top: 5%;
 }
 
+.larger-font {
+  font-size: 16px;
+}
+
 /* don't let the text of the monomers be selected */
 .noselect {
   -webkit-touch-callout: none; /* iOS Safari */
