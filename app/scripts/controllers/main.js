@@ -74,6 +74,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 	    };
 	    var errorCallback = function(response) {
 	      main.result = response.data;
+        HELMNotationService.setHelm('');
 	      console.log(response.data);
 	    };
 
@@ -88,15 +89,24 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 
 	/* Invoke factory function to validate the HELM notation */
 	main.validateHelmNotation = function (inputSequence) {
+    // make sure that we have a string to even pass
+    console.log(inputSequence);
+    if (inputSequence === null || inputSequence.length === 0) {
+      main.helm = '';
+      HELMNotationService.setHelm('');
+      return;
+    }
+
 		var successCallback = function (valid) {
 		  if (valid) {
 		  	main.helm = inputSequence;
-		HELMNotationService.setHelm(inputSequence);
+        HELMNotationService.setHelm(inputSequence);
 		  	$scope.displayOnCanvas(inputSequence);
 		  	main.getCanonicalHelmNotation(main.helm);
 		  }
 		  else {
 		  	main.result = 'INVALID HELM SEQUENCE';
+        HELMNotationService.setHelm('');
 		  }
 		};
 		var errorCallback = function (response) {
@@ -1049,6 +1059,14 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
     if (evt.which === 46) {
       main.trashClicked();
     }
+  };
+
+  main.showTrash = function () {
+    var currentNode = CanvasDisplayService.getSelectedNode();
+    if (!currentNode || !currentNode.data){
+      return false;
+    }
+    return true;
   };
 
   // "remove" button is clicked -- should parse current HELM string, removing the HELM substring

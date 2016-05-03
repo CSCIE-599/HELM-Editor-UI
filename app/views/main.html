@@ -10,8 +10,12 @@
       <!-- right controls -->
       <div class='col-md-6 right-controls'>
         <!--removes a node from the graph and updates HELM sequence (should be trash icon?) -->
-        <button class='btn' ng-click='main.trashClicked()'>Remove Selected Node</button>
-        <input class='pull-right' name='lookup' id='lookup'>
+        <button 
+          class='btn pull-right' 
+          ng-click='main.trashClicked()'
+          ng-disabled='!main.showTrash()'>
+          <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
+        </button>
       </div>
     </div>
     <div class='row full-height'>
@@ -134,7 +138,11 @@
       <div class='col-md-9 canvas-column'>
         <div class='row canvas-row-top'>
           <p><span><b>View:</b> Detailed Sequence</span><span class="message-span">{{main.result}}</span></p>
-          <div class='canvas-container' id='canvas' ng-keyup='main.keyUp($event)' tabindex='1'>
+          <div 
+            class='canvas-container' 
+            id='canvas' 
+            ng-keyup='main.keyUp($event)' 
+            tabindex='1'>
             <!-- canvas view with right-click context menu -->
             <helm-canvas context-menu="menuOptions" model="expression" graph='canvasView' canvastype='upper'>
             <script type="text/ng-template" id="viewmodal.html"></script>

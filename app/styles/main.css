@@ -434,8 +434,9 @@ svg {
   font-weight: bold;
 }
 .monomer-font-color-white {
-  color: #ffffff;
-  -webkit-text-fill-color: #ffffff;
+  /*color: #ffffff;*/
+  color: #000000;
+  -webkit-text-fill-color: #000000;
   -webkit-text-stroke: .7px black;
   font-weight: bold;
 }

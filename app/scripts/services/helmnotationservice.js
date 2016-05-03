@@ -155,7 +155,6 @@ angular.module('helmeditor2App')
 
     // remove the specified sequence from the sequences array and update helm
     var removeSequence = function(seqName){
-
       var seqIndex = -1;
       for (var i = 0; i < sequences.length; i++){
         if (sequences[i].name === seqName){
@@ -172,15 +171,21 @@ angular.module('helmeditor2App')
           }
         }
       }
+
       updateHelmFromStrings(); 
     };
 
     // smaller functions that act similarly to the updateHelm function but include constructing connections string
-    var updateHelmFromStrings = function(){
-      var seqString = getUpdatedSequencesString();
-      var conString = getUpdatedConnectionsString();
-      helm = seqString + conString;
-      console.log(helm);
+    var updateHelmFromStrings = function () {
+      // check if there are no sequences
+      if (sequences.length === 0) {
+        helm = '';
+      }
+      else {
+        var seqString = getUpdatedSequencesString();
+        var conString = getUpdatedConnectionsString();
+        helm = seqString + conString;
+      }
       parseHelm(helm); // redundant?
     };
 
@@ -196,7 +201,7 @@ angular.module('helmeditor2App')
           res = res + '|';
         }
       }
-      var connectionsString = '$' + res + '$$$$';
+      var connectionsString = '$' + res + '$$$';
       console.log(connectionsString);
       return connectionsString;
     };
@@ -273,7 +278,15 @@ angular.module('helmeditor2App')
             if (updatedSeq[0] === '.'){
               updatedSeq = updatedSeq.substring(1);
             }
-            replaceSequence(sequence.name, updatedSeq);
+
+            // if the sequence is gone, remove it
+            if (updatedSeq.length === 0) {
+              removeSequence(sequence.name);
+            }
+            // otherwise replace it
+            else {
+              replaceSequence(sequence.name, updatedSeq);
+            }
             console.log('New HELM string: ' + getHelm());
             return getHelm();
           }
