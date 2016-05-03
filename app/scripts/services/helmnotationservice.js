@@ -202,7 +202,6 @@ angular.module('helmeditor2App')
         }
       }
       var connectionsString = '$' + res + '$$$';
-      console.log(connectionsString);
       return connectionsString;
     };
 
@@ -268,9 +267,6 @@ angular.module('helmeditor2App')
             var updatedSeq = seqNotation.substring(0, tmpSeqStrt) + 
               seqNotation.substring((tmpSeqStrt + matchIndex + matchLength), seqNotation.length);
 
-            console.log('Old sequence: ' + seqNotation);
-            console.log('Modified sequence: ' + updatedSeq);
-
             // if the first node is now an orphaned child e.g. '(P)' take it out
             if (updatedSeq[0] === '('){
               updatedSeq = updatedSeq.substring(updatedSeq.indexOf(')') + 1, updatedSeq.length);
@@ -287,15 +283,11 @@ angular.module('helmeditor2App')
             else {
               replaceSequence(sequence.name, updatedSeq);
             }
-            console.log('New HELM string: ' + getHelm());
             return getHelm();
           }
           // need to split the sequence into two sequences
           else {
-            console.log('Old sequence: ' + seqNotation);
             var firstSequence = seqNotation.substring(0, tmpSeqStrt);
-
-            console.log('First sequence:' + firstSequence);
             replaceSequence(sequence.name, firstSequence);
 
             var secondSequence = seqNotation.substring((tmpSeqStrt+matchIndex+matchLength), seqNotation.length);
@@ -305,9 +297,7 @@ angular.module('helmeditor2App')
             if (secondSequence[0]==='.'){
               secondSequence = secondSequence.substring(1, secondSequence.length);
             }
-            console.log('Second sequence: ' + secondSequence);
             addNewSequence(sequence.type, secondSequence);
-            console.log('New HELM string: ' + getHelm());
             return getHelm();
           }
         }
