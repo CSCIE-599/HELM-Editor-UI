@@ -130,8 +130,7 @@ describe('Service: MonomerLibraryService', function () {
     // check an RNA Fragment
     var fragment = polymers[0].FragmentGroup[0].Fragment[1];
     expect(fragment._name).toBe('C');
-    expect(fragment.encodedMonomer).toBeDefined();
-    expect(fragment.encodedMonomer.MonomerID).toBe('C');
+    expect(fragment.encodedMonomer).toBeUndefined();
 
     // check a deeper RNA Fragment
     fragment = polymers[0].FragmentGroup[1].FragmentGroup[0].Fragment[2];
