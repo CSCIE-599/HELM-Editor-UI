@@ -134,7 +134,7 @@
       <div class='col-md-9 canvas-column'>
         <div class='row canvas-row-top'>
           <p><span><b>View:</b> Detailed Sequence</span><span class="message-span">{{main.result}}</span></p>
-          <div class='canvas-container' id= 'canvas'>
+          <div class='canvas-container' id='canvas' ng-keyup='main.keyUp($event)' tabindex='1'>
             <!-- canvas view with right-click context menu -->
             <helm-canvas context-menu="menuOptions" model="expression" graph='canvasView' canvastype='upper'>
             <script type="text/ng-template" id="viewmodal.html"></script>

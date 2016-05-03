@@ -1043,14 +1043,22 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 		]]
 	];
 
+  // listen for the delete key being released and try to delete the node if possible
+  main.keyUp = function (evt) {
+    // only do it on the delete key (fn+delete on Macs)
+    if (evt.which === 46) {
+      main.trashClicked();
+    }
+  };
+
   // "remove" button is clicked -- should parse current HELM string, removing the HELM substring
   // associated with the selected node and generate new HELM string(s) and graph
-  main.trashClicked = function(){
-  	console.log('trash clicked!');
+  main.trashClicked = function () {
 
   	var currentNode = CanvasDisplayService.getSelectedNode();
-    if (currentNode === {}){
+    if (!currentNode || !currentNode.data){
     	console.log('No node to delete');
+      return;
     }
     else{
     	var nodeID = currentNode.data.id;
@@ -1082,7 +1090,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 	    	// found the sequence to modify (containing the node to be removed)
 	    	if (sequenceName === currentNode.data.seqName){
 	    		nodeID -= priorSeqNodes;
-	    		console.log('node should be at index: ' + nodeID + ' in this sequence');
+	    		//console.log('node should be at index: ' + nodeID + ' in this sequence');
 	    		var updatedHELM = HELMNotationService.helmNodeRemoved(polymers, sequences[i], currentNode, nodeID);
 	    		
 	  			clearCanvas();
