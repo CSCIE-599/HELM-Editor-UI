@@ -31,7 +31,8 @@ angular.module('helmeditor2App')
 
 	self.createRibose = function (nodeName,  nodeColor, xPos, yPos) {
 		//console.log('adding ribose node ' + nodeName +' at: (' + xPos + ',' +yPos +')');
-	 	return self.createNode(nodeName, 'NUCLEOTIDE', 'lightgrey', false, xPos, yPos, 'r');
+	 	//return self.createNode(nodeName, 'NUCLEOTIDE', 'lightgrey', false, xPos, yPos, 'r');
+	 	return self.createNode(nodeName, 'NUCLEOTIDE', '#c6c3fe', false, xPos, yPos, 'r');
 	};
 
 	self.createBase = function (nodeName,  nodeColor, xPos, yPos) {
@@ -191,7 +192,8 @@ angular.module('helmeditor2App')
 			break;
 		
 			default: 
-			color = 'lightgrey';
+			//color = 'lightgrey';
+			color = '#c6c3fe';
 		}
 		return color;		
     };
