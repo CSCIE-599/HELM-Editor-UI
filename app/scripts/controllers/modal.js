@@ -36,11 +36,22 @@ angular.module('helmeditor2App')
         type = 'CHEM';
         break;
     }
-    webService.getMonomerImageUrl(self.currentMonomer._name, type, true).then(function (url) {
-      self.currentMonomerImageUrl = url;
-    }, function () {
-      self.currentMonomerImageUrl = null;
-    });
+
+    // handle fragments
+    if (self.currentMonomer._notation) {
+      webService.getHelmImageUrl(type + '1{' + self.currentMonomer._notation + '}$$$$').then(function (url) {
+        self.currentMonomerImageUrl = url;
+      }, function () {
+        self.currentMonomerImageUrl = null;
+      });
+    }
+    else {
+      webService.getMonomerImageUrl(self.currentMonomer._name, type, true).then(function (url) {
+        self.currentMonomerImageUrl = url;
+      }, function () {
+        self.currentMonomerImageUrl = null;
+      });
+    }
 
     // retrieve the ID if it exists
     self.getMonomerID = function () {

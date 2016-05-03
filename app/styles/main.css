@@ -241,6 +241,10 @@ body {
   padding-bottom: 45px;
 }
 
+.canvas-container:focus {
+  outline: 0px solid transparent;
+}
+
 svg {
   width: 100%;
   height: 100%;
@@ -430,8 +434,9 @@ svg {
   font-weight: bold;
 }
 .monomer-font-color-white {
-  color: #ffffff;
-  -webkit-text-fill-color: #ffffff;
+  /*color: #ffffff;*/
+  color: #000000;
+  -webkit-text-fill-color: #000000;
   -webkit-text-stroke: .7px black;
   font-weight: bold;
 }
@@ -495,6 +500,10 @@ svg {
   margin-top: 5%;
 }
 
+.larger-font {
+  font-size: 16px;
+}
+
 /* don't let the text of the monomers be selected */
 .noselect {
   -webkit-touch-callout: none; /* iOS Safari */
@@ -534,7 +543,7 @@ svg {
 }
 
 .modal {
-display: block;
+  display: block;
 }
 
 .btn {
@@ -575,4 +584,8 @@ caption {
 
 .table-data img {
   max-height: 120px;
+}
+
+.node-cover {
+  cursor: pointer;
 }

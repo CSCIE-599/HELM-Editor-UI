@@ -63,4 +63,17 @@ describe('Service: MonomerSelectionService', function () {
     expect(MonomerSelectionService.getSelectedMonomer()).toEqual(monomerA);
   });
 
+  it('should clear the selected monomer', function () {
+    var evt = {
+      stopPropagation: function () {}
+    };
+    var monomerA = {
+      _name: 'mA'
+    };
+    MonomerSelectionService.setSelectedMonomer(monomerA, evt);
+    expect(MonomerSelectionService.getSelectedMonomer()).toEqual(monomerA);
+    MonomerSelectionService.clearSelectedMonomer();
+    expect(MonomerSelectionService.getSelectedMonomer()).toEqual({});
+  });
+
 });

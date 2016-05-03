@@ -259,13 +259,12 @@ describe('Directive: helmCanvas', function () {
     // go through each one
     for (var i = 0; i < children.length; i++) {
       var g = children.eq(i);
-      expect(g.children().length).toBe(5);
+      expect(g.children().length).toBe(6);
       var rect = g.children().eq(0);
       var nameText = g.children().eq(1);
       var numText = g.children().eq(2);
 
       // test the rect
-      expect(rect.hasClass('node-rect')).toBe(true);
       expect(rect.attr('width')).toBe(vals[i].width);
       expect(rect.attr('height')).toBe(vals[i].height);
       expect(rect.attr('fill')).toBe(vals[i].colour);
