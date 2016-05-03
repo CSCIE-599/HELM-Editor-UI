@@ -19,6 +19,10 @@ angular.module('helmeditor2App')
     //number printed by node
     var nodeNum = 0;
 
+    //number to keep track of position of annotation
+    var paramNum = 0;
+
+
 	//node height
 	var nodeHeight = 25;
 
@@ -116,7 +120,12 @@ angular.module('helmeditor2App')
         }
         nodeId++;
 
-        if(newNode.num === 1){
+        if (sequenceType === 'PEPTIDE' || sequenceType === 'NUCLEOTIDE' ){
+ 			paramNum++;
+            newNode.paramNum = paramNum;
+        }
+
+        if(newNode.paramNum === 1){
         	newNode.annotationVisible = 'visible';
         }
 		return newNode;
@@ -229,6 +238,10 @@ angular.module('helmeditor2App')
 
 	self.setNodeNum = function(num){
 		nodeNum = num;
+	};
+
+	self.setParamNum = function(num){
+		paramNum = num;
 	};
 
 	self.setNodeID = function(id){
@@ -424,6 +437,11 @@ angular.module('helmeditor2App')
 		//used to display the sequence# next to the monomer
 		this.num = function () {
 			return this.data.num || '';
+		};
+
+		//keep track of the node to display the annotaion
+		this.paramNum = function () {
+			return this.data.paramNum || '';
 		};
 
 		// Name of the node.

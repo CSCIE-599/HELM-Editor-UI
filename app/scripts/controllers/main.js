@@ -193,7 +193,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
       var graphedNodes = [];
 
       CanvasDisplayService.setNodeID(0); // want node IDs to start at 0 for each new graph
-
+    
       var prevSeqType;
 
       for (var i = 0; i < sequenceArray.length; i++){
@@ -207,6 +207,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
         });
 
         CanvasDisplayService.setNodeNum(0); //reset node numbering
+        CanvasDisplayService.setParamNum(0);
       }
 
       //draw any links between sequences
@@ -662,6 +663,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 			connections: []
 		};
 		CanvasDisplayService.setNodeNum(0);
+		CanvasDisplayService.setParamNum(0);
 		$scope.canvasView = new CanvasDisplayService.CanvasView(emptyData);
 		$scope.updateLower(main.viewTypes[0]);
 		main.result = '';
@@ -819,6 +821,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
       connections: []
     };
     CanvasDisplayService.setNodeNum(0);
+    CanvasDisplayService.setParamNum(0);
     CanvasDisplayService.setNodeID(0);
     $scope.canvasView = new CanvasDisplayService.CanvasView(emptyData);
   };
