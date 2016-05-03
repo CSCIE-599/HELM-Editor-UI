@@ -38,4 +38,9 @@ angular.module('helmeditor2App')
     self.getSelectedMonomer = function () {
       return self.currentMonomer;
     };
+
+    // clears the current selected monomer
+    self.clearSelectedMonomer = function () {
+      self.currentMonomer = {};
+    };
   });

@@ -38,6 +38,7 @@ describe('Service: HELMNotationService', function () {
     expect(sequences.length).toBe(1);
     expect(sequences[0].name).toBe('RNA1');
     expect(sequences[0].notation).toBe('P.R(A)P.R(G)P.R(C)P.R(U)P.R(T)P.R(T)P.R(T)P.R(T)');
+    expect(sequences[0].type).toBe('RNA');
   });
 
   it('should clear the sequences and connections when you clear the helm notation', function () {
@@ -48,6 +49,7 @@ describe('Service: HELMNotationService', function () {
     expect(sequences.length).toBe(1);
     expect(sequences[0].name).toBe('RNA1');
     expect(sequences[0].notation).toBe('P.R(A)P.R(G)P.R(C)P.R(U)P.R(T)P.R(T)P.R(T)P.R(T)');
+    expect(sequences[0].type).toBe('RNA');
     HELMNotationService.setHelm('');
     expect(HELMNotationService.getSequences().length).toBe(0);
     expect(HELMNotationService.getConnections().length).toBe(0);
@@ -61,10 +63,13 @@ describe('Service: HELMNotationService', function () {
     expect(sequences.length).toBe(3);
     expect(sequences[0].name).toBe('RNA1');
     expect(sequences[0].notation).toBe('P.R(A)P.R(G)P.R(C)P.R(U)P.R(T)P.R(T)P.R(T)P.R(T)');
+    expect(sequences[0].type).toBe('RNA');
     expect(sequences[1].name).toBe('CHEM1');
     expect(sequences[1].notation).toBe('SS3');
+    expect(sequences[1].type).toBe('CHEM');
     expect(sequences[2].name).toBe('PEPTIDE1');
     expect(sequences[2].notation).toBe('A.R.C.A.A.K.T.C.D.A');
+    expect(sequences[2].type).toBe('PEPTIDE');
   });
 
   it('should be able to parse a notation with no connections', function () {  

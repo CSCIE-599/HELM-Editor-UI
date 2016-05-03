@@ -33,16 +33,17 @@
     
   <!-- loop thru all the nodes in the graph -->
     <g ng-repeat="node in graph.nodes">
-      <rect ng-attr-class={{'node-rect'}}    
-            ng-attr-width="{{node.width()}}"
-            ng-attr-height="{{node.height()}}"
-            ng-attr-fill="{{node.colour()}}"
-            ng-attr-x="{{node.x()}}"
-            ng-attr-y="{{node.y()}}"
-            ng-attr-rx="{{node.rx()}}"
-            ng-attr-ry="{{node.ry()}}"
-            ng-attr-transform="rotate({{node.transformDegree()}}, {{node.transformx()}}, {{node.transformy()}})"
-            ng-click="$event.stopPropagation();">
+      <rect 
+        ng-attr-class="{{node.id()==graph.getSelectedNode().data.id ? 'selected-node-rect':'node-rect'}}"
+        ng-attr-width="{{node.width()}}"
+        ng-attr-height="{{node.height()}}"
+        ng-attr-fill="{{node.colour()}}"
+        ng-attr-x="{{node.x()}}"
+        ng-attr-y="{{node.y()}}"
+        ng-attr-rx="{{node.rx()}}"
+        ng-attr-ry="{{node.ry()}}"
+        ng-attr-transform="rotate({{node.transformDegree()}}, {{node.transformx()}}, {{node.transformy()}})"
+        ng-click="$event.stopPropagation();">
       </rect>
 
       <text
@@ -66,17 +67,31 @@
       </text>
 
       <!-- annotation node and text inside it-->
-       <rect width="15" height="15" fill = "yellow"  
-       ng-attr-x="{{node.x() - 25}}"
-       ng-attr-y="{{node.y() - 20}}"
-       ng-attr-visibility="{{node.annotationVisible()}}"
-      />
+      <rect width="15" height="15" fill = "yellow"  
+        ng-attr-x="{{node.x() - 25}}"
+        ng-attr-y="{{node.y() - 20}}"
+        ng-attr-visibility="{{node.annotationVisible()}}">
+      </rect>
       <text
         ng-attr-x="{{node.x() - 22}}" 
         ng-attr-y="{{node.y() - 10}}"
         ng-attr-visibility="{{node.annotationVisible()}}">
         {{node.annotationText()}}
       </text>
+
+      <!-- what we can actually click -->
+      <rect 
+        ng-click="graph.toggleSelectedNode(node, $event)"
+        ng-attr-width="{{node.width()}}"
+        ng-attr-height="{{node.height()}}"
+        ng-attr-x="{{node.x()}}"
+        ng-attr-y="{{node.y()}}"
+        ng-attr-rx="{{node.rx()}}"
+        ng-attr-ry="{{node.ry()}}"
+        ng-attr-transform="rotate({{node.transformDegree()}}, {{node.transformx()}}, {{node.transformy()}})"
+        fill="transparent"
+        class="node-cover">
+      </rect>
     </g>
   </g>
 </svg>
