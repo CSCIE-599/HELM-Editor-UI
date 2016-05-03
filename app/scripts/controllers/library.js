@@ -163,6 +163,11 @@ angular.module('helmeditor2App')
         return (monomer._name === currentMonomer._name) ? 'monomer-selected' : '';
       };
 
+      // raise font size if it's a no-shape
+      var raiseFontSizeClass = function (monomer) {
+        return (monomer._shape === 'No' ? 'larger-font' : '')
+      };
+
       // expose the methods we want to 
       self.setViewVisible = setViewVisible;
       self.searchMonomers = searchMonomers;
@@ -177,4 +182,5 @@ angular.module('helmeditor2App')
       self.monomerClicked = monomerClicked;
       self.monomerDblClicked = monomerDblClicked;
       self.monomerSelectedClass = monomerSelectedClass;
+      self.raiseFontSizeClass = raiseFontSizeClass;
   }]);
