@@ -193,7 +193,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
       var graphedNodes = [];
 
       CanvasDisplayService.setNodeID(0); // want node IDs to start at 0 for each new graph
-    
+
       var prevSeqType;
 
       for (var i = 0; i < sequenceArray.length; i++){
@@ -376,7 +376,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
       	y = 190;  //TO-DO: this is hard coded to be slightly below the previous, first sequence
 	  }
 	  var allNodes = [];
-      var currNode = CanvasDisplayService.createNode(monomerArr[0], 'CHEM', 'purple', false, x , y, chemSequenceName);
+      var currNode = CanvasDisplayService.createNode(monomerArr[0], 'CHEM', '#a020f0', false, x , y, chemSequenceName);
       allNodes.push(currNode);
       var firstNode = currNode;
 

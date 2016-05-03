@@ -69,7 +69,7 @@ angular.module('helmeditor2App')
 			rx = radiusX +10;
 			ry = radiusY +10;			
 		}
-        if(nodeColor === 'red' || nodeColor === 'purple'){
+        if(nodeColor === 'red' || nodeColor === '#a020f0'){
 			textColor = '#FFFFFF';
 		} else {
 			 textColor = '#000000';
