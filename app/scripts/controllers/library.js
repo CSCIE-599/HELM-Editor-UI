@@ -160,12 +160,12 @@ angular.module('helmeditor2App')
       // retrieve the class appropriate to display if selected
       var monomerSelectedClass = function (monomer) {
         var currentMonomer = MonomerSelectionService.getSelectedMonomer();
-        return (monomer._name === currentMonomer._name) ? 'monomer-selected' : '';
+        return (monomer === currentMonomer) ? 'monomer-selected' : '';
       };
 
       // raise font size if it's a no-shape
       var raiseFontSizeClass = function (monomer) {
-        return (monomer._shape === 'No' ? 'larger-font' : '')
+        return (monomer._shape === 'No' ? 'larger-font' : '');
       };
 
       // expose the methods we want to 
