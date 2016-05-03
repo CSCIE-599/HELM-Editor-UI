@@ -19,9 +19,6 @@ angular.module('helmeditor2App')
     //number printed by node
     var nodeNum = 0;
 
-   
-    var paramNum = 0;
-
 	//node height
 	var nodeHeight = 25;
 
@@ -32,25 +29,27 @@ angular.module('helmeditor2App')
 	var radiusX = 3;
 	var radiusY = 3;
 
-	self.createRibose = function (nodeName,  nodeColor, xPos, yPos) {
+
+	self.createRibose = function (nodeName,  nodeColor, xPos, yPos, sequenceName) {
+
 		//console.log('adding ribose node ' + nodeName +' at: (' + xPos + ',' +yPos +')');
-	 	//return self.createNode(nodeName, 'NUCLEOTIDE', 'lightgrey', false, xPos, yPos, 'r');
-	 	return self.createNode(nodeName, 'NUCLEOTIDE', '#c6c3fe', false, xPos, yPos, 'r');
+	 	//return self.createNode(nodeName, 'NUCLEOTIDE', 'lightgrey', false, xPos, yPos, 'r', sequenceName);
+	 	return self.createNode(nodeName, 'NUCLEOTIDE', '#c6c3fe', false, xPos, yPos, 'r', sequenceName);
 	};
 
-	self.createBase = function (nodeName,  nodeColor, xPos, yPos) {
+	self.createBase = function (nodeName,  nodeColor, xPos, yPos, sequenceName) {
 		//console.log('adding base node ' + nodeName +' at: (' + xPos + ',' +yPos +')');
-	 	return self.createNode(nodeName, 'NUCLEOTIDE', nodeColor, true, xPos, yPos, 'b');
+	 	return self.createNode(nodeName, 'NUCLEOTIDE', nodeColor, true, xPos, yPos, 'b', sequenceName);
 	};
 
-	self.createPhosphate = function (nodeName,  nodeColor, xPos, yPos) {
+	self.createPhosphate = function (nodeName,  nodeColor, xPos, yPos, sequenceName) {
 		//console.log('adding phosphate node ' + nodeName +' at: (' + xPos + ',' +yPos +')');
-	 	return self.createNode(nodeName, 'NUCLEOTIDE', nodeColor, false, xPos, yPos, 'p');
+	 	return self.createNode(nodeName, 'NUCLEOTIDE', nodeColor, false, xPos, yPos, 'p', sequenceName);
 	};
 
 
 	// create a new node
-	self.createNode = function (nodeName, sequenceType, nodeColor, isRotate, xpos, ypos, nodeType) {
+	self.createNode = function (nodeName, sequenceType, nodeColor, isRotate, xpos, ypos, nodeType, sequenceName) {
 
 		var rotateDegree = '0';
 		var rx = radiusX;
@@ -75,6 +74,7 @@ angular.module('helmeditor2App')
 		var newNode = {
 			name: nodeName,
             seqType : sequenceType,  //Nucleotide, Peptide, or Chem
+            seqName : sequenceName,
 			id: nodeId,
 			x: xpos,
 			y: ypos,
@@ -109,14 +109,6 @@ angular.module('helmeditor2App')
             newNode.seqVisible = 'visible';
             newNode.nodeVisible = 'visible';
         }
-
-
-        if ((sequenceType === 'PEPTIDE') || (sequenceType === 'NUCLEOTIDE')){
-            paramNum++;
-            newNode.paramNum = paramNum;
-            
-        }
-
         // adjust the positioning and viisbility of base and chem nodes in lower pane
     	if ((sequenceType === 'CHEM') || (sequenceType === 'NUCLEOTIDE' && nodeType === 'b')){
         	newNode.lowery = newNode.lowery-120;
@@ -124,7 +116,7 @@ angular.module('helmeditor2App')
         }
         nodeId++;
 
-        if(newNode.paramNum === 1){
+        if(newNode.num === 1){
         	newNode.annotationVisible = 'visible';
         }
 		return newNode;
@@ -142,7 +134,7 @@ angular.module('helmeditor2App')
 	self.isRiboseNode = function(node){
 	 	var riboseArr = ['R', 'dR', 'sR', 'mR', 'fR', 'LR', 'MOE', 'FMOE',
 	 					 'mph', 'PONA','qR', 'RGNA', 'SGNA'	,'12ddR', '25R',
-	 					 '4sR' , 'aFR', 'aR', 'eR', 'FR', 'hx', 'ILR', 'tR',
+	 					 '4sR' , 'aFR', 'aR', 'eR', 'FR', 'hx', 'lLR', 'tR',
 	 					 'UNA', '3A6','3FAM', '3SS6', '5A6','5cGT','5FAM',
 	 					 '5FBC6', 'am12', 'am6'];
 
@@ -155,7 +147,12 @@ angular.module('helmeditor2App')
 
 	/*Identify a phosphate node*/
 	self.isPhosphateNode = function(node){
-		if(node === 'P' || node === 'sP' || node === 'naP' ||  node === 'nasP'){
+		if(node === 'P' || 
+			 node === 'sP' || 
+			 node === 'naP' || 
+			 node === 'nasP' || 
+			 node === 'bP' || 
+			 node === 'dier'){
 			return true;
         }
 		return false;
@@ -226,13 +223,16 @@ angular.module('helmeditor2App')
 		return nodeNum;
 	};
 
+	self.getNodeID = function(){
+		return nodeId;
+	};
+
 	self.setNodeNum = function(num){
 		nodeNum = num;
 	};
 
-
-	self.setParamNum = function(num){
-		paramNum = num;
+	self.setNodeID = function(id){
+		nodeId = id;
 	};
 
 	/*helper method for creating cyclical nodes, only supports cyclical peptides now*/
@@ -347,6 +347,15 @@ angular.module('helmeditor2App')
 	  }
 	};
 
+	var selectedNode = {};
+	var selectedNodeID = {};
+	self.getSelectedNode = function(){
+   		return selectedNode;
+  };
+  self.clearSelectedNode = function(){
+	  selectedNode = {};
+		selectedNodeID = {};
+  };
 
 	/*data models for canvas, node and connection */
 
@@ -358,6 +367,7 @@ angular.module('helmeditor2App')
 
 		this.nodes = [];
 		this.connections = [];
+		selectedNode = {};
 
 		// Add a node to the canvas view.
 		this.addNode = function (nodeDataModel) {
@@ -380,6 +390,25 @@ angular.module('helmeditor2App')
 			// Update the view
 			this.connections.push(new self.ConnectionView(connectionDataModel));
 		};
+
+		// sets the current selected node to be what was clicked
+   	this.toggleSelectedNode = function (nodeDataModel, evt) {
+      console.log(nodeDataModel.id());
+      // un-select if it was previously selected
+      if (selectedNodeID === nodeDataModel.id()) {
+        selectedNode = {};
+        selectedNodeID = {};
+      }
+      else {
+        selectedNode = nodeDataModel;
+        selectedNodeID = nodeDataModel.id();
+      }
+      evt.stopPropagation();
+    };
+
+    this.getSelectedNode = function(){
+    		return selectedNode;
+    };
 	};
 
 	// View for a node.
@@ -397,9 +426,6 @@ angular.module('helmeditor2App')
 			return this.data.num || '';
 		};
 
-		this.paramNum = function () {
-			return this.data.paramNum || '';
-		};
 		// Name of the node.
 		this.name = function () {
 			return this.data.name || '';
@@ -496,9 +522,7 @@ angular.module('helmeditor2App')
 		//visibility of the annotation
 		this.annotationText = function () {
 			return this.data.annotationText;
-		};
-
-
+		};		
 	};
 
 	// View for a connection.
