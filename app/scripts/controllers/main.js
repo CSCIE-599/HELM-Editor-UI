@@ -842,12 +842,13 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
     var currentMonomer = MonomerSelectionService.getSelectedMonomer();
     addMonomer(currentMonomer);
     // and clear the selection so we don't keep adding over and over again
-    MonomerSelectionService.toggleSelectedMonomer(currentMonomer);
+    MonomerSelectionService.clearSelectedMonomer();
   };
 
   // handle the dropping -- only supports dropping monomers right now
   $scope.elementDropped = function (evt, data) {
     addMonomer(data);
+    MonomerSelectionService.clearSelectedMonomer();
   };
 
 	/*****************/
