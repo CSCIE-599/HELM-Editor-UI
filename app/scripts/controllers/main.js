@@ -382,7 +382,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
         	y = 190;  //TO-DO: this is hard coded to be slightly below the previous, first sequence
   	  }
   	  var allNodes = [];
-        var currNode = CanvasDisplayService.createNode(monomerArr[0], 'CHEM', chemColor, false, x , y, chemSequenceName);
+        var currNode = CanvasDisplayService.createNode(monomerArr[0], 'CHEM', chemColor, false, x, y, '', chemSequenceName);
         allNodes.push(currNode);
         var firstNode = currNode;
 
@@ -861,7 +861,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
       }
     };
 
-    // hanlde the clicks on the SVG itself
+    // handle the clicks on the SVG itself
     $scope.svgClicked = function () {
       var currentMonomer = MonomerSelectionService.getSelectedMonomer();
       addMonomer(currentMonomer);
@@ -1089,13 +1089,10 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 
     	var currentNode = CanvasDisplayService.getSelectedNode();
       if (!currentNode || !currentNode.data){
-      	console.log('No node to delete');
         return;
       }
       else{
       	var nodeID = currentNode.data.id;
-
-      	console.log(currentNode);
 
   	    // if node is part of a CHEM sequence, just delete the chem sequence
   	    if (currentNode.data.seqType === 'CHEM'){
@@ -1122,7 +1119,6 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
   	    	// found the sequence to modify (containing the node to be removed)
   	    	if (sequenceName === currentNode.data.seqName){
   	    		nodeID -= priorSeqNodes;
-  	    		//console.log('node should be at index: ' + nodeID + ' in this sequence');
   	    		var updatedHELM = HELMNotationService.helmNodeRemoved(polymers, sequences[i], currentNode, nodeID);
   	    		
   	  			clearCanvas();
@@ -1190,7 +1186,12 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 
     // on the mouse up, try to connect the nodes
     main.mouseup = function (node, evt) { 
-      console.log(node);
+      // deal with this if we dropped onto a node
+      if (main.dragStartNode && node && main.dragStartNode !== node) {
+        HELMNotationService.connectNodes(main.dragStartNode, node);
+      }
+
+      // clean up our stored information
       main.dragStartNode = null;
       main.dragStartLocation = null;
       main.dragEndLocation = null;
