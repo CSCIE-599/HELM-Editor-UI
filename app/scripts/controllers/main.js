@@ -1142,7 +1142,6 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
     main.dragEndLocation = null;
     main.svgEl = null;
     main.svgPt = null;
-    main.baseBoundingRect = null;
 
     // handle the beginning of a drag
     main.mousedown = function (node, evt) {
@@ -1150,7 +1149,6 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
       if (!main.svgEl) {
         main.svgEl = document.querySelector('svg');
         main.svgPt = main.svgEl.createSVGPoint();
-        main.baseBoundingRect = main.svgEl.getBoundingClientRect();
       }
 
       main.dragStartNode = node;
