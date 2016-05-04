@@ -1,7 +1,9 @@
-<svg class="draggable-container"
+<svg class="draggable-container noselect"
   xmlns="http://www.w3.org/2000/svg" id="mainCanvas"
   ng-click="$parent.svgClicked()"
-  ui-on-drop="$parent.elementDropped($event, $data)">
+  ui-on-drop="$parent.elementDropped($event, $data)"
+  ng-mousemove="main.mousemove($event)"
+  ng-mouseup="main.mouseup(null, $event)">
 
   <!-- zoom and pan buttons -->   
   <circle class="zoombtn"  cx="40" cy="31" r="8" ng-click="zoom(0.8, $event)"></circle>
@@ -90,7 +92,9 @@
         ng-attr-ry="{{node.ry()}}"
         ng-attr-transform="rotate({{node.transformDegree()}}, {{node.transformx()}}, {{node.transformy()}})"
         fill="transparent"
-        class="node-cover">
+        class="node-cover"
+        ng-mousedown="main.mousedown(node, $event)"
+        ng-mouseup="main.mouseup(node, $event)">
       </rect>
     </g>
   </g>
