@@ -207,6 +207,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
         });
 
         CanvasDisplayService.setNodeNum(0); //reset node numbering
+        CanvasDisplayService.setParamNum(0);
       }
 
       //draw any links between sequences
@@ -362,7 +363,13 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
     //TO-DO: verify that CHEM sequences always consist of only 1 element
 	$scope.processChemicalModifiers = function (monomerArr, chemSequenceName, pos, connectionArray, sequenceArray) {
 
-      //TO-DO: confirm accurate way to position CHEM node
+     var chemColor;
+     if(monomerArr[0] === 'sDBL'){
+     	chemColor =  '#FFFFFF';
+     }
+     else {
+     	chemColor = '#a020f0';
+     }
 
       //get x position, whether to the far left or right side of canvas
       var x = $scope.getCHEMXPosition(connectionArray, chemSequenceName, sequenceArray);
@@ -375,7 +382,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
       	y = 190;  //TO-DO: this is hard coded to be slightly below the previous, first sequence
 	  }
 	  var allNodes = [];
-      var currNode = CanvasDisplayService.createNode(monomerArr[0], 'CHEM', 'purple', false, x , y, chemSequenceName);
+      var currNode = CanvasDisplayService.createNode(monomerArr[0], 'CHEM', chemColor, false, x , y, chemSequenceName);
       allNodes.push(currNode);
       var firstNode = currNode;
 
@@ -662,6 +669,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 			connections: []
 		};
 		CanvasDisplayService.setNodeNum(0);
+		CanvasDisplayService.setParamNum(0);
 		$scope.canvasView = new CanvasDisplayService.CanvasView(emptyData);
 		$scope.updateLower(main.viewTypes[0]);
 		main.result = '';
@@ -819,6 +827,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
       connections: []
     };
     CanvasDisplayService.setNodeNum(0);
+    CanvasDisplayService.setParamNum(0);
     CanvasDisplayService.setNodeID(0);
     $scope.canvasView = new CanvasDisplayService.CanvasView(emptyData);
   };
@@ -1126,6 +1135,5 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 	    }
 	  }
   };
-
 
 }]);

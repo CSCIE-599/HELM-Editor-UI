@@ -19,6 +19,10 @@ angular.module('helmeditor2App')
     //number printed by node
     var nodeNum = 0;
 
+    //number to keep track of position of annotation
+    var paramNum = 0;
+
+
 	//node height
 	var nodeHeight = 25;
 
@@ -56,7 +60,7 @@ angular.module('helmeditor2App')
 		var ry = radiusX;
 		var textColor;
 
-		nodeWidth = self.getNodeWidth(nodeName, isRotate);
+		nodeWidth = self.getNodeWidth(sequenceType);
 
 		if(isRotate){
 			rotateDegree = '45';
@@ -65,7 +69,7 @@ angular.module('helmeditor2App')
 			rx = radiusX +10;
 			ry = radiusY +10;			
 		}
-        if(nodeColor === 'red' || nodeColor === 'purple'){
+        if(nodeColor === 'red' || nodeColor === '#a020f0'){
 			textColor = '#FFFFFF';
 		} else {
 			 textColor = '#000000';
@@ -116,7 +120,12 @@ angular.module('helmeditor2App')
         }
         nodeId++;
 
-        if(newNode.num === 1){
+        if (sequenceType === 'PEPTIDE' || sequenceType === 'NUCLEOTIDE' ){
+ 			paramNum++;
+            newNode.paramNum = paramNum;
+        }
+
+        if(newNode.paramNum === 1){
         	newNode.annotationVisible = 'visible';
         }
 		return newNode;
@@ -198,22 +207,17 @@ angular.module('helmeditor2App')
 			case '5iU':
 			color =	'cyan'; 
 			break;
-		
+
 			default: 
-			//color = 'lightgrey';
 			color = '#c6c3fe';
 		}
 		return color;		
     };
 
 	/* helper method to calculate width of a node*/
-    self.getNodeWidth = function(nodeName, isRotate){
-		if(!isRotate){
-	    	if(nodeName.length === 3){
-				return 30;
-			}else if(nodeName.length >= 4){ 
-				return 55;
-			}
+    self.getNodeWidth = function(seqType){
+		if(seqType === 'CHEM'){
+			return 55;
 		}
 		return 25;
     };
@@ -229,6 +233,10 @@ angular.module('helmeditor2App')
 
 	self.setNodeNum = function(num){
 		nodeNum = num;
+	};
+
+	self.setParamNum = function(num){
+		paramNum = num;
 	};
 
 	self.setNodeID = function(id){
@@ -277,7 +285,6 @@ angular.module('helmeditor2App')
 	
 	/*helper function to get a new pos to create a new row, increments y*/
 	self.getNewRowPos = function(pos,seqType,prevSeqType){
-	
 		if(!pos){//starting pos
 			return {
 				x: 200, //TO-DO make this relative to the length of sequence
@@ -424,6 +431,11 @@ angular.module('helmeditor2App')
 		//used to display the sequence# next to the monomer
 		this.num = function () {
 			return this.data.num || '';
+		};
+
+		//keep track of the node to display the annotaion
+		this.paramNum = function () {
+			return this.data.paramNum || '';
 		};
 
 		// Name of the node.
