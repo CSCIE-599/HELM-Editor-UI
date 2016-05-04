@@ -1138,24 +1138,64 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 
     // remember the node that we started with
     main.dragStartNode = null;
+    main.dragStartLocation = null;
+    main.dragEndLocation = null;
+    main.svgEl = null;
+    main.svgPt = null;
+    main.baseBoundingRect = null;
+
     // handle the beginning of a drag
     main.mousedown = function (node, evt) {
+      // set up the SVG stuff for transforms
+      if (!main.svgEl) {
+        main.svgEl = document.querySelector('svg');
+        main.svgPt = main.svgEl.createSVGPoint();
+        main.baseBoundingRect = main.svgEl.getBoundingClientRect();
+      }
+
       main.dragStartNode = node;
-      console.log(node);
-      console.log(node.position());
-      console.log(evt);
+      main.dragStartLocation = {
+        x: node.x() + node.width()/2,
+        y: node.y() + node.height()/2
+      };
+
+      evt.stopPropagation();
     };
 
+    // on the move, make sure to update our destination
     main.mousemove = function (evt) {
       if (main.dragStartNode) {
-        console.log(evt);
+        // transform the point correctly
+        main.svgPt.x = evt.clientX;
+        main.svgPt.y = evt.clientY;
+        var pt = main.svgPt.matrixTransform(main.svgEl.getElementById('map-matrix').getScreenCTM().inverse());
+        main.dragEndLocation = {
+          x: pt.x,
+          y: pt.y
+        };
+
+        // shift the dragged location back from the cursor so we don't click it
+        if (main.dragEndLocation.x < main.dragStartLocation.x) {
+          main.dragEndLocation.x += 2;
+        }
+        else {
+          main.dragEndLocation.x -= 2;
+        }
+        if (main.dragEndLocation.y < main.dragStartLocation.y) {
+          main.dragEndLocation.y += 2;
+        }
+        else {
+          main.dragEndLocation.y -= 2;
+        }
       }
     };
 
+    // on the mouse up, try to connect the nodes
     main.mouseup = function (node, evt) { 
-      main.dragStartNode = null;
       console.log(node);
-      console.log(evt);
+      main.dragStartNode = null;
+      main.dragStartLocation = null;
+      main.dragEndLocation = null;
       evt.stopPropagation();
     };
 

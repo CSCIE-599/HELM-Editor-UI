@@ -32,8 +32,8 @@
         ng-click="$event.stopPropagation();">
       </path>
     </g>
-    
-  <!-- loop thru all the nodes in the graph -->
+
+    <!-- loop thru all the nodes in the graph -->
     <g ng-repeat="node in graph.nodes">
       <rect 
         ng-attr-class="{{node.id()==graph.getSelectedNode().data.id ? 'selected-node-rect':'node-rect'}}"
@@ -96,6 +96,15 @@
         ng-mousedown="main.mousedown(node, $event)"
         ng-mouseup="main.mouseup(node, $event)">
       </rect>
+
+      <!-- draw the currently dragged connection on top -->
+      <g ng-show="main.dragStartLocation">
+        <path 
+          ng-attr-d="M{{main.dragStartLocation.x}}, {{main.dragStartLocation.y}} L{{main.dragEndLocation.x}}, {{main.dragEndLocation.y}}"
+          ng-attr-class="{{'path-draw'}}"
+          ng-click="$event.stopPropagation();">
+        </path>
+      </g>
     </g>
   </g>
 </svg>

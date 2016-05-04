@@ -30,6 +30,11 @@ Styles for nodes and connectors.
 	fill:none;
 }
 
+.path-draw {
+  stroke: #000000;
+  fill: none;
+}
+
 .boldText{
 	font-weight: bolder;
 }
