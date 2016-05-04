@@ -60,7 +60,7 @@ angular.module('helmeditor2App')
 		var ry = radiusX;
 		var textColor;
 
-		nodeWidth = self.getNodeWidth(nodeName, isRotate);
+		nodeWidth = self.getNodeWidth(sequenceType);
 
 		if(isRotate){
 			rotateDegree = '45';
@@ -207,22 +207,17 @@ angular.module('helmeditor2App')
 			case '5iU':
 			color =	'cyan'; 
 			break;
-		
+
 			default: 
-			//color = 'lightgrey';
 			color = '#c6c3fe';
 		}
 		return color;		
     };
 
 	/* helper method to calculate width of a node*/
-    self.getNodeWidth = function(nodeName, isRotate){
-		if(!isRotate){
-	    	if(nodeName.length === 3){
-				return 30;
-			}else if(nodeName.length >= 4){ 
-				return 55;
-			}
+    self.getNodeWidth = function(seqType){
+		if(seqType === 'CHEM'){
+			return 55;
 		}
 		return 25;
     };
@@ -290,7 +285,6 @@ angular.module('helmeditor2App')
 	
 	/*helper function to get a new pos to create a new row, increments y*/
 	self.getNewRowPos = function(pos,seqType,prevSeqType){
-	
 		if(!pos){//starting pos
 			return {
 				x: 200, //TO-DO make this relative to the length of sequence
