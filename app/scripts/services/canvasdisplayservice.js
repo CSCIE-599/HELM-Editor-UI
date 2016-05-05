@@ -121,6 +121,11 @@ angular.module('helmeditor2App')
         newNode.annotationVisible = 'visible';
       }
 
+      // handle CHEM to make sure they get a paramNum
+      if (sequenceType === 'CHEM') {
+        newNode.paramNum = 1;
+      }
+
       // and done
       return newNode;
     };

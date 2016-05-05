@@ -86,12 +86,12 @@ angular.module('helmeditor2App')
       connection.dest.sequenceName = connectionString.substring(0, connectionString.indexOf(','));
       connectionString = connectionString.substring(connectionString.indexOf(',') + 1);
       connection.source.attachment = {};
-      connection.source.attachment.nodeNum = connectionString.substring(0, connectionString.indexOf(':'));
+      connection.source.attachment.nodeNum = parseInt(connectionString.substring(0, connectionString.indexOf(':')));
       connectionString = connectionString.substring(connectionString.indexOf(':') + 1);
       connection.source.attachment.point = connectionString.substring(0, connectionString.indexOf('-'));
       connectionString = connectionString.substring(connectionString.indexOf('-') + 1);
       connection.dest.attachment = {};
-      connection.dest.attachment.nodeNum = connectionString.substring(0, connectionString.indexOf(':'));
+      connection.dest.attachment.nodeNum = parseInt(connectionString.substring(0, connectionString.indexOf(':')));
       connectionString = connectionString.substring(connectionString.indexOf(':') + 1);
       connection.dest.attachment.point = connectionString;
       return connection;
@@ -367,20 +367,166 @@ angular.module('helmeditor2App')
 
     // given the two nodes, tries to join the two sequences together into one if it's possible
     var joinSequence = function (node1, node2) {
-      console.log('sequence');
-      console.log(node1.data);
-      console.log(node2.data);
+      // handle peptides vs nucleotides
+      if (node1.data.seqType === 'PEPTIDE') {
+        return joinPeptideSequences(node1, node2);
+      }
+      else {
+        return joinNucleotideSequences(node1, node2);
+      }
+    };
+
+    // join two peptide sequences together
+    var joinPeptideSequences= function (node1, node2) {
+      // if both are the ends of their sequences, just make them into one
+      var sequence1 = getSequenceByName(node1.data.seqName);
+      var polymers1 = HelmConversionService.getPolymers(sequence1.name, sequence1.notation);
+      var sequence2 = getSequenceByName(node2.data.seqName);
+      var polymers2 = HelmConversionService.getPolymers(sequence2.name, sequence2.notation);
+      if ((node1.data.paramNum === 1 && node2.data.paramNum === polymers2.length) ||
+          (node2.data.paramNum === 1 && node1.data.paramNum === polymers1.length)) {
+        // see what label we need to add to the type for the new sequence
+        var postfix = 1; // start at 1
+        for (var i = 0; i < sequences.length; i++) {
+          if (sequences[i].name.indexOf(node1.data.seqType) === 0) {
+            var num = parseInt(sequences[i].name.substring(node1.data.seqType.length));
+            postfix = postfix > num ? postfix : num + 1;
+          }
+        }
+
+        var newNotation = node1.data.paramNum >= node2.data.paramNum ? sequence1.notation + '.' + sequence2.notation : sequence2.notation + '.' + sequence1.notation;
+        // create our new sequence
+        var sequence = {
+          name: node1.data.seqType + postfix,
+          notation: newNotation,
+          type: node1.data.seqType
+        };
+
+        sequences.push(sequence);
+
+        // and remove each of the sequences
+        for (var j = 0; j < sequences.length; ) {
+          if (sequences[j] === sequence1 || sequences[j] === sequence2) {
+            sequences.splice(j, 1);
+          }
+          else {
+            j++;
+          }
+        }
+
+        return getUpdatedHelmFromStrings();
+      }
+      // otherwise we have to just try to make a connection
+      else {
+        return createNewConnection(node1, node2);
+      }
+    };
+
+    // join two nucleotide sequences (or try) 
+    var joinNucleotideSequences = function (node1, node2) {
+      var sequence1 = getSequenceByName(node1.data.seqName);
+      var polymers1 = HelmConversionService.getPolymers(sequence1.name, sequence1.notation);
+      var sequence2 = getSequenceByName(node2.data.seqName);
+      var polymers2 = HelmConversionService.getPolymers(sequence2.name, sequence2.notation);
+
+      console.log(polymers1);
+      console.log(polymers2);
       return helm;
     };
 
     // given the two nodes, tries to create a new connection between the two, if possible
     var createNewConnection = function (node1, node2) {
+      // swap to make chem node second if it exists (to avoid another bug)
+      if (node1.data.seqType === 'CHEM') {
+        var temp = node1;
+        node1 = node2;
+        node2 = temp;
+      }
+
       // only thing to do is make sure that there is an open connection on the nodes in question
-      
-      console.log('connection');
-      console.log(node1.data);
-      console.log(node2.data);
-      return helm;
+      var openAttachments1 = getOpenAttachments(node1);
+      var totalAttachments1 = getTotalAttachments(node1);
+      var openAttachments2 = getOpenAttachments(node2);
+      var totalAttachments2 = getTotalAttachments(node2);
+
+      // if not, warn and exit
+      if (openAttachments1 <= 0 || openAttachments2 <= 0) {
+        console.warn('No open attachment points to be connected!');
+        return helm;
+      }
+
+      var sequence1 = getSequenceByName(node1.data.seqName);
+      var sequence2 = getSequenceByName(node2.data.seqName);
+
+      // otherwise, add the connection
+      addConnection(sequence1.name,
+        node1.data.paramNum,
+        'R' + (totalAttachments1 - openAttachments1 + 1),
+        sequence2.name,
+        node2.data.paramNum,
+        'R' + (totalAttachments2 - openAttachments2 + 1));
+
+      // and update the HELM string
+      return getUpdatedHelmFromStrings();
+    };
+
+    // returns the total number of attachments on the node
+    var getTotalAttachments = function (node) {
+      var sequence = getSequenceByName(node.data.seqName);
+      var monomer = MonomerLibraryService.getMonomerById(sequence.type, node.data.name);
+      return monomer.encodedMonomer.Attachments.Attachment.length;
+    };
+
+    // returns the number of open connections on the given node
+    var getOpenAttachments = function (node) {
+      // retrieve the sequence and the polymers
+      var sequence = getSequenceByName(node.data.seqName);
+      var polymers = HelmConversionService.getPolymers(sequence.name, sequence.notation);
+      // find the monomer
+      var monomer = MonomerLibraryService.getMonomerById(sequence.type, node.data.name);
+
+      // start with total, and decrease for any taken spots
+      var openConnections = monomer.encodedMonomer.Attachments.Attachment.length;
+      // decrease open connections if there are any monomers before each or after it
+      if (node.data.paramNum > 1 && polymers.length > 1) {
+        openConnections--;
+      }
+      if (node.data.paramNum < polymers.length && polymers.length > 1) {
+        openConnections--;
+      }
+
+      // check the connections for anything taking up attachments
+      for (var i = 0; i < connections.length; i++) {
+        // is it the source?
+        if (connections[i].source.sequenceName === sequence.name && 
+            connections[i].source.attachment.nodeNum === node.data.paramNum) {
+          openConnections--;
+        }
+        // or the destination?
+        if (connections[i].dest.sequenceName === sequence.name && 
+            connections[i].dest.attachment.nodeNum === node.data.paramNum) {
+          openConnections--;
+        }
+      }
+
+      // and make sure to check to see if there's a third connection, for nucleotides
+      if (sequence.type === 'RNA') {
+        // if there's long enoug
+        if (node.data.paramNum < polymers.length) {
+          // check for the polymer AFTER this one to be a base
+          if (!CanvasDisplayService.isRiboseNode(polymers[node.data.paramNum]) &&
+              !CanvasDisplayService.isPhosphateNode(polymers[node.data.paramNum])) {
+            openConnections--;
+          }
+        }
+        // short circuit if it is a base
+        if (!CanvasDisplayService.isRiboseNode(node.data.name) &&
+            !CanvasDisplayService.isPhosphateNode(node.data.name)) {
+          openConnections = 0;
+        }
+      }
+
+      return openConnections;
     };
 
     // helper function to retrieve the sequence by name
@@ -444,61 +590,20 @@ angular.module('helmeditor2App')
 
     // helper function to create the cycle in a peptide sequence (after checking validity)
     var createPeptideCycle = function (node1, node2, sequence) {
-      // retrieve the monomers from the library (so we can see the available attachments)
-      var monomer1 = MonomerLibraryService.getMonomerById('PEPTIDE', node1.data.name);
-      var monomer2 = MonomerLibraryService.getMonomerById('PEPTIDE', node2.data.name);
-      var polymers = HelmConversionService.getPolymers(sequence.name, sequence.notation);
-      
       // peptide cycles are valid as long as there's an open attachment
-      var totalFirstConnections = monomer1.encodedMonomer.Attachments.Attachment.length; 
-      var openFirstConnections = monomer1.encodedMonomer.Attachments.Attachment.length;
-      var totalSecondConnections = monomer2.encodedMonomer.Attachments.Attachment.length; 
-      var openSecondConnections = monomer2.encodedMonomer.Attachments.Attachment.length;
-
-      // decrease open connections if there are any monomers before each or after each
-      if (node1.data.paramNum > 1 && polymers.length > 1) {
-        openFirstConnections--;
-      }
-      if (node2.data.paramNum > 1 && polymers.length > 1) {
-        openSecondConnections--;
-      }
-      if (node1.data.paramNum < polymers.length && polymers.length > 1) {
-        openFirstConnections--;
-      }
-      if (node2.data.paramNum < polymers.length && polymers.length > 1) {
-        openSecondConnections--;
-      }
-
-      // check the connections for anything taking up attachments
-      for (var i = 0; i < connections.length; i++) {
-        // are either the source?
-        if (connections[i].source.sequenceName === sequence.name && 
-            connections[i].source.attachment.nodeNum === node1.data.paramNum) {
-          openFirstConnections--;
-        }
-        if (connections[i].source.sequenceName === sequence.name && 
-            connections[i].source.attachment.nodeNum === node2.data.paramNum) {
-          openSecondConnections--;
-        }
-        // or the destination
-        if (connections[i].dest.sequenceName === sequence.name && 
-            connections[i].dest.attachment.nodeNum === node1.data.paramNum) {
-          openFirstConnections--;
-        }
-        if (connections[i].dest.sequenceName === sequence.name && 
-            connections[i].dest.attachment.nodeNum === node2.data.paramNum) {
-          openSecondConnections--;
-        }
-      }
+      var totalFirstAttachments = getTotalAttachments(node1); 
+      var openFirstAttachments = getOpenAttachments(node1);
+      var totalSecondAttachments = getTotalAttachments(node2);
+      var openSecondAttachments = getOpenAttachments(node2);
 
       // and lastly, if there are open connections for both, add the connection
-      if (openFirstConnections > 0 && openSecondConnections > 0) {
+      if (openFirstAttachments > 0 && openSecondAttachments > 0) {
         addConnection(sequence.name,
           node1.data.paramNum,
-          'R' + (totalFirstConnections - openFirstConnections + 1),
+          'R' + (totalFirstAttachments - openFirstAttachments + 1),
           sequence.name,
           node2.data.paramNum,
-          'R' + (totalSecondConnections - openSecondConnections + 1));
+          'R' + (totalSecondAttachments - openSecondAttachments + 1));
 
         // and update the HELM string
         return getUpdatedHelmFromStrings();

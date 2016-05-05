@@ -675,7 +675,6 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
         var helmOut = HELMNotationService.connectNodes(self.dragStartNode, node);
         console.log(helmOut);
         if (helmOut !== HELMNotationService.getHelm()) {
-          console.log('resetting');
           CanvasDisplayService.resetCanvas();
           self.validateHelmNotation(helmOut);
         }
