@@ -297,7 +297,10 @@ angular.module('helmeditor2App')
             if (secondSequence[0]==='.'){
               secondSequence = secondSequence.substring(1, secondSequence.length);
             }
-            addNewSequence(sequence.type, secondSequence);
+            // only add the new sequence if it actually exists
+            if (secondSequence.length > 0) {
+              addNewSequence(sequence.type, secondSequence);
+            }
             return getHelm();
           }
         }
