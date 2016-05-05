@@ -556,6 +556,4 @@ angular.module('helmeditor2App')
       this.last = las;
       this.nodes = nodesArr;
     };
-
-
   });
