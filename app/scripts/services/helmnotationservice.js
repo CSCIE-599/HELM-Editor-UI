@@ -189,6 +189,21 @@ angular.module('helmeditor2App')
       parseHelm(helm); // redundant?
     };
 
+    // doesn't affect helm in place, but retrieves the new string
+    var getUpdatedHelmFromStrings = function () {
+      var ret;
+      // check if there are no sequences
+      if (sequences.length === 0) {
+        ret = '';
+      }
+      else {
+        var seqString = getUpdatedSequencesString();
+        var conString = getUpdatedConnectionsString();
+        ret = seqString + conString;
+      }
+      return ret;
+    };
+
     // updates HELM notation to match what's in the connections array
     var getUpdatedConnectionsString = function(){
       var res = '';
@@ -455,21 +470,21 @@ angular.module('helmeditor2App')
       // check the connections for anything taking up attachments
       for (var i = 0; i < connections.length; i++) {
         // are either the source?
-        if (connections.source.sequenceName === sequence.name && 
-            connections.source.attachment.nodeNum === node1.data.paramNum) {
+        if (connections[i].source.sequenceName === sequence.name && 
+            connections[i].source.attachment.nodeNum === node1.data.paramNum) {
           openFirstConnections--;
         }
-        if (connections.source.sequenceName === sequence.name && 
-            connections.source.attachment.nodeNum === node2.data.paramNum) {
+        if (connections[i].source.sequenceName === sequence.name && 
+            connections[i].source.attachment.nodeNum === node2.data.paramNum) {
           openSecondConnections--;
         }
         // or the destination
-        if (connections.dest.sequenceName === sequence.name && 
-            connections.dest.attachment.nodeNum === node1.data.paramNum) {
+        if (connections[i].dest.sequenceName === sequence.name && 
+            connections[i].dest.attachment.nodeNum === node1.data.paramNum) {
           openFirstConnections--;
         }
-        if (connections.dest.sequenceName === sequence.name && 
-            connections.dest.attachment.nodeNum === node2.data.paramNum) {
+        if (connections[i].dest.sequenceName === sequence.name && 
+            connections[i].dest.attachment.nodeNum === node2.data.paramNum) {
           openSecondConnections--;
         }
       }
@@ -484,9 +499,11 @@ angular.module('helmeditor2App')
           'R' + (totalSecondConnections - openSecondConnections + 1));
 
         // and update the HELM string
-        updateHelmFromStrings();
+        return getUpdatedHelmFromStrings();
       }
 
+      // if we got here, we didn't do anything
+      console.warn('Invalid peptide cycle attempted, ignoring.');
       return helm;
     };
 

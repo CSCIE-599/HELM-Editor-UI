@@ -232,7 +232,7 @@ angular.module('helmeditor2App')
     };
 
     /* helper method for creating cyclical nodes, only supports cyclical peptides now */
-    self.makeCycle = function (sequence, seqType, pos, dir) {
+    self.makeCycle = function (sequence, seqType, pos, dir, seqName) {
       var cycleNodesArray = [];
       var r = (sequence.length * 10) + 10;//radius
 
@@ -258,7 +258,7 @@ angular.module('helmeditor2App')
           nodexpos = Math.sin(-i * Math.PI / 180) * r + xc; //making 'i' negative creates clockwise placement
           nodeypos = Math.cos(-i * Math.PI / 180) * r + yc;
 
-          var node = self.createNode(value, seqType, '#00C3FF', true, nodexpos, nodeypos);
+          var node = self.createNode(value, seqType, '#00C3FF', true, nodexpos, nodeypos, '', seqName);
           cycleNodesArray.push(node);
           i = i + degree;
         }
@@ -268,7 +268,7 @@ angular.module('helmeditor2App')
     };
     
     /* helper function to get a new pos to create a new row, increments y */
-    self.getNewRowPos = function(pos,seqType,prevSeqType){
+    self.getNewRowPos = function(pos, seqType, prevSeqType){
       if (!pos) { //starting pos
         return {
           x: 200, //TO-DO make this relative to the length of sequence
@@ -851,8 +851,8 @@ angular.module('helmeditor2App')
     var separateSequences = function (sequence, seqName, connectionArray) {
       //get the start and end points of cycle
       var connectionPoints = getCyclicalSourceDest(seqName, connectionArray);
-      var cycleStartId =  connectionPoints[1];
-      var cycleEndId = connectionPoints[0];
+      var cycleStartId = connectionPoints[1] > connectionPoints[0] ? connectionPoints[0] : connectionPoints[1];
+      var cycleEndId = connectionPoints[1] > connectionPoints[0] ? connectionPoints[1] : connectionPoints[0];
       var slicedSeqArr  =  [];
       var beforeArr = [];
       var afterArr = [];
@@ -899,7 +899,7 @@ angular.module('helmeditor2App')
           graphedNodes.push(currSubGraph.nodes);
         }
         else {
-          currSubGraph = makeCyclicalGraph(slice.monomers, seqType, pos, dir);
+          currSubGraph = makeCyclicalGraph(slice.monomers, seqType, pos, dir, seqName);
           graphedNodes.push(currSubGraph.nodes);
           dir = 'reverse';
         }
@@ -925,11 +925,11 @@ angular.module('helmeditor2App')
     };
 
     //helper function for drawing the cycle portion of a cyclical graph
-    var makeCyclicalGraph = function (monomerArr, seqType, pos, dir) {
+    var makeCyclicalGraph = function (monomerArr, seqType, pos, dir, seqName) {
       var firstNode, currNode, prevNode;
       var allNodes = [];
 
-      var cyclicalNodes = self.makeCycle(monomerArr, seqType, pos, dir);
+      var cyclicalNodes = self.makeCycle(monomerArr, seqType, pos, dir, seqName);
 
       angular.forEach(cyclicalNodes, function (value, key) {
         currNode = value;
@@ -991,20 +991,6 @@ angular.module('helmeditor2App')
       }
     };
 
-    // // create a new node and add to the view.
-    // var addNewNode = function (nodeName, seqType, nodeColor, isRotate, xpos, ypos, nodeType, sequenceName) {
-    //   var node = self.createNode(nodeName, 
-    //     seqType, 
-    //     nodeColor,
-    //     isRotate, 
-    //     xpos, 
-    //     ypos, 
-    //     nodeType, 
-    //     sequenceName);
-    //   self.canvasView.addNode(node);
-    //   return node;
-    // };
-
     //add a connection between 2 nodes
     var addNewConnection = function (sourceNode, destNode) {
       var conn = self.createConnection(sourceNode, destNode);
@@ -1051,15 +1037,4 @@ angular.module('helmeditor2App')
 
       return [sourceNodeId, destNodeId];
     };
-
-
-
-
-
-
-
-
-
-
-
   });

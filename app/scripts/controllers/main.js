@@ -172,6 +172,9 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
     self.getCanvasView = function () {
       return CanvasDisplayService.canvasView;
     };
+    self.resetCanvas = function () {
+      CanvasDisplayService.resetCanvas();
+    };
     CanvasDisplayService.resetCanvas();
 
     /* zoom and pan functions */
@@ -670,6 +673,11 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
       if (self.dragStartNode && node && self.dragStartNode !== node) {
         var helmOut = HELMNotationService.connectNodes(self.dragStartNode, node);
         console.log(helmOut);
+        if (helmOut !== HELMNotationService.getHelm()) {
+          console.log('resetting');
+          CanvasDisplayService.resetCanvas();
+          self.validateHelmNotation(helmOut);
+        }
       }
 
       // clean up our stored information
