@@ -174,6 +174,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
     };
     self.resetCanvas = function () {
       CanvasDisplayService.resetCanvas();
+      HELMNotationService.setHelm('');
     };
     CanvasDisplayService.resetCanvas();
 
