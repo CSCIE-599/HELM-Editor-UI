@@ -137,25 +137,54 @@
       </div>
       <div class='col-md-9 canvas-column'>
         <div class='row canvas-row-top'>
-          <p><span><b>View:</b> Detailed Sequence</span><span class="message-span">{{main.result}}</span></p>
+          <p>
+            <span><b>View:</b> Detailed Sequence</span>
+            <span class="message-span">{{main.result}}</span>
+          </p>
           <div 
             class='canvas-container' 
             id='canvas' 
             ng-keyup='main.keyUp($event)' 
             tabindex='1'>
             <!-- canvas view with right-click context menu -->
-            <helm-canvas context-menu="menuOptions" model="expression" graph='canvasView' canvastype='upper'>
+            <helm-canvas 
+              context-menu="menuOptions" 
+              model="expression" 
+              graph='canvasView' 
+              canvastype='upper'></helm-canvas>
             <script type="text/ng-template" id="viewmodal.html"></script>
           </div>
         </div>
         <div class='row canvas-row-bottom'>
-          <p><span><b>View:</b> <select ng-model='viewType' ng-selected='viewType' ng-options='option as option.label for option in main.viewTypes' ng-change='updateLower(viewType)'></select></span></p>
-          <div ng-show='helm'><p><span>{{main.helm}}</span></p></div>
+          <p>
+            <span>
+              <b>View:</b>
+              <select 
+                ng-model='viewType' 
+                ng-selected='viewType' 
+                ng-options='option as option.label for option in main.viewTypes' 
+                ng-change='updateLower(viewType)'></select>
+              </span>
+            </p>
+          <div ng-show='helm'>
+            <p><span>{{main.helm}}</span></p>
+          </div>
           <div ng-show='moleculeprops'>
             <table class='molecule-table'>
-              <tr><th>Component Type</th><th>Molecular Weight</th><th>Molecular Formula</th><th>Ext. Coefficient</th><th>Molecular Structure</th></tr>
-              <tr><td>{{main.seqtype}}</td><td>{{main.molecularweight}}</td><td>{{main.molecularformula}}</td><td>{{main.extcoefficient}}</td>
-              <td><a ng-href="" ng-click='showHelmImage()'>{{main.helmImageLink}}</a></td></tr>
+              <tr>
+                <th>Component Type</th>
+                <th>Molecular Weight</th>
+                <th>Molecular Formula</th>
+                <th>Ext. Coefficient</th>
+                <th>Molecular Structure</th>
+              </tr>
+              <tr>
+                <td>{{main.seqtype}}</td>
+                <td>{{main.molecularweight}}</td>
+                <td>{{main.molecularformula}}</td>
+                <td>{{main.extcoefficient}}</td>
+                <td><a ng-href="" ng-click='showHelmImage()'>{{main.helmImageLink}}</a></td>
+              </tr>
             </table>
           </div>
           <div class='canvas-container' ng-show='sequence'>
@@ -195,7 +224,9 @@
           <td rowspan='3'></td>
           <td><label>Please choose:</label></td> 
           <td align='right'>
-            <select ng-model='polymerType' ng-options='option as option.label for option in main.polyTypes'></select>
+            <select 
+              ng-model='main.polymerType' 
+              ng-options='option as option.label for option in main.polyTypes'></select>
           </td>
         </tr>
         <tr>

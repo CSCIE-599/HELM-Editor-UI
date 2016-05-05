@@ -26,11 +26,11 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
       { value: 'RNA', label:'RNA/DNA' },
       { value: 'PEPTIDE', label:'PEPTIDE' },
     ];
+    // the selected one
+    self.polymerType = self.polyTypes[0];
 
     // indicates whether to reset during loading a new sequence 
     self.shouldReset = true;
-
-    $scope.polymerType = self.polyTypes[0];
     self.result = '';
 
     /* Check if need to validate HELM input, or convert input to Helm */
@@ -47,19 +47,19 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
       }
       
       /* TODO: Check that input is valid type? */
-      if (polymerType.value === 'HELM') {
+      if (self.polymerType.value === 'HELM') {
         self.validateHelmNotation(inputSequence);
       }
       else {
-        self.getHelmNotation(polymerType, inputSequence);
+        self.getHelmNotation(self.polymerType, inputSequence);
       }
       self.toggleModal();
     };
     
     /* clear the modal dialog text area*/
-    self.clear = function (){
+    self.clear = function () {
       var modalInputField = document.getElementById('input');
-      if(modalInputField){
+      if (modalInputField) {
         modalInputField.value = '';  
       }  
     };
@@ -130,18 +130,18 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
         }
       };
       webService.getConversionCanonical(inputSequence).then(successCallback, errorCallback);
-     };
+    };
 
     /* Invoke factory function to get molecular weight */
     self.getMolecularWeight = function (inputSequence) {
       var successCallback = function (result) {
-          self.molecularweight = result;
-        };
-        var errorCallback = function(response) {
-          console.log(response.data);
-        };
-        webService.getMolecularWeight(inputSequence).then(successCallback, errorCallback);
-     };
+        self.molecularweight = result;
+      };
+      var errorCallback = function(response) {
+        console.log(response.data);
+      };
+      webService.getMolecularWeight(inputSequence).then(successCallback, errorCallback);
+    };
 
     /* Invoke factory function to get molecular formula */
     self.getMolecularFormula = function (inputSequence) {
@@ -152,7 +152,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
         console.log(response.data);
       };
       webService.getMolecularFormula(inputSequence).then(successCallback, errorCallback);
-     };
+    };
 
      /* Invoke factory function to get the extinction coefficient */
     self.getExtinctionCoefficient = function (inputSequence) {
@@ -164,7 +164,13 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
         console.log(response.data);
       };
       webService.getExtinctionCoefficient(inputSequence).then(successCallback, errorCallback);
-     };
+    };
+
+    // link up the canvas that we are displaying
+    self.canvasView = CanvasDisplayService.canvasView;
+
+
+    
 
     /*
     * Begin code for Canvas
