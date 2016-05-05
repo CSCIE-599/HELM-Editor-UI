@@ -33,6 +33,11 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
     self.shouldReset = true;
     self.result = '';
 
+    // expose the current HELM through the HELMNotationService
+    self.getHelm = function () {
+      return HELMNotationService.getHelm();
+    };
+
     /* Check if need to validate HELM input, or convert input to Helm */
     self.processInput = function (polymerType, inputSequence) {
       /* Check that input is not empty */
@@ -69,14 +74,13 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
       var successCallback = function (helmNotation) {
         self.helm = helmNotation;
         HELMNotationService.setHelm(helmNotation);
-        $scope.displayOnCanvas(helmNotation);
         CanvasDisplayService.loadHelmTranslationData(HelmConversionService.convertHelmNotationToSequence(helmNotation));
         self.getCanonicalHelmNotation(self.helm);
       };
       var errorCallback = function(response) {
         self.result = response.data;
         HELMNotationService.setHelm('');
-        console.log(response.data);
+        console.error(response.data);
       };
 
       switch(polymerType.value) {
@@ -91,7 +95,6 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
     /* Invoke factory function to validate the HELM notation */
     self.validateHelmNotation = function (inputSequence) {
       // make sure that we have a string to even pass
-      console.log(inputSequence);
       if (inputSequence === null || inputSequence.length === 0) {
         self.helm = '';
         HELMNotationService.setHelm('');
@@ -112,7 +115,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
       };
       var errorCallback = function (response) {
         self.result = response.data;
-        console.log(response.data);
+        console.error(response.data);
       };
 
       webService.validateHelmNotation(inputSequence).then(successCallback, errorCallback);
@@ -122,10 +125,9 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
     self.getCanonicalHelmNotation = function (inputSequence) {
       var successCallback = function (result) {
         self.chelm = result;
-        console.log(result);
       };
       var errorCallback = function(response) {
-        console.log(response.data);
+        console.error(response.data);
         if(response.status === 400) {
            self.chelm = response.data;
         }
@@ -139,7 +141,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
         self.molecularweight = result;
       };
       var errorCallback = function(response) {
-        console.log(response.data);
+        console.error(response.data);
       };
       webService.getMolecularWeight(inputSequence).then(successCallback, errorCallback);
     };
@@ -150,7 +152,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
         self.molecularformula = result;
       };
       var errorCallback = function(response) {
-        console.log(response.data);
+        console.error(response.data);
       };
       webService.getMolecularFormula(inputSequence).then(successCallback, errorCallback);
     };
@@ -159,10 +161,9 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
     self.getExtinctionCoefficient = function (inputSequence) {
       var successCallback = function (result) {
         self.extcoefficient = result;
-        console.log(result);
       };
       var errorCallback = function(response) {
-        console.log(response.data);
+        console.error(response.data);
       };
       webService.getExtinctionCoefficient(inputSequence).then(successCallback, errorCallback);
     };
@@ -172,9 +173,6 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
       return CanvasDisplayService.canvasView;
     };
     CanvasDisplayService.resetCanvas();
-    self.logCanvasView = function () {
-      console.log(self.getCanvasView());
-    };
 
     /* zoom and pan functions */
     var zoomCount = 0;
@@ -258,7 +256,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
       var errorCallback = function(response) {
         $scope.imageMessage = 'Image not available. See console for more information.';
         $scope.requestedview = '';
-        console.log(response);
+        console.error(response);
       };
       if (self.helm !== '') {
         webService.getHelmImageUrl(self.helm).then(successCallback, errorCallback);
@@ -279,7 +277,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
       var errorCallback = function(response) {
         $scope.imageMessage = 'Image not available. See console for more information.';
         $scope.requestedview = '';
-        console.log(response);
+        console.error(response);
       };
       if (monomerId !== '' && polymerType !== '') {
         webService.getMonomerImageUrl(monomerId, polymerType, '').then(successCallback, errorCallback);
@@ -340,17 +338,14 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 
         HELMNotationService.addNewSequence(type, notation);
 
-        // and update (for now, until it's all linked together correctly)
-        var out = HELMNotationService.getHelm();
-        // clearCanvas();
+        // output it all
         CanvasDisplayService.resetCanvas();
-        self.helm = out;
-        CanvasDisplayService.loadHelmTranslationData(HelmConversionService.convertHelmNotationToSequence(out));
+        self.validateHelmNotation(HELMNotationService.getHelm());
       }
     };
 
     // handle the clicks on the SVG itself
-    $scope.svgClicked = function () {
+    self.svgClicked = function () {
       var currentMonomer = MonomerSelectionService.getSelectedMonomer();
       addMonomer(currentMonomer);
       // and clear the selection so we don't keep adding over and over again
@@ -358,7 +353,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
     };
 
     // handle the dropping -- only supports dropping monomers right now
-    $scope.elementDropped = function (evt, data) {
+    self.elementDropped = function (evt, data) {
       addMonomer(data);
       MonomerSelectionService.clearSelectedMonomer();
     };
@@ -576,7 +571,6 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
       }
       else{
         var nodeID = currentNode.data.id;
-        console.log(nodeID);
 
         // if node is part of a CHEM sequence, just delete the chem sequence
         if (currentNode.data.seqType === 'CHEM') {

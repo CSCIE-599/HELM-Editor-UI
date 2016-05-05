@@ -16,12 +16,6 @@
           ng-disabled='!main.showTrash()'>
           <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
         </button>
-        <span class='spacer'></span>
-        <button
-          class='btn pull-right'
-          ng-click='main.logCanvasView()'>
-          Log canvas
-        </button>
       </div>
     </div>
     <div class='row full-height'>
@@ -173,7 +167,7 @@
               </span>
             </p>
           <div ng-show='helm'>
-            <p><span>{{main.helm}}</span></p>
+            <p><span>{{main.getHelm()}}</span></p>
           </div>
           <div ng-show='moleculeprops'>
             <table class='molecule-table'>
