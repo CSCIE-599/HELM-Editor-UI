@@ -906,7 +906,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 	//ui-bootstrap modal doc: https://angular-ui.github.io/bootstrap/
 	$scope.open = function(){
       	$uibModal.open({
-        	templateUrl: '/templates/viewmodal.html',
+        	templateUrl: 'templates/viewmodal.html',
         	controller: 'modal',
 			scope: $scope,
 		});
@@ -915,7 +915,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 	//wider modal
 	$scope.openWideModal = function(){
 		$uibModal.open({
-			templateUrl: '/templates/viewmodal.html',
+			templateUrl: 'templates/viewmodal.html',
 			controller: 'modal',
 			windowClass: 'wide-modal',
 			scope: $scope,
@@ -926,7 +926,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 	//TODO - should show Mass
 	$scope.openMolecularPropertiesModal = function(){
 		$uibModal.open({
-			templateUrl: '/templates/tablemodal.html',
+			templateUrl: 'templates/tablemodal.html',
 			controller: 'modal',
 			scope: $scope,
 		});
@@ -935,7 +935,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 	//helper function - show image in modal
 	$scope.openImageView = function(){
 		$uibModal.open({
-			templateUrl: '/templates/imagemodal.html',
+			templateUrl: 'templates/imagemodal.html',
 			controller: 'modal',
 			scope: $scope,
 		});
