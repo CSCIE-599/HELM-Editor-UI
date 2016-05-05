@@ -400,7 +400,7 @@ angular.module('helmeditor2App')
 
 			// sets the current selected node to be what was clicked
 	   	this.toggleSelectedNode = function (nodeDataModel, evt) {
-	      console.log(nodeDataModel.id());
+	   		console.log(nodeDataModel.id());
 	      // un-select if it was previously selected
 	      if (selectedNodeID === nodeDataModel.id()) {
 	        selectedNode = {};
@@ -579,33 +579,6 @@ angular.module('helmeditor2App')
 			this.last = las;
 			this.nodes = nodesArr;
 		};
-
-		// remember the node that we started with
-	  self.dragStartNode = null;
-	  // handle the beginning of a drag
-	  self.mousedown = function (node, evt) {
-	    console.log(self.dragStartNode);
-	    self.dragStartNode = node;
-	    console.log(self.dragStartNode);
-	    console.log(node);
-	    console.log(node.position());
-	    console.log(evt);
-	  };
-
-		self.mousemove = function (evt) {
-	    console.log(self.dragStartNode);
-	    if (self.dragStartNode) {
-	      console.log(evt);
-	    }
-	  };
-
-	  self.mouseup = function (node, evt) {
-	    console.log(self.dragStartNode);  
-	    self.dragStartNode = null;
-	    console.log(self.dragStartNode);
-	    console.log(node);
-	    console.log(evt);
-	  };
 
 
   });

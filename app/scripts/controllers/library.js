@@ -149,6 +149,7 @@ angular.module('helmeditor2App')
       var monomerDblClicked = function (monomer, evt) {
         // select it to be sure
         MonomerSelectionService.setSelectedMonomer(monomer, evt);
+        console.log(monomer);
 
         // load the modal with the detail view
         $uibModal.open({

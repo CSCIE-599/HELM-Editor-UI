@@ -8,7 +8,7 @@
  * Service in the helmeditor2App.
  */
 angular.module('helmeditor2App')
-  .service('HELMNotationService', function () {
+  .service('HELMNotationService', ['HelmConversionService', 'CanvasDisplayService', function (HelmConversionService, CanvasDisplayService) {
     var self = this;
 
     // store the current HELM string
@@ -308,6 +308,124 @@ angular.module('helmeditor2App')
       return getHelm();
     };
 
+    // try to make a connection between the two nodes passed, if possible
+    var connectNodes = function (node1, node2) {
+      var newHelm;
+      // first make sure we're not trying to connect the same node to itself
+      if (node1 === node2) {
+        return;
+      }
+      // are we connecting two nodes within the same sequence? -> make a cycle
+      if (node1.data.seqName === node2.data.seqName) {
+        newHelm = createCycle(node1, node2);
+      }
+      // are we connecting two nodes of the same type (not CHEM)? -> make one sequence only
+      else if (node1.data.seqType === node2.data.seqType && node1.data.seqType !== 'CHEM') {
+        newHelm = joinSequence(node1, node2);
+      }
+      // otherwise we are just trying to make a connection
+      else {
+        newHelm = createNewConnection(node1, node2);
+      }
+    };
+
+    // helper function to retrieve the sequence by name
+    var getSequenceByName = function (name) {
+      for (var i = 0; i < sequences.length; i++) {
+        if (sequences[i].name === name) {
+          return sequences[i];
+        }
+      }
+
+      // we failed, return null
+      return null;
+    };
+
+    // helper function to add a connection
+    // var addConnection = function (seq1, seq2, nodeNum1, nodeNum2) {
+
+    // };
+
+    // helper method to try to create a nucleotide cycle (NOT COMPLETE)
+    var createNucleotideCycle = function (node1, node2, sequence) {
+      console.log('nuce');
+      // for RNA, the cycle must be between two backbone nodes (i.e. not nodeType b)
+      if (node1.data.nodeType === 'b' || node2.data.nodeType === 'b') {
+        console.warn('Invalid cycle in RNA sequence attempted - branch monomers cannot be part of a cyclic connection.');
+        return helm;
+      }
+
+      // get the polymers from the sequence
+      var polymers = HelmConversionService.getPolymers(sequence.name, sequence.notation);
+
+      // now the tricky part - a valid cycle for RNAs can only ever be from the first and last backbone nodes
+      var firstNode, secondNode;
+      if (node1.data.paramNum < node2.data.paramNum) {
+        firstNode = node1;
+        secondNode = node2;
+      }
+      else {
+        firstNode = node2;
+        secondNode = node1;
+      }
+
+      // make sure we're on the first and last backbone
+      if (!(firstNode.data.paramNum === 1 && // first is first
+            (secondNode.data.paramNum === polymers.length || // last is actually last
+             (secondNode.data.paramNum === polymers.length - 1 && !CanvasDisplayService.isPhosphateNode(polymers[polymers.length - 1]) && !CanvasDisplayService.isRiboseNode(polymers[polymers.length - 1]))))) {
+        console.warn('Invalid cycle in RNA sequence attempted!');
+        return helm;
+      }
+
+      // now make sure there are attachment points available (i.e not used up in other connections)
+      for (var j = 0; j < connections.length; j++) {
+        // can break out if the nodes in question are in any connections
+        if ((connections[j].source.sequenceName === firstNode.data.seqName && connections[j].source.attachment.nodeNum === firstNode.data.paramNum) ||
+            (connections[j].source.sequenceName === secondNode.data.seqName && connections[j].source.attachment.nodeNum === secondNode.data.paramNum) ||
+            (connections[j].dest.sequenceName === firstNode.data.seqName && connections[j].dest.attachment.nodeNum === firstNode.data.paramNum) ||
+            (connections[j].dest.sequenceName === secondNode.data.seqName && connections[j].dest.attachment.nodeNum === secondNode.data.paramNum)) {
+          console.warn('Invalid cycle in RNA sequence attempted - no attachment point available!');
+          return helm;
+        }
+      }
+
+      // otherwise we just need to add a connection... but this isn't supported yet, so just log it
+      console.warn('Nucloetide cycles are not supported currently in the editor.');
+    };
+
+    // given the two nodes, tries to create a cyclical connection if there are open connections on each node
+    var createCycle = function (node1, node2) {
+      // find the sequence we're dealing with
+      var sequence = getSequenceByName(node1.data.seqName);
+
+      // if we didn't find it, bail out now
+      if (!sequence) {
+        return helm;
+      }
+
+      // otherwise, decide if it's a peptide or nucleotide (chem can't be cycles)
+      if (sequence.type === 'RNA') {
+        createNucleotideCycle(node1, node2, sequence);
+      }
+      else {
+        console.log('PEPTIDE - ' + sequence.type);
+      }
+    };
+
+    // given the two nodes, tries to join the two sequences together into one if it's possible
+    var joinSequence = function (node1, node2) {
+      console.log('sequence');
+      console.log(node1.data);
+      console.log(node2.data);
+    };
+
+    // given the two nodes, tries to create a new connection between the two, if possible
+    var createNewConnection = function (node1, node2) {
+      console.log('connection');
+      console.log(node1.data);
+      console.log(node2.data);
+    };
+
     // make things global
     self.getHelm = getHelm;
     self.setHelm = setHelm;
@@ -317,4 +435,5 @@ angular.module('helmeditor2App')
     self.helmNodeRemoved = helmNodeRemoved;
     self.removeSequence = removeSequence;
     self.parseHelm = parseHelm;
-  });
+    self.connectNodes = connectNodes;
+  }]);
