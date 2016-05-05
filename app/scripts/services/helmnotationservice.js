@@ -429,6 +429,85 @@ angular.module('helmeditor2App')
       var sequence2 = getSequenceByName(node2.data.seqName);
       var polymers2 = HelmConversionService.getPolymers(sequence2.name, sequence2.notation);
 
+      // find out what we'll call it if we need it
+      var postfix = 1; // start at 1
+      for (var i = 0; i < sequences.length; i++) {
+        if (sequences[i].name.indexOf(node1.data.seqType) === 0) {
+          var num = parseInt(sequences[i].name.substring(node1.data.seqType.length));
+          postfix = postfix > num ? postfix : num + 1;
+        }
+      }
+
+      // there are a couple of scenarios to handle based on whether we're connecting phosphate or rhibose nodes
+      // Ribose - Ribose - if they're the ends of their sequences, put a P in between them
+      if (CanvasDisplayService.isRiboseNode(node1.data.name) && CanvasDisplayService.isRiboseNode(node2.data.name)) {
+        if (node1.data.paramNum === 1 && // node1 is the start of a sequence
+            (node2.data.paramNum === polymers2.length || // node2 is the actual end
+             (node2.data.paramNum === polymers2.length - 1) && (!CanvasDisplayService.isRiboseNode(polymers2[polymers2.length - 1]) && !CanvasDisplayService.isPhosphateNode(polymers2[polymers2.length - 1])))) {// node2 is the end (not counting a base after it)
+          var newNotation1 = sequence2.notation + 'P.' + sequence1.notation;
+          var newSequence1 = {
+            name: 'RNA' + postfix,
+            notation: newNotation1,
+            type: node1.data.seqType
+          };
+          sequences.push(newSequence1);
+
+          // and remove each of the sequences
+          for (var j = 0; j < sequences.length; ) {
+            if (sequences[j] === sequence1 || sequences[j] === sequence2) {
+              sequences.splice(j, 1);
+            }
+            else {
+              j++;
+            }
+          }
+
+          return getUpdatedHelmFromStrings();
+        }
+        else if (node2.data.paramNum === 1 && // node2 is the start of a sequence
+            (node1.data.paramNum === polymers1.length || // node1 is the actual end
+             (node1.data.paramNum === polymers1.length - 1) && (!CanvasDisplayService.isRiboseNode(polymers1[polymers1.length - 1]) && !CanvasDisplayService.isPhosphateNode(polymers1[polymers1.length - 1])))) {// node2 is the end (not counting a base after it)
+          var newNotation2 = sequence1.notation + 'P.' + sequence2.notation;
+          var newSequence2 = {
+            name: 'RNA' + postfix,
+            notation: newNotation2,
+            type: node1.data.seqType
+          };
+          sequences.push(newSequence2);
+
+          // and remove each of the sequences
+          for (var k = 0; k < sequences.length; ) {
+            if (sequences[k] === sequence1 || sequences[k] === sequence2) {
+              sequences.splice(k, 1);
+            }
+            else {
+              k++;
+            }
+          }
+
+          return getUpdatedHelmFromStrings();
+        }
+        else { // otherwise it's invalid
+          console.warn('You cannot link two nucleotide sequences from not the ends');
+          return helm;
+        }
+      }
+      // Phosphate to Phosphate - don't do anything
+      else if (CanvasDisplayService.isPhosphateNode(node1.data.name) && CanvasDisplayService.isPhosphateNode(node2.data.name)) {
+        console.warn('You can\'t link two Phosphate nodes directly together');
+        return helm;
+      }
+      // Ribose - Phospate - try to link if they're the ends of their sequences
+      else if ((CanvasDisplayService.isRiboseNode(node1.data.name) && CanvasDisplayService.isPhosphateNode(node2.data.name)) ||
+               (CanvasDisplayService.isRiboseNode(node2.data.name) && CanvasDisplayService.isPhosphateNode(node1.data.name))) {
+        return helm;
+      }
+      // otherwise there's a base in there somewhere, just give up
+      else {
+        console.warn('You can\'t link a base that\'s already in a sequence!');
+        return helm;
+      }
+
       console.log(polymers1);
       console.log(polymers2);
       return helm;
