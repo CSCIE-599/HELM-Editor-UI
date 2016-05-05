@@ -375,6 +375,8 @@ angular.module('helmeditor2App')
 
     // given the two nodes, tries to create a new connection between the two, if possible
     var createNewConnection = function (node1, node2) {
+      // only thing to do is make sure that there is an open connection on the nodes in question
+      
       console.log('connection');
       console.log(node1.data);
       console.log(node2.data);
