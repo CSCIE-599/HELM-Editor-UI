@@ -94,13 +94,6 @@ describe('Service: CanvasDisplayService', function () {
     var newRowPos = CanvasDisplayService.getNewRowPos(startPos, 'PEPTIDE', 'NUCLEOTIDE' );
     expect(angular.equals(newRowPos.x, 200) && angular.equals(newRowPos.y, startPos.y + 120)).toBe(true);
   });
-  
-  it('should zoom in by 20 percent', function () {
-     expect(!!CanvasDisplayService).toBe(true);
-  });
-  
-  it('should zoom out by 20 percent', function () {
-    expect(!!CanvasDisplayService).toBe(true);
-  });
+ 
 
 });
