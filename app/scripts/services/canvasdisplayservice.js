@@ -400,7 +400,6 @@ angular.module('helmeditor2App')
 
 			// sets the current selected node to be what was clicked
 	   	this.toggleSelectedNode = function (nodeDataModel, evt) {
-	   		console.log(nodeDataModel.id());
 	      // un-select if it was previously selected
 	      if (selectedNodeID === nodeDataModel.id()) {
 	        selectedNode = {};

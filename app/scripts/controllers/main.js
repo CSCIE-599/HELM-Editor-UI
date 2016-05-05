@@ -101,7 +101,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
   		  if (valid) {
   		  	main.helm = inputSequence;
           HELMNotationService.setHelm(inputSequence);
-  		  	$scope.displayOnCanvas(inputSequence);
+          $scope.displayOnCanvas(inputSequence);
   		  	main.getCanonicalHelmNotation(main.helm);
   		  }
   		  else {
@@ -1188,7 +1188,8 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
     main.mouseup = function (node, evt) { 
       // deal with this if we dropped onto a node
       if (main.dragStartNode && node && main.dragStartNode !== node) {
-        HELMNotationService.connectNodes(main.dragStartNode, node);
+        var helmOut = HELMNotationService.connectNodes(main.dragStartNode, node);
+        console.log(helmOut);
       }
 
       // clean up our stored information

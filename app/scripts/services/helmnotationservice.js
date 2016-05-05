@@ -8,7 +8,7 @@
  * Service in the helmeditor2App.
  */
 angular.module('helmeditor2App')
-  .service('HELMNotationService', ['HelmConversionService', 'CanvasDisplayService', function (HelmConversionService, CanvasDisplayService) {
+  .service('HELMNotationService', ['HelmConversionService', 'CanvasDisplayService', 'MonomerLibraryService', function (HelmConversionService, CanvasDisplayService, MonomerLibraryService) {
     var self = this;
 
     // store the current HELM string
@@ -310,23 +310,57 @@ angular.module('helmeditor2App')
 
     // try to make a connection between the two nodes passed, if possible
     var connectNodes = function (node1, node2) {
-      var newHelm;
       // first make sure we're not trying to connect the same node to itself
       if (node1 === node2) {
-        return;
+        return helm;
       }
       // are we connecting two nodes within the same sequence? -> make a cycle
       if (node1.data.seqName === node2.data.seqName) {
-        newHelm = createCycle(node1, node2);
+        return createCycle(node1, node2);
       }
       // are we connecting two nodes of the same type (not CHEM)? -> make one sequence only
       else if (node1.data.seqType === node2.data.seqType && node1.data.seqType !== 'CHEM') {
-        newHelm = joinSequence(node1, node2);
+        return joinSequence(node1, node2);
       }
       // otherwise we are just trying to make a connection
       else {
-        newHelm = createNewConnection(node1, node2);
+        return createNewConnection(node1, node2);
       }
+    };
+
+    // given the two nodes, tries to create a cyclical connection if there are open connections on each node
+    var createCycle = function (node1, node2) {
+      // find the sequence we're dealing with
+      var sequence = getSequenceByName(node1.data.seqName);
+
+      // if we didn't find it, bail out now
+      if (!sequence) {
+        return helm;
+      }
+
+      // otherwise, decide if it's a peptide or nucleotide (chem can't be cycles)
+      if (sequence.type === 'RNA') {
+        return createNucleotideCycle(node1, node2, sequence);
+      }
+      else {
+        return createPeptideCycle(node1, node2, sequence);
+      }
+    };
+
+    // given the two nodes, tries to join the two sequences together into one if it's possible
+    var joinSequence = function (node1, node2) {
+      console.log('sequence');
+      console.log(node1.data);
+      console.log(node2.data);
+      return helm;
+    };
+
+    // given the two nodes, tries to create a new connection between the two, if possible
+    var createNewConnection = function (node1, node2) {
+      console.log('connection');
+      console.log(node1.data);
+      console.log(node2.data);
+      return helm;
     };
 
     // helper function to retrieve the sequence by name
@@ -341,14 +375,8 @@ angular.module('helmeditor2App')
       return null;
     };
 
-    // helper function to add a connection
-    // var addConnection = function (seq1, seq2, nodeNum1, nodeNum2) {
-
-    // };
-
     // helper method to try to create a nucleotide cycle (NOT COMPLETE)
     var createNucleotideCycle = function (node1, node2, sequence) {
-      console.log('nuce');
       // for RNA, the cycle must be between two backbone nodes (i.e. not nodeType b)
       if (node1.data.nodeType === 'b' || node2.data.nodeType === 'b') {
         console.warn('Invalid cycle in RNA sequence attempted - branch monomers cannot be part of a cyclic connection.');
@@ -391,39 +419,94 @@ angular.module('helmeditor2App')
 
       // otherwise we just need to add a connection... but this isn't supported yet, so just log it
       console.warn('Nucloetide cycles are not supported currently in the editor.');
+      return helm;
     };
 
-    // given the two nodes, tries to create a cyclical connection if there are open connections on each node
-    var createCycle = function (node1, node2) {
-      // find the sequence we're dealing with
-      var sequence = getSequenceByName(node1.data.seqName);
+    // helper function to create the cycle in a peptide sequence (after checking validity)
+    var createPeptideCycle = function (node1, node2, sequence) {
+      // retrieve the monomers from the library (so we can see the available attachments)
+      var monomer1 = MonomerLibraryService.getMonomerById('PEPTIDE', node1.data.name);
+      var monomer2 = MonomerLibraryService.getMonomerById('PEPTIDE', node2.data.name);
+      var polymers = HelmConversionService.getPolymers(sequence.name, sequence.notation);
+      
+      // peptide cycles are valid as long as there's an open attachment
+      var totalFirstConnections = monomer1.encodedMonomer.Attachments.Attachment.length; 
+      var openFirstConnections = monomer1.encodedMonomer.Attachments.Attachment.length;
+      var totalSecondConnections = monomer2.encodedMonomer.Attachments.Attachment.length; 
+      var openSecondConnections = monomer2.encodedMonomer.Attachments.Attachment.length;
 
-      // if we didn't find it, bail out now
-      if (!sequence) {
-        return helm;
+      // decrease open connections if there are any monomers before each or after each
+      if (node1.data.paramNum > 1 && polymers.length > 1) {
+        openFirstConnections--;
+      }
+      if (node2.data.paramNum > 1 && polymers.length > 1) {
+        openSecondConnections--;
+      }
+      if (node1.data.paramNum < polymers.length && polymers.length > 1) {
+        openFirstConnections--;
+      }
+      if (node2.data.paramNum < polymers.length && polymers.length > 1) {
+        openSecondConnections--;
       }
 
-      // otherwise, decide if it's a peptide or nucleotide (chem can't be cycles)
-      if (sequence.type === 'RNA') {
-        createNucleotideCycle(node1, node2, sequence);
+      // check the connections for anything taking up attachments
+      for (var i = 0; i < connections.length; i++) {
+        // are either the source?
+        if (connections.source.sequenceName === sequence.name && 
+            connections.source.attachment.nodeNum === node1.data.paramNum) {
+          openFirstConnections--;
+        }
+        if (connections.source.sequenceName === sequence.name && 
+            connections.source.attachment.nodeNum === node2.data.paramNum) {
+          openSecondConnections--;
+        }
+        // or the destination
+        if (connections.dest.sequenceName === sequence.name && 
+            connections.dest.attachment.nodeNum === node1.data.paramNum) {
+          openFirstConnections--;
+        }
+        if (connections.dest.sequenceName === sequence.name && 
+            connections.dest.attachment.nodeNum === node2.data.paramNum) {
+          openSecondConnections--;
+        }
       }
-      else {
-        console.log('PEPTIDE - ' + sequence.type);
+
+      // and lastly, if there are open connections for both, add the connection
+      if (openFirstConnections > 0 && openSecondConnections > 0) {
+        addConnection(sequence.name,
+          node1.data.paramNum,
+          'R' + (totalFirstConnections - openFirstConnections + 1),
+          sequence.name,
+          node2.data.paramNum,
+          'R' + (totalSecondConnections - openSecondConnections + 1));
+
+        // and update the HELM string
+        updateHelmFromStrings();
       }
+
+      return helm;
     };
 
-    // given the two nodes, tries to join the two sequences together into one if it's possible
-    var joinSequence = function (node1, node2) {
-      console.log('sequence');
-      console.log(node1.data);
-      console.log(node2.data);
-    };
+    // helper function to add a connection
+    var addConnection = function (srcSeqName, srcAttNum, srcAttPt, dstSeqName, dstAttNum, dstAttPt) {
+      var connection = {
+        source: {
+          sequenceName: srcSeqName,
+          attachment: {
+            nodeNum: srcAttNum,
+            point: srcAttPt
+          }
+        },
+        dest: {
+          sequenceName: dstSeqName,
+          attachment: {
+            nodeNum: dstAttNum,
+            point: dstAttPt
+          }
+        }
+      };
 
-    // given the two nodes, tries to create a new connection between the two, if possible
-    var createNewConnection = function (node1, node2) {
-      console.log('connection');
-      console.log(node1.data);
-      console.log(node2.data);
+      connections.push(connection);
     };
 
     // make things global
