@@ -19,7 +19,9 @@
         </tr>
         <tr ng-show="modal.currentMonomer.encodedMonomer.MonomerSmiles">
             <td class='table-label'>Smiles</td>
-            <td class='table-data'>{{modal.currentMonomer.encodedMonomer.MonomerSmiles}}</td>
+            <td class='table-data'>
+                <div class='table-max-height'>{{modal.currentMonomer.encodedMonomer.MonomerSmiles}}</div>
+            </td>
         </tr>
         <tr ng-show="modal.currentMonomer.encodedMonomer.MonomerType">
             <td class='table-label'>Monomer Type</td>
@@ -35,7 +37,9 @@
         </tr>
         <tr ng-show="modal.currentMonomer.encodedMonomer.MonomerMolFile">
             <td class='table-label'>MolFile</td>
-            <td class='table-data'><div class='table-max-height'>{{modal.currentMonomer.encodedMonomer.MonomerMolFile}}</div></td>
+            <td class='table-data'>
+                <div class='table-max-height'>{{modal.currentMonomer.encodedMonomer.MonomerMolFile}}</div>
+            </td>
         </tr>
         <tr ng-show="modal.currentMonomerImageUrl">
             <td class='table-label'>Molecular Image</td>
