@@ -12,29 +12,29 @@ var app = angular.module('helmeditor2App');
 
 app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'CanvasDisplayService', 'MonomerSelectionService', 'HELMNotationService', 'FileSaver', 'Blob', '$uibModal', 
   function ($scope, webService, HelmConversionService, CanvasDisplayService, MonomerSelectionService, HELMNotationService, FileSaver, Blob, $uibModal) {
-    var main = this;
+    var self = this;
 
     /* Toggle modal dialogue display */
-    main.modalShown = false;
-    main.toggleModal = function() {
-      main.modalShown = !main.modalShown;
+    self.modalShown = false;
+    self.toggleModal = function() {
+      self.modalShown = !self.modalShown;
     };
 
     /* Variables for loadsequence view */
-    main.polyTypes = [
+    self.polyTypes = [
       { value: 'HELM', label:'HELM' },
       { value: 'RNA', label:'RNA/DNA' },
       { value: 'PEPTIDE', label:'PEPTIDE' },
     ];
 
     // indicates whether to reset during loading a new sequence 
-    main.shouldReset = true;
+    self.shouldReset = true;
 
-    $scope.polymerType = main.polyTypes[0];
-    main.result = '';
+    $scope.polymerType = self.polyTypes[0];
+    self.result = '';
 
     /* Check if need to validate HELM input, or convert input to Helm */
-    main.processInput = function (polymerType, inputSequence) {
+    self.processInput = function (polymerType, inputSequence) {
       /* Check that input is not empty */
       if (!angular.isDefined(inputSequence)) {
         window.alert('Invalid input');
@@ -42,22 +42,22 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
       }
 
       // clear the canvas if the reset check box is selected
-      if (main.shouldReset) {
+      if (self.shouldReset) {
         $scope.resetCanvas(); 
       }
       
       /* TODO: Check that input is valid type? */
       if (polymerType.value === 'HELM') {
-        main.validateHelmNotation(inputSequence);
+        self.validateHelmNotation(inputSequence);
       }
       else {
-        main.getHelmNotation(polymerType, inputSequence);
+        self.getHelmNotation(polymerType, inputSequence);
       }
-      main.toggleModal();
+      self.toggleModal();
     };
     
     /* clear the modal dialog text area*/
-    main.clear = function (){
+    self.clear = function (){
       var modalInputField = document.getElementById('input');
       if(modalInputField){
         modalInputField.value = '';  
@@ -65,15 +65,15 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
     };
 
     /* Invoke factory function to get HELM notation */
-    main.getHelmNotation = function (polymerType, inputSequence) {
+    self.getHelmNotation = function (polymerType, inputSequence) {
       var successCallback = function (helmNotation) {
-        main.helm = helmNotation;
+        self.helm = helmNotation;
         HELMNotationService.setHelm(helmNotation);
         $scope.displayOnCanvas(helmNotation);
-        main.getCanonicalHelmNotation(main.helm);
+        self.getCanonicalHelmNotation(self.helm);
       };
       var errorCallback = function(response) {
-        main.result = response.data;
+        self.result = response.data;
         HELMNotationService.setHelm('');
         console.log(response.data);
       };
@@ -88,29 +88,29 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
     };
 
     /* Invoke factory function to validate the HELM notation */
-    main.validateHelmNotation = function (inputSequence) {
+    self.validateHelmNotation = function (inputSequence) {
       // make sure that we have a string to even pass
       console.log(inputSequence);
       if (inputSequence === null || inputSequence.length === 0) {
-        main.helm = '';
+        self.helm = '';
         HELMNotationService.setHelm('');
         return;
       }
 
       var successCallback = function (valid) {
         if (valid) {
-          main.helm = inputSequence;
+          self.helm = inputSequence;
           HELMNotationService.setHelm(inputSequence);
           $scope.displayOnCanvas(inputSequence);
-          main.getCanonicalHelmNotation(main.helm);
+          self.getCanonicalHelmNotation(self.helm);
         }
         else {
-          main.result = 'INVALID HELM SEQUENCE';
+          self.result = 'INVALID HELM SEQUENCE';
           HELMNotationService.setHelm('');
         }
       };
       var errorCallback = function (response) {
-        main.result = response.data;
+        self.result = response.data;
         console.log(response.data);
       };
 
@@ -118,24 +118,24 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
     };
 
     /* Invoke factory function to get canonical helm notation */
-    main.getCanonicalHelmNotation = function (inputSequence) {
+    self.getCanonicalHelmNotation = function (inputSequence) {
       var successCallback = function (result) {
-        main.chelm = result;
+        self.chelm = result;
         console.log(result);
       };
       var errorCallback = function(response) {
         console.log(response.data);
         if(response.status === 400) {
-           main.chelm = response.data;
+           self.chelm = response.data;
         }
       };
       webService.getConversionCanonical(inputSequence).then(successCallback, errorCallback);
      };
 
     /* Invoke factory function to get molecular weight */
-    main.getMolecularWeight = function (inputSequence) {
+    self.getMolecularWeight = function (inputSequence) {
       var successCallback = function (result) {
-          main.molecularweight = result;
+          self.molecularweight = result;
         };
         var errorCallback = function(response) {
           console.log(response.data);
@@ -144,9 +144,9 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
      };
 
     /* Invoke factory function to get molecular formula */
-    main.getMolecularFormula = function (inputSequence) {
+    self.getMolecularFormula = function (inputSequence) {
       var successCallback = function (result) {
-        main.molecularformula = result;
+        self.molecularformula = result;
       };
       var errorCallback = function(response) {
         console.log(response.data);
@@ -155,9 +155,9 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
      };
 
      /* Invoke factory function to get the extinction coefficient */
-    main.getExtinctionCoefficient = function (inputSequence) {
+    self.getExtinctionCoefficient = function (inputSequence) {
       var successCallback = function (result) {
-        main.extcoefficient = result;
+        self.extcoefficient = result;
         console.log(result);
       };
       var errorCallback = function(response) {
@@ -198,7 +198,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 
       for (var i = 0; i < sequenceArray.length; i++) {
         var seqType = $scope.getType(sequenceArray[i].name); //PEPTIDE, NUCLEOTIDE, or CHEM
-         main.seqtype = seqType;
+         self.seqtype = seqType;
          pos = CanvasDisplayService.getNewRowPos(pos, seqType, prevSeqType);     //add a new row for a every iteration
          prevSeqType = seqType;
         graphedNodes.push({
@@ -217,7 +217,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
     
       //zoomin the default view by 20%
       if (zoomCount === 0) {
-        $scope.zoom(0.8, null, document.getElementById('mainCanvas'));
+        $scope.zoom(0.8, null, document.getElementById('selfCanvas'));
         $scope.zoom(1.0, null, document.getElementById('lowerCanvas'));
       }
     };
@@ -670,20 +670,20 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
       CanvasDisplayService.setNodeNum(0);
       CanvasDisplayService.setParamNum(0);
       $scope.canvasView = new CanvasDisplayService.CanvasView(emptyData);
-      $scope.updateLower(main.viewTypes[0]);
-      main.result = '';
-      main.seqtype = '';
-      main.helm = '';
+      $scope.updateLower(self.viewTypes[0]);
+      self.result = '';
+      self.seqtype = '';
+      self.helm = '';
 
       HELMNotationService.setHelm('');
 
-      main.chelm = '';
-      main.molecularweight = '';
-      main.molecularformula = '';
-      main.extcoefficient = '';
-      main.clear();
+      self.chelm = '';
+      self.molecularweight = '';
+      self.molecularformula = '';
+      self.extcoefficient = '';
+      self.clear();
 
-      main.helmImageLink = '';     
+      self.helmImageLink = '';     
     };
 
     /* zoom and pan functions */
@@ -706,24 +706,24 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
      * Begin code for lower pane
      */
        /* Variables for view types in lower pane */
-    main.viewTypes = [
+    self.viewTypes = [
       { value: 'HELM', label:'HELM' },
       { value: 'Sequence', label:'Sequence' },
       { value: 'Molecule Properties', label:'Molecule Properties' }
     ];
-    $scope.viewType = main.viewTypes[0];
+    $scope.viewType = self.viewTypes[0];
     $scope.helm = true;
     $scope.sequence = false;
     $scope.moleculeprops = false;
-    main.result = '';
-    main.helm = '';
+    self.result = '';
+    self.helm = '';
     HELMNotationService.setHelm('');
-    main.chelm = '';
-    main.componenttype = '';
-    main.molecularweight = '';
-    main.molecularformula = '';
-    main.extcoefficient = '';
-    main.helmImageLink = '';
+    self.chelm = '';
+    self.componenttype = '';
+    self.molecularweight = '';
+    self.molecularformula = '';
+    self.extcoefficient = '';
+    self.helmImageLink = '';
 
     /* view type selection event handler */
     $scope.updateLower = function(selectedView) {
@@ -738,11 +738,11 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
           $scope.helm =false;
           $scope.sequence = false;
           $scope.moleculeprops = true;
-          if(main.helm !== '' && main.molecularformula === '') {
-            main.getMolecularWeight(main.helm);
-            main.getMolecularFormula(main.helm);
-            main.getExtinctionCoefficient(main.helm);
-            main.helmImageLink = 'Show';
+          if(self.helm !== '' && self.molecularformula === '') {
+            self.getMolecularWeight(self.helm);
+            self.getMolecularFormula(self.helm);
+            self.getExtinctionCoefficient(self.helm);
+            self.helmImageLink = 'Show';
           }
           break;
         case 'Sequence':
@@ -769,8 +769,8 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
         $scope.requestedview = '';
         console.log(response);
       };
-      if (main.helm !== '') {
-        webService.getHelmImageUrl(main.helm).then(successCallback, errorCallback);
+      if (self.helm !== '') {
+        webService.getHelmImageUrl(self.helm).then(successCallback, errorCallback);
       } else {
         $scope.imageMessage = 'Structure is empty!';
       }
@@ -801,7 +801,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 
     // Methods used by the monomer library to add/drag elements to the 
     // sets the current selected monomer to be what was clicked
-    main.toggleSelectedMonomer = function (monomer, evt) {
+    self.toggleSelectedMonomer = function (monomer, evt) {
       MonomerSelectionService.toggleSelectedMonomer(monomer, evt);
     };
 
@@ -855,7 +855,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
         // and update (for now, until it's all linked together correctly)
         var out = HELMNotationService.getHelm();
         clearCanvas();
-        main.helm = out;
+        self.helm = out;
         $scope.displayOnCanvas(out);
       }
     };
@@ -961,8 +961,8 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
       null,
       ['View', function () {}, [
         ['HELM Notation', function () {
-          $scope.requestedview = main.helm;
-          if (main.helm.length > 100) {    //for long sequences,
+          $scope.requestedview = self.helm;
+          if (self.helm.length > 100) {    //for long sequences,
             $scope.openWideModal();      //use wider modal
           }
           else {
@@ -970,8 +970,8 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
           }
         }],
         ['Canonical HELM Notation', function () {
-          $scope.requestedview = main.chelm;
-          if (main.helm.length > 100){
+          $scope.requestedview = self.chelm;
+          if (self.helm.length > 100){
             $scope.openWideModal();
           }
           else {
@@ -996,24 +996,24 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
           $scope.open();
         }]*/
         ['Molecule Properties', function () {
-          main.getMolecularWeight(main.helm);       //sets main.molecularweight
-          main.getMolecularFormula(main.helm);      //sets main.molecularformula
-          main.getExtinctionCoefficient(main.helm); //sets main.extcoefficient
+          self.getMolecularWeight(self.helm);       //sets self.molecularweight
+          self.getMolecularFormula(self.helm);      //sets self.molecularformula
+          self.getExtinctionCoefficient(self.helm); //sets self.extcoefficient
           $scope.openMolecularPropertiesModal();
         }]
       ]],
       null,
       ['Copy', function () {}, [
         /*['Image', function ($itemScope) {
-          $scope.requestednotation = webService.getHelmImageUrl(main.helm);
+          $scope.requestednotation = webService.getHelmImageUrl(self.helm);
           $scope.copyToClipboard();
         }],*/
         ['HELM Notation', function () {
-          $scope.requestednotation = main.helm;
+          $scope.requestednotation = self.helm;
           $scope.copyToClipboard();
         }],
         ['Canonical HELM Notation', function () {
-          $scope.requestednotation = main.chelm;
+          $scope.requestednotation = self.chelm;
           $scope.copyToClipboard();
         }]
         /*,
@@ -1033,12 +1033,12 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
       null,
       ['Save', function () {}, [
         ['HELM Notation', function () {
-          $scope.requestednotation = main.helm;
+          $scope.requestednotation = self.helm;
           $scope.fileExtension = '.helm';
           $scope.downloadFile();
         }],
         ['Canonical HELM Notation', function () {
-          $scope.requestednotation = main.chelm;
+          $scope.requestednotation = self.chelm;
           $scope.fileExtension = '.chelm';
           $scope.downloadFile();
         }]
@@ -1062,14 +1062,14 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
     ];
 
     // listen for the delete key being released and try to delete the node if possible
-    main.keyUp = function (evt) {
+    self.keyUp = function (evt) {
       // only do it on the delete key (fn+delete on Macs)
       if (evt.which === 46) {
-        main.trashClicked();
+        self.trashClicked();
       }
     };
 
-    main.showTrash = function () {
+    self.showTrash = function () {
       var currentNode = CanvasDisplayService.getSelectedNode();
       if (!currentNode || !currentNode.data) {
         return false;
@@ -1079,7 +1079,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 
     // "remove" button is clicked -- should parse current HELM string, removing the HELM substring
     // associated with the selected node and generate new HELM string(s) and graph
-    main.trashClicked = function () {
+    self.trashClicked = function () {
 
       var currentNode = CanvasDisplayService.getSelectedNode();
       if (!currentNode || !currentNode.data) {
@@ -1096,7 +1096,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 
           var updatedHelm = HELMNotationService.getHelm();
           clearCanvas();
-          main.validateHelmNotation(updatedHelm);
+          self.validateHelmNotation(updatedHelm);
           return;
         }
 
@@ -1116,7 +1116,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
             var updatedHELM = HELMNotationService.helmNodeRemoved(polymers, sequences[i], currentNode, nodeID);
             
             clearCanvas();
-            main.validateHelmNotation(updatedHELM);
+            self.validateHelmNotation(updatedHELM);
           }
           else{
             // track number of elements in sequences not containing the node-to-delete
@@ -1127,22 +1127,22 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
     };
 
     // remember the node that we started with
-    main.dragStartNode = null;
-    main.dragStartLocation = null;
-    main.dragEndLocation = null;
-    main.svgEl = null;
-    main.svgPt = null;
+    self.dragStartNode = null;
+    self.dragStartLocation = null;
+    self.dragEndLocation = null;
+    self.svgEl = null;
+    self.svgPt = null;
 
     // handle the beginning of a drag
-    main.mousedown = function (node, evt) {
+    self.mousedown = function (node, evt) {
       // set up the SVG stuff for transforms
-      if (!main.svgEl) {
-        main.svgEl = document.querySelector('svg');
-        main.svgPt = main.svgEl.createSVGPoint();
+      if (!self.svgEl) {
+        self.svgEl = document.querySelector('svg');
+        self.svgPt = self.svgEl.createSVGPoint();
       }
 
-      main.dragStartNode = node;
-      main.dragStartLocation = {
+      self.dragStartNode = node;
+      self.dragStartLocation = {
         x: node.x() + node.width()/2,
         y: node.y() + node.height()/2
       };
@@ -1151,45 +1151,45 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
     };
 
     // on the move, make sure to update our destination
-    main.mousemove = function (evt) {
-      if (main.dragStartNode) {
+    self.mousemove = function (evt) {
+      if (self.dragStartNode) {
         // transform the point correctly
-        main.svgPt.x = evt.clientX;
-        main.svgPt.y = evt.clientY;
-        var pt = main.svgPt.matrixTransform(main.svgEl.getElementById('map-matrix').getScreenCTM().inverse());
-        main.dragEndLocation = {
+        self.svgPt.x = evt.clientX;
+        self.svgPt.y = evt.clientY;
+        var pt = self.svgPt.matrixTransform(self.svgEl.getElementById('map-matrix').getScreenCTM().inverse());
+        self.dragEndLocation = {
           x: pt.x,
           y: pt.y
         };
 
         // shift the dragged location back from the cursor so we don't click it
-        if (main.dragEndLocation.x < main.dragStartLocation.x) {
-          main.dragEndLocation.x += 2;
+        if (self.dragEndLocation.x < self.dragStartLocation.x) {
+          self.dragEndLocation.x += 2;
         }
         else {
-          main.dragEndLocation.x -= 2;
+          self.dragEndLocation.x -= 2;
         }
-        if (main.dragEndLocation.y < main.dragStartLocation.y) {
-          main.dragEndLocation.y += 2;
+        if (self.dragEndLocation.y < self.dragStartLocation.y) {
+          self.dragEndLocation.y += 2;
         }
         else {
-          main.dragEndLocation.y -= 2;
+          self.dragEndLocation.y -= 2;
         }
       }
     };
 
     // on the mouse up, try to connect the nodes
-    main.mouseup = function (node, evt) { 
+    self.mouseup = function (node, evt) { 
       // deal with this if we dropped onto a node
-      if (main.dragStartNode && node && main.dragStartNode !== node) {
-        var helmOut = HELMNotationService.connectNodes(main.dragStartNode, node);
+      if (self.dragStartNode && node && self.dragStartNode !== node) {
+        var helmOut = HELMNotationService.connectNodes(self.dragStartNode, node);
         console.log(helmOut);
       }
 
       // clean up our stored information
-      main.dragStartNode = null;
-      main.dragStartLocation = null;
-      main.dragEndLocation = null;
+      self.dragStartNode = null;
+      self.dragStartLocation = null;
+      self.dragEndLocation = null;
       evt.stopPropagation();
     };
 
