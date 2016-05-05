@@ -44,6 +44,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
       // clear the canvas if the reset check box is selected
       if (self.shouldReset) {
         $scope.resetCanvas(); 
+        CanvasDisplayService.resetCanvas();
       }
       
       /* TODO: Check that input is valid type? */
@@ -70,6 +71,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
         self.helm = helmNotation;
         HELMNotationService.setHelm(helmNotation);
         $scope.displayOnCanvas(helmNotation);
+        CanvasDisplayService.loadHelmTranslationData(HelmConversionService.convertHelmNotationToSequence(helmNotation));
         self.getCanonicalHelmNotation(self.helm);
       };
       var errorCallback = function(response) {
@@ -102,6 +104,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
           self.helm = inputSequence;
           HELMNotationService.setHelm(inputSequence);
           $scope.displayOnCanvas(inputSequence);
+          CanvasDisplayService.loadHelmTranslationData(HelmConversionService.convertHelmNotationToSequence(inputSequence));
           self.getCanonicalHelmNotation(self.helm);
         }
         else {
@@ -167,10 +170,15 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
     };
 
     // link up the canvas that we are displaying
-    self.canvasView = CanvasDisplayService.canvasView;
+    self.getCanvasView = function () {
+      return CanvasDisplayService.canvasView;
+    };
+    CanvasDisplayService.resetCanvas();
+    self.logCanvasView = function () {
+      console.log(self.getCanvasView());
+    };
 
 
-    
 
     /*
     * Begin code for Canvas
@@ -204,9 +212,9 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 
       for (var i = 0; i < sequenceArray.length; i++) {
         var seqType = $scope.getType(sequenceArray[i].name); //PEPTIDE, NUCLEOTIDE, or CHEM
-         self.seqtype = seqType;
-         pos = CanvasDisplayService.getNewRowPos(pos, seqType, prevSeqType);     //add a new row for a every iteration
-         prevSeqType = seqType;
+        self.seqtype = seqType;
+        pos = CanvasDisplayService.getNewRowPos(pos, seqType, prevSeqType);     //add a new row for a every iteration
+        prevSeqType = seqType;
         graphedNodes.push({
           name : sequenceArray[i].name,
           nodes : $scope.generateGraph(sequenceArray[i].sequence, sequenceArray[i].name, connectionArray, pos, seqType, sequenceArray)
@@ -396,75 +404,75 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
       return new CanvasDisplayService.SubGraph(firstNode,currNode,allNodes);
     };
 
-      //Returns the x position for the param CHEM node
-      //
-      //@param  connectionArray    array of connections encoded in HELM Notation
-      //@param  chemSequenceName   name of CHEM node (eg, 'CHEM1')
-      $scope.getCHEMXPosition = function (connectionArray, chemSequenceName,sequenceArray) {
-        var sequenceCHEMConnectsTo, nodeCHEMConnectsTo, length;
+    //Returns the x position for the param CHEM node
+    //
+    //@param  connectionArray    array of connections encoded in HELM Notation
+    //@param  chemSequenceName   name of CHEM node (eg, 'CHEM1')
+    $scope.getCHEMXPosition = function (connectionArray, chemSequenceName,sequenceArray) {
+      var sequenceCHEMConnectsTo, nodeCHEMConnectsTo, length;
 
-        //get the sequence name and number for node that CHEM connections to
-        for (var i = 0; i < connectionArray.length; i++) {
-          if (chemSequenceName ===connectionArray[i].source.name) { //if CHEM is the source node for connection
-            sequenceCHEMConnectsTo = connectionArray[i].dest.name;
-            nodeCHEMConnectsTo = connectionArray[i].dest.nodeID;
-          }
-          else if (chemSequenceName === connectionArray[i].dest.name) { //if CHEM is dest node for connection
-            sequenceCHEMConnectsTo = connectionArray[i].source.name;
-            nodeCHEMConnectsTo = connectionArray[i].source.nodeID;
-          }
+      //get the sequence name and number for node that CHEM connections to
+      for (var i = 0; i < connectionArray.length; i++) {
+        if (chemSequenceName ===connectionArray[i].source.name) { //if CHEM is the source node for connection
+          sequenceCHEMConnectsTo = connectionArray[i].dest.name;
+          nodeCHEMConnectsTo = connectionArray[i].dest.nodeID;
         }
+        else if (chemSequenceName === connectionArray[i].dest.name) { //if CHEM is dest node for connection
+          sequenceCHEMConnectsTo = connectionArray[i].source.name;
+          nodeCHEMConnectsTo = connectionArray[i].source.nodeID;
+        }
+      }
 
-        //get length of the sequence that CHEM connects to
-        for (var j = 0; j < sequenceArray.length; j++) {
-          if (sequenceCHEMConnectsTo === sequenceArray[j].name) {
-            length = sequenceArray[j].sequence.length;
-          }
+      //get length of the sequence that CHEM connects to
+      for (var j = 0; j < sequenceArray.length; j++) {
+        if (sequenceCHEMConnectsTo === sequenceArray[j].name) {
+          length = sequenceArray[j].sequence.length;
         }
+      }
 
-        //TO-DO: redo hard-coding with spacing
-        if (nodeCHEMConnectsTo < length/2) {    //if CHEM node connects near the beginning of another sequence,
-          return (100 - monomerSpacing);        //position CHEM node to left
-        }
-        else {                                  //if CHEM connects near the end of another sequence,
-          return ((length-4) * monomerSpacing); //position CHEM node to right
-        }
-      };
+      //TO-DO: redo hard-coding with spacing
+      if (nodeCHEMConnectsTo < length/2) {    //if CHEM node connects near the beginning of another sequence,
+        return (100 - monomerSpacing);        //position CHEM node to left
+      }
+      else {                                  //if CHEM connects near the end of another sequence,
+        return ((length-4) * monomerSpacing); //position CHEM node to right
+      }
+    };
     //makes a cyclic peptide, with two stems on the left and a circle on the right
-      $scope.separateSequences = function (sequence, seqName, connectionArray) {
+    $scope.separateSequences = function (sequence, seqName, connectionArray) {
 
-        //get the start and end points of cycle
-        var connectionPoints = $scope.getCyclicalSourceDest(seqName, connectionArray);
-        var cycleStartId =  connectionPoints[1];
-        var cycleEndId = connectionPoints[0];
-        var slicedSeqArr  =  [];
-        var beforeArr = [];
-        var afterArr = [];
-        var cycle = [];
+      //get the start and end points of cycle
+      var connectionPoints = $scope.getCyclicalSourceDest(seqName, connectionArray);
+      var cycleStartId =  connectionPoints[1];
+      var cycleEndId = connectionPoints[0];
+      var slicedSeqArr  =  [];
+      var beforeArr = [];
+      var afterArr = [];
+      var cycle = [];
 
-        for (var i=0;i<sequence.length;i++) {
-          if (i < cycleStartId) {
-        beforeArr.push(sequence[i]);
-          }
-          else if (i>= cycleStartId && i<=cycleEndId) {
-        cycle.push(sequence[i]);
-          }
-          else if (i>cycleEndId) {
-            afterArr.push(sequence[i]);
-          }
+      for (var i=0;i<sequence.length;i++) {
+        if (i < cycleStartId) {
+      beforeArr.push(sequence[i]);
         }
+        else if (i>= cycleStartId && i<=cycleEndId) {
+      cycle.push(sequence[i]);
+        }
+        else if (i>cycleEndId) {
+          afterArr.push(sequence[i]);
+        }
+      }
 
-        if (beforeArr.length !== 0) {
-          slicedSeqArr.push(new CanvasDisplayService.ChildSequence('linear', beforeArr));
-        }
-        if (cycle.length !== 0) {
-          slicedSeqArr.push(new CanvasDisplayService.ChildSequence('cyclic',cycle));
-        }
-        if (afterArr.length !== 0) {
-          slicedSeqArr.push(new CanvasDisplayService.ChildSequence('linear', afterArr));
-        }
-        return slicedSeqArr;
-      };
+      if (beforeArr.length !== 0) {
+        slicedSeqArr.push(new CanvasDisplayService.ChildSequence('linear', beforeArr));
+      }
+      if (cycle.length !== 0) {
+        slicedSeqArr.push(new CanvasDisplayService.ChildSequence('cyclic',cycle));
+      }
+      if (afterArr.length !== 0) {
+        slicedSeqArr.push(new CanvasDisplayService.ChildSequence('linear', afterArr));
+      }
+      return slicedSeqArr;
+    };
 
       //makes a cyclic peptide after determining if there are any linear and cyclic combo
     $scope.makeGraphWithCycles = function (sequence, dir, seqType, pos, seqName, connectionArray, sequenceArray) {
@@ -861,8 +869,10 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
         // and update (for now, until it's all linked together correctly)
         var out = HELMNotationService.getHelm();
         clearCanvas();
+        CanvasDisplayService.resetCanvas();
         self.helm = out;
         $scope.displayOnCanvas(out);
+        CanvasDisplayService.loadHelmTranslationData(HelmConversionService.convertHelmNotationToSequence(out));
       }
     };
 
@@ -1102,6 +1112,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 
           var updatedHelm = HELMNotationService.getHelm();
           clearCanvas();
+          CanvasDisplayService.resetCanvas();
           self.validateHelmNotation(updatedHelm);
           return;
         }
@@ -1122,6 +1133,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
             var updatedHELM = HELMNotationService.helmNodeRemoved(polymers, sequences[i], currentNode, nodeID);
             
             clearCanvas();
+            CanvasDisplayService.resetCanvas();
             self.validateHelmNotation(updatedHELM);
           }
           else{

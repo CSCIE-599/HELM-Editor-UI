@@ -556,4 +556,509 @@ angular.module('helmeditor2App')
       this.last = las;
       this.nodes = nodesArr;
     };
+
+    /* the following section controls the state of the current canvasView */
+    self.canvasView = null;
+
+    // reset the canvas to a blank slate
+    self.resetCanvas = function () {
+      var emptyData = {
+        nodes: [],
+        connections: []
+      };
+      self.canvasView = new self.CanvasView(emptyData);
+      self.nodeNum = 0;
+      self.paramNum = 0;
+    };
+
+    // loads a set of connections and nodes
+    self.loadHelmTranslationData = function (helmTranslationData) {
+      var sequenceArray = helmTranslationData[0]; //each element has .name and .sequence (array of letters)
+      var connectionArray = helmTranslationData[1]; //each element has .source and .dest
+
+      // reset node ID to start at 0
+      self.nodeId = 0;
+
+      // remember the previous sequence type
+      var prevSeqType;
+
+      // the nodes that we're graphing
+      var graphedNodes = [];
+
+      // go through all sequences and convert them to nodes
+      for (var i = 0; i < sequenceArray.length; i++) {
+        // retrieve the sequence type and the row position for the new node
+        var seqType = getSequenceType(sequenceArray[i].name);
+        var pos = self.getNewRowPos(pos, seqType, prevSeqType);
+        prevSeqType = seqType;
+
+        // push the sequence to our graph
+        graphedNodes.push({
+          name: sequenceArray[i].name,
+          nodes: generateGraph(sequenceArray[i].sequence,
+            sequenceArray[i].name,
+            connectionArray,
+            pos,
+            seqType,
+            sequenceArray)
+        });
+
+        // reset our numbering for the next sequence
+        self.nodeNum = 0;
+        self.paramNum = 0;
+      }
+
+      // now parse the connections
+      if (connectionArray.length > 0) {
+        makeRequestedConnections(connectionArray, graphedNodes);
+      }
+
+      // TODO - do we need to zoom here? Can we even? Probably not...
+    };
+
+    // spacing between monomers and connection length
+    var monomerSpacing = 50;
+    var connectionLength = 70;
+
+    // helper method that generates a graph of the sequence
+    // returns all drawn nodes
+    // the nodes are used to make the connections explicitly specified in the HELM notation
+    var generateGraph = function (sequence, sequenceName, connectionArray, pos, sequenceType, sequenceArray) {
+      var graphedNodes = []; // all nodes created and graphed
+      var dir = 'forward'; // 'forward' places nodes to the right, 'reverse' places nodes to the left.
+
+      // handle linear sequences
+      if (!isCyclical(sequenceName, connectionArray)) {
+        var currentSubGraph = makeLinearGraph(sequence, 
+          dir, 
+          sequenceType, 
+          pos, 
+          sequenceName, 
+          connectionArray, 
+          sequenceArray);
+        graphedNodes.push(currentSubGraph.nodes);
+      }
+      // and cyclical ones
+      else {
+        var nodes = makeGraphWithCycles(sequence, 
+          dir, 
+          sequenceType, 
+          pos, 
+          sequenceName, 
+          connectionArray, 
+          sequenceArray);
+        graphedNodes.push(nodes);
+      }
+
+      return graphedNodes;
+    };
+
+    // makes a linear graph starting from the pos
+    // returns a Subgraph obj, that's already drawn on the canvas
+    // a subgraph has firstNode, lastNode and array of allnodes in the graph
+    var makeLinearGraph = function (monomerArray, dir, seqType, pos, sequenceName, connectionArray, sequenceArray) {
+      var subGraph;
+      switch (seqType) {
+        case 'NUCLEOTIDE':
+          subGraph = processNucleotides(monomerArray, pos, dir, sequenceName);
+          break;
+        case 'PEPTIDE':
+          subGraph = processPeptides(monomerArray, pos, dir, sequenceName);
+          break;
+        case 'CHEM':
+          subGraph = processChemicalModifiers(monomerArray, sequenceName, pos, connectionArray, sequenceArray);
+          break;
+      }
+
+      return subGraph;
+    };
+
+    // helper fucntion to draw out nucleotide sequences
+    var processNucleotides = function (monomerArray, pos, dir, sequenceName) {
+      var prevNode, currNode, firstNode, riboseNode, baseNode;
+      var x = pos.x;
+      var y = pos.y;
+      var allNodes = [];
+
+      // go through every element in the monomer array
+      angular.forEach(monomerArray, function (value, key) {
+        var color = self.getNodeColor(value);
+
+        // handle Phosphate nodes
+        if (self.isPhosphateNode(value)) {
+          currNode = self.createPhosphate(value, color, x, y, sequenceName);
+          // keep track of the first node
+          if (key === 0) {
+            firstNode = currNode;
+          }
+          // add the node to our list and the actual view
+          allNodes.push(currNode);
+          self.canvasView.addNode(currNode);
+
+          // add a connection if this is not the first
+          if (prevNode) {
+            addNewConnection(prevNode, currNode);
+          }
+        }
+        // ribose nodes
+        else if (self.isRiboseNode(value)) {
+          if (prevNode) {
+            currNode = self.createRibose(value, color, prevNode.x + monomerSpacing, y, sequenceName);
+          }
+          else {
+            currNode = self.createRibose(value, color, x , y, sequenceName);
+          }
+          riboseNode = currNode;
+          if (key === 0) {
+            firstNode = currNode;
+          }
+          allNodes.push(currNode);
+          self.canvasView.addNode(currNode);
+          if (prevNode) {
+            addNewConnection(prevNode, currNode);
+          }
+        }
+        // base nodes
+        else {
+          if (riboseNode) {
+            baseNode = self.createBase(value, color, riboseNode.x , riboseNode.y + connectionLength, sequenceName);
+            if (key === 0) {
+              firstNode = currNode;
+            }
+            allNodes.push(baseNode);
+            self.canvasView.addNode(baseNode);
+          }
+          if (riboseNode && baseNode) {
+            addNewConnection(riboseNode, baseNode);
+          }
+        }
+
+        // move spacing and remember the last node
+        if (currNode) {
+          if (dir === 'reverse') {
+            x = currNode.x - monomerSpacing;
+          }
+          else {
+            x = currNode.x + monomerSpacing;
+          }
+          prevNode = currNode;
+        }
+      });
+
+      // and lastly return the new object
+      return new self.SubGraph(firstNode, currNode, allNodes);
+    };
+
+    // helper function which draws peptide sequences
+    var processPeptides = function (monomerArr, pos, dir, sequenceName) {
+      var prevNode, currNode, firstNode;
+      var x = pos.x;
+      var y = pos.y;
+      var allNodes = [];
+
+      // go through all monomers to add them in
+      angular.forEach(monomerArr, function(value, key) {
+
+        currNode = self.createNode(value, 'PEPTIDE', '#00C3FF', true, x , y, '',sequenceName);
+        allNodes.push(currNode);
+        self.canvasView.addNode(currNode);
+        if (key === 0) {
+          firstNode = currNode;
+        }
+        if (prevNode) {
+          addNewConnection(prevNode, currNode);
+        }
+        prevNode = currNode;
+
+        if (dir === 'reverse') {
+          x = currNode.x - monomerSpacing;
+        }
+        else {
+          x = currNode.x + monomerSpacing;
+        }
+      });
+
+      return new self.SubGraph(firstNode,currNode,allNodes);
+    };
+
+    //helper function which draws CHEM sequences
+    //TO-DO: verify that CHEM sequences always consist of only 1 element
+    var processChemicalModifiers = function (monomerArr, chemSequenceName, pos, connectionArray, sequenceArray) {
+      var chemColor;
+      if (monomerArr[0] === 'sDBL') {
+        chemColor =  '#FFFFFF';
+      }
+      else {
+        chemColor = '#a020f0';
+      }
+
+      //get x position, whether to the far left or right side of canvas
+      var x = getCHEMXPosition(connectionArray, chemSequenceName, sequenceArray);
+      var y;
+      if (!x) {
+        x = pos.x;
+        y = pos.y;
+      }
+      else {
+        y = 190;  // TO-DO: this is hard coded to be slightly below the previous, first sequence
+      }
+      var allNodes = [];
+      var currNode = self.createNode(monomerArr[0], 'CHEM', chemColor, false, x, y, '', chemSequenceName);
+      allNodes.push(currNode);
+      var firstNode = currNode;
+
+      self.canvasView.addNode(currNode);
+      return new self.SubGraph(firstNode,currNode,allNodes);
+    };
+
+    //Returns the x position for the param CHEM node
+    //
+    //@param  connectionArray    array of connections encoded in HELM Notation
+    //@param  chemSequenceName   name of CHEM node (eg, 'CHEM1')
+    var getCHEMXPosition = function (connectionArray, chemSequenceName,sequenceArray) {
+      var sequenceCHEMConnectsTo, nodeCHEMConnectsTo, length;
+
+      //get the sequence name and number for node that CHEM connections to
+      for (var i = 0; i < connectionArray.length; i++) {
+        if (chemSequenceName === connectionArray[i].source.name) { //if CHEM is the source node for connection
+          sequenceCHEMConnectsTo = connectionArray[i].dest.name;
+          nodeCHEMConnectsTo = connectionArray[i].dest.nodeID;
+        }
+        else if (chemSequenceName === connectionArray[i].dest.name) { //if CHEM is dest node for connection
+          sequenceCHEMConnectsTo = connectionArray[i].source.name;
+          nodeCHEMConnectsTo = connectionArray[i].source.nodeID;
+        }
+      }
+
+      //get length of the sequence that CHEM connects to
+      for (var j = 0; j < sequenceArray.length; j++) {
+        if (sequenceCHEMConnectsTo === sequenceArray[j].name) {
+          length = sequenceArray[j].sequence.length;
+        }
+      }
+
+      //TO-DO: redo hard-coding with spacing
+      if (nodeCHEMConnectsTo < length/2) {    //if CHEM node connects near the beginning of another sequence,
+        return (100 - monomerSpacing);        //position CHEM node to left
+      }
+      else {                                  //if CHEM connects near the end of another sequence,
+        return ((length-4) * monomerSpacing); //position CHEM node to right
+      }
+    };
+
+    // makes a cyclic peptide, with two stems on the left and a circle on the right
+    var separateSequences = function (sequence, seqName, connectionArray) {
+      //get the start and end points of cycle
+      var connectionPoints = getCyclicalSourceDest(seqName, connectionArray);
+      var cycleStartId =  connectionPoints[1];
+      var cycleEndId = connectionPoints[0];
+      var slicedSeqArr  =  [];
+      var beforeArr = [];
+      var afterArr = [];
+      var cycle = [];
+
+      for (var i = 0; i < sequence.length; i++) {
+        if (i < cycleStartId) {
+          beforeArr.push(sequence[i]);
+        }
+        else if (i >= cycleStartId && i <= cycleEndId) {
+          cycle.push(sequence[i]);
+        }
+        else if (i > cycleEndId) {
+          afterArr.push(sequence[i]);
+        }
+      }
+
+      if (beforeArr.length !== 0) {
+        slicedSeqArr.push(new self.ChildSequence('linear', beforeArr));
+      }
+      if (cycle.length !== 0) {
+        slicedSeqArr.push(new self.ChildSequence('cyclic',cycle));
+      }
+      if (afterArr.length !== 0) {
+        slicedSeqArr.push(new self.ChildSequence('linear', afterArr));
+      }
+      return slicedSeqArr;
+    };
+
+    //makes a cyclic peptide after determining if there are any linear and cyclic combo
+    var makeGraphWithCycles = function (sequence, dir, seqType, pos, seqName, connectionArray, sequenceArray) {
+      var graphedNodes = [];  //array of all nodes created and graphed
+      var currSubGraph;
+      var prevSubGraph;
+
+      //separate the sequence into linear and cyclical slices
+      var slicedSequenceArr =  separateSequences(sequence, seqName, connectionArray);
+
+      for (var i = 0; i < slicedSequenceArr.length; i++) {
+        var slice = slicedSequenceArr[i];
+
+        if (slice.flow === 'linear') {
+          currSubGraph = makeLinearGraph(slice.monomers, dir, seqType, pos, seqName, connectionArray, sequenceArray);
+          graphedNodes.push(currSubGraph.nodes);
+        }
+        else {
+          currSubGraph = makeCyclicalGraph(slice.monomers, seqType, pos, dir);
+          graphedNodes.push(currSubGraph.nodes);
+          dir = 'reverse';
+        }
+        if (prevSubGraph && currSubGraph) {
+          addNewConnection(prevSubGraph.last, currSubGraph.first);
+        }
+        prevSubGraph = currSubGraph;
+
+        if (dir === 'reverse') {
+          pos = {
+            x: prevSubGraph.last.x - monomerSpacing,
+            y: prevSubGraph.last.y
+          };
+        }
+        else {
+          pos = {
+            x: prevSubGraph.last.x + monomerSpacing,
+            y: prevSubGraph.last.y
+          };
+        }
+      }
+      return graphedNodes;
+    };
+
+    //helper function for drawing the cycle portion of a cyclical graph
+    var makeCyclicalGraph = function (monomerArr, seqType, pos, dir) {
+      var firstNode, currNode, prevNode;
+      var allNodes = [];
+
+      var cyclicalNodes = self.makeCycle(monomerArr, seqType, pos, dir);
+
+      angular.forEach(cyclicalNodes, function (value, key) {
+        currNode = value;
+        if (key === 0){
+          firstNode = value;//keep track of firstNode
+        }
+        self.canvasView.addNode(value);
+        allNodes.push(value);
+
+        if (prevNode && currNode){
+          addNewConnection(prevNode, currNode);
+        }
+        prevNode = currNode;
+      });
+
+      if (firstNode && currNode){
+        addNewConnection(firstNode, currNode);
+      }
+      return new self.SubGraph(firstNode,currNode,allNodes);
+    };
+
+    //Makes the connections requested in HELM Notation.
+    //Each connectionArray element has the following items:
+    //      source.name     (eg, 'RNA1')
+    //      dest.name       (eg, 'CHEM1')
+    //      source.nodeID   (eg, '24')
+    //      dest.nodeID     (eg, '1')
+    //This example would link the 24th node in the 'RNA1' sequence to the 1st in the 'CHEM1' sequence.
+    //
+    //@param    connection     array of connections requested in HELM Notation
+    //@param    graphedNodes   array of all nodes graphed, each elem has '.name' and '.nodes'
+    var makeRequestedConnections = function (connectionArray, graphedNodesArray) {
+
+      var j, k;
+      var nodes, source, dest = '';
+      for (j = 0; j < connectionArray.length; j++) {
+        if (connectionArray[j].source.name === connectionArray[j].dest.name) {
+          continue; //skip cyclical connections, which are drawn in 'makeCyclicalGraph()'
+        }
+        for (k = 0; k < graphedNodesArray.length; k++) { //for each sequence of nodes graphed,
+          nodes = graphedNodesArray[k].nodes[0];      //get the array of nodes
+
+          //if found source sequence, get source node
+          if (graphedNodesArray[k].name === connectionArray[j].source.name) {
+            source = nodes[connectionArray[j].source.nodeID - 1];
+          }
+          //if found destination sequence, get dest node
+          else if (graphedNodesArray[k].name === connectionArray[j].dest.name) {
+            dest = nodes[connectionArray[j].dest.nodeID - 1];
+          }
+          //if found source and dest nodes, add link
+          if (source !== '' && dest !== '') {
+            addNewConnection(source, dest);
+            source = '';
+            dest = '';
+          }
+          nodes = '';
+        }
+      }
+    };
+
+    // // create a new node and add to the view.
+    // var addNewNode = function (nodeName, seqType, nodeColor, isRotate, xpos, ypos, nodeType, sequenceName) {
+    //   var node = self.createNode(nodeName, 
+    //     seqType, 
+    //     nodeColor,
+    //     isRotate, 
+    //     xpos, 
+    //     ypos, 
+    //     nodeType, 
+    //     sequenceName);
+    //   self.canvasView.addNode(node);
+    //   return node;
+    // };
+
+    //add a connection between 2 nodes
+    var addNewConnection = function (sourceNode, destNode) {
+      var conn = self.createConnection(sourceNode, destNode);
+      self.canvasView.addConnection(conn);
+      return conn;
+    };
+
+    // retrieves the sequence type for a given sequence name
+    var getSequenceType = function (sequenceName) {
+      if (sequenceName.toUpperCase().indexOf('RNA') > -1){
+        return 'NUCLEOTIDE';
+      }
+      if (sequenceName.toUpperCase().indexOf('PEPTIDE') > -1){
+        return 'PEPTIDE';
+      }
+      if (sequenceName.toUpperCase().indexOf('CHEM') > -1){
+        return 'CHEM';
+      }
+    };
+
+    // helper function returns 'true' if sequence is partly, or completely, cyclical
+    var isCyclical = function (sequenceName, connectionArray) {
+      for (var j = 0; j < connectionArray.length; j++){
+          if (connectionArray[j].source.name === connectionArray[j].dest.name){
+              if (connectionArray[j].source.name === sequenceName) {
+                  return true;
+              }
+          }
+      }
+      return false;
+    };
+
+    //helper function returns source node id and dest node id for cyclical connections
+    var getCyclicalSourceDest = function (sequenceName, connectionArray) {
+      var sourceNodeId, destNodeId;
+      for (var j = 0; j < connectionArray.length; j++){
+        if (connectionArray[j].source.name === connectionArray[j].dest.name){
+          if (connectionArray[j].source.name === sequenceName) {
+            sourceNodeId = connectionArray[j].source.nodeID-1;
+            destNodeId = connectionArray[j].dest.nodeID-1;
+          }
+        }
+      }
+
+      return [sourceNodeId, destNodeId];
+    };
+
+
+
+
+
+
+
+
+
+
+
   });

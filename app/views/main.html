@@ -16,6 +16,12 @@
           ng-disabled='!main.showTrash()'>
           <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
         </button>
+        <span class='spacer'></span>
+        <button
+          class='btn pull-right'
+          ng-click='main.logCanvasView()'>
+          Log canvas
+        </button>
       </div>
     </div>
     <div class='row full-height'>
@@ -150,7 +156,7 @@
             <helm-canvas 
               context-menu="menuOptions" 
               model="expression" 
-              graph='canvasView' 
+              graph='main.getCanvasView()' 
               canvastype='upper'></helm-canvas>
             <script type="text/ng-template" id="viewmodal.html"></script>
           </div>
@@ -188,7 +194,7 @@
             </table>
           </div>
           <div class='canvas-container' ng-show='sequence'>
-            <helm-canvas graph='canvasView' canvastype='lower'>
+            <helm-canvas graph='main.getCanvasView()' canvastype='lower'>
           </div>
         </div>
       </div>
