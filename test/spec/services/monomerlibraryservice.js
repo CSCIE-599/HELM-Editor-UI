@@ -257,13 +257,58 @@ describe('Service: MonomerLibraryService', function () {
     expect(results[0].encodedMonomer.MonomerName).toBe('SM(PEG)2 linker from Pierce');
   });
 
-  it('should be able to return multipel results when the search terms are not exact', function () {
+  it('should be able to return multiple results when the search terms are not exact', function () {
     var results = MonomerLibraryService.searchMonomers('RNA', 'fS');
     expect(results.length).toBe(4);
     results = MonomerLibraryService.searchMonomers('RNA', 'hexanol');
     expect(results.length).toBe(4);
     results = MonomerLibraryService.searchMonomers('CHEM', 'linker');
     expect(results.length).toBe(2);
+  });
+
+  it('should be able to retrieve a given nucleotide', function () {
+    var monomer = MonomerLibraryService.getMonomerById('RNA', 'A');
+    expect(monomer._name).toBe('A');
+    expect(monomer.encodedMonomer.MonomerID).toBe('A');
+    expect(monomer.encodedMonomer.PolymerType).toBe('RNA');
+    monomer = MonomerLibraryService.getMonomerById('RNA', 'MOE');
+    expect(monomer._name).toBe('MOE');
+    expect(monomer.encodedMonomer.MonomerID).toBe('MOE');
+    expect(monomer.encodedMonomer.PolymerType).toBe('RNA');
+    monomer = MonomerLibraryService.getMonomerById('RNA', 'nasP');
+    expect(monomer._name).toBe('nasP');
+    expect(monomer.encodedMonomer.MonomerID).toBe('nasP');
+    expect(monomer.encodedMonomer.PolymerType).toBe('RNA');
+  });
+
+  it('should be able to retrieve a given peptide', function () {
+    var monomer = MonomerLibraryService.getMonomerById('PEPTIDE', 'T');
+    expect(monomer._name).toBe('T');
+    expect(monomer.encodedMonomer.MonomerID).toBe('T');
+    expect(monomer.encodedMonomer.PolymerType).toBe('PEPTIDE');
+    monomer = MonomerLibraryService.getMonomerById('PEPTIDE', 'meD');
+    expect(monomer._name).toBe('meD');
+    expect(monomer.encodedMonomer.MonomerID).toBe('meD');
+    expect(monomer.encodedMonomer.PolymerType).toBe('PEPTIDE');
+    monomer = MonomerLibraryService.getMonomerById('PEPTIDE', 'fmoc');
+    expect(monomer._name).toBe('fmoc');
+    expect(monomer.encodedMonomer.MonomerID).toBe('fmoc');
+    expect(monomer.encodedMonomer.PolymerType).toBe('PEPTIDE');
+  });
+
+  it('should be able to retrieve a given peptide', function () {
+    var monomer = MonomerLibraryService.getMonomerById('CHEM', 'Alexa');
+    expect(monomer._name).toBe('Alexa');
+    expect(monomer.encodedMonomer.MonomerID).toBe('Alexa');
+    expect(monomer.encodedMonomer.PolymerType).toBe('CHEM');
+    monomer = MonomerLibraryService.getMonomerById('CHEM', 'A6OH');
+    expect(monomer._name).toBe('A6OH');
+    expect(monomer.encodedMonomer.MonomerID).toBe('A6OH');
+    expect(monomer.encodedMonomer.PolymerType).toBe('CHEM');
+    monomer = MonomerLibraryService.getMonomerById('CHEM', 'SMCC');
+    expect(monomer._name).toBe('SMCC');
+    expect(monomer.encodedMonomer.MonomerID).toBe('SMCC');
+    expect(monomer.encodedMonomer.PolymerType).toBe('CHEM');
   });
 
   // functions to return our test databases (these are currently the full databases)
