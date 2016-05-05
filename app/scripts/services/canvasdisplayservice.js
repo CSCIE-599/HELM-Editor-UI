@@ -567,8 +567,9 @@ angular.module('helmeditor2App')
         connections: []
       };
       self.canvasView = new self.CanvasView(emptyData);
-      self.nodeNum = 0;
-      self.paramNum = 0;
+      nodeNum = 0;
+      paramNum = 0;
+      nodeId = 0;
     };
 
     // loads a set of connections and nodes
@@ -577,7 +578,7 @@ angular.module('helmeditor2App')
       var connectionArray = helmTranslationData[1]; //each element has .source and .dest
 
       // reset node ID to start at 0
-      self.nodeId = 0;
+      nodeId = 0;
 
       // remember the previous sequence type
       var prevSeqType;
@@ -604,8 +605,8 @@ angular.module('helmeditor2App')
         });
 
         // reset our numbering for the next sequence
-        self.nodeNum = 0;
-        self.paramNum = 0;
+        nodeNum = 0;
+        paramNum = 0;
       }
 
       // now parse the connections
