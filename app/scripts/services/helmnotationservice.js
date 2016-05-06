@@ -429,6 +429,9 @@ angular.module('helmeditor2App')
       var sequence2 = getSequenceByName(node2.data.seqName);
       var polymers2 = HelmConversionService.getPolymers(sequence2.name, sequence2.notation);
 
+      var newNotation;
+      var newSequence;
+
       // find out what we'll call it if we need it
       var postfix = 1; // start at 1
       for (var i = 0; i < sequences.length; i++) {
@@ -444,48 +447,12 @@ angular.module('helmeditor2App')
         if (node1.data.paramNum === 1 && // node1 is the start of a sequence
             (node2.data.paramNum === polymers2.length || // node2 is the actual end
              (node2.data.paramNum === polymers2.length - 1) && (!CanvasDisplayService.isRiboseNode(polymers2[polymers2.length - 1]) && !CanvasDisplayService.isPhosphateNode(polymers2[polymers2.length - 1])))) {// node2 is the end (not counting a base after it)
-          var newNotation1 = sequence2.notation + 'P.' + sequence1.notation;
-          var newSequence1 = {
-            name: 'RNA' + postfix,
-            notation: newNotation1,
-            type: node1.data.seqType
-          };
-          sequences.push(newSequence1);
-
-          // and remove each of the sequences
-          for (var j = 0; j < sequences.length; ) {
-            if (sequences[j] === sequence1 || sequences[j] === sequence2) {
-              sequences.splice(j, 1);
-            }
-            else {
-              j++;
-            }
-          }
-
-          return getUpdatedHelmFromStrings();
+          newNotation = sequence2.notation + 'P.' + sequence1.notation;
         }
         else if (node2.data.paramNum === 1 && // node2 is the start of a sequence
             (node1.data.paramNum === polymers1.length || // node1 is the actual end
              (node1.data.paramNum === polymers1.length - 1) && (!CanvasDisplayService.isRiboseNode(polymers1[polymers1.length - 1]) && !CanvasDisplayService.isPhosphateNode(polymers1[polymers1.length - 1])))) {// node2 is the end (not counting a base after it)
-          var newNotation2 = sequence1.notation + 'P.' + sequence2.notation;
-          var newSequence2 = {
-            name: 'RNA' + postfix,
-            notation: newNotation2,
-            type: node1.data.seqType
-          };
-          sequences.push(newSequence2);
-
-          // and remove each of the sequences
-          for (var k = 0; k < sequences.length; ) {
-            if (sequences[k] === sequence1 || sequences[k] === sequence2) {
-              sequences.splice(k, 1);
-            }
-            else {
-              k++;
-            }
-          }
-
-          return getUpdatedHelmFromStrings();
+          newNotation = sequence1.notation + 'P.' + sequence2.notation;
         }
         else { // otherwise it's invalid
           console.warn('You cannot link two nucleotide sequences from not the ends');
@@ -498,19 +465,80 @@ angular.module('helmeditor2App')
         return helm;
       }
       // Ribose - Phospate - try to link if they're the ends of their sequences
-      else if ((CanvasDisplayService.isRiboseNode(node1.data.name) && CanvasDisplayService.isPhosphateNode(node2.data.name)) ||
-               (CanvasDisplayService.isRiboseNode(node2.data.name) && CanvasDisplayService.isPhosphateNode(node1.data.name))) {
-        return helm;
+      else if (CanvasDisplayService.isRiboseNode(node1.data.name) && CanvasDisplayService.isPhosphateNode(node2.data.name)) {
+        if (node1.data.paramNum === 1 && // node1 is the start of a sequence
+            node2.data.paramNum === polymers2.length) { // node2 is the actual end 
+          console.log('start-to-end');
+          newNotation = sequence2.notation + '.' + sequence1.notation;
+        }
+        else if (node2.data.paramNum === 1 && // node2 is the start of a sequence
+                 node1.data.paramNum === polymers1.length) { // node1 is the actual end 
+          console.log('end-to-start');
+          newNotation = sequence1.notation + sequence2.notation;
+        }
+        else if (node2.data.paramNum === 1 && // node2 is the start of a sequence
+                 node1.data.paramNum === polymers1.length - 1 && // node1 is not quite the end
+                 !CanvasDisplayService.isRiboseNode(polymers1[polymers1.length - 1]) && // node1 doesn't have a ribose after it
+                 !CanvasDisplayService.isPhosphateNode(polymers1[polymers1.length - 1])) { // node1 doesn't have a phopspate after it
+          console.log('almost-end-to-start');
+          newNotation = sequence1.notation + sequence2.notation;
+        }
+        // otherwise invalid
+        else {
+          console.warn('Not a valid attempt to link nucleotide sequences');
+          return helm;
+        }
       }
+      // Phospate - Ribose
+      else if (CanvasDisplayService.isRiboseNode(node2.data.name) && CanvasDisplayService.isPhosphateNode(node1.data.name)) {
+        if (node1.data.paramNum === 1 && // node1 is the start of a sequence
+            node2.data.paramNum === polymers2.length) { // node2 is the actual end 
+          console.log('start-to-end');
+          newNotation = sequence2.notation + sequence1.notation;
+        }
+        else if (node1.data.paramNum === 1 && // node1 is the start of a sequence
+                 node2.data.paramNum === polymers2.length - 1 && // node2 is not quite the end
+                 !CanvasDisplayService.isRiboseNode(polymers2[polymers2.length - 1]) && // node2 doesn't have a ribose after it
+                 !CanvasDisplayService.isPhosphateNode(polymers2[polymers2.length - 1])) { // node2 doesn't have a phopspate after it
+          console.log('start-to-almost-end');
+          newNotation = sequence2.notation + sequence1.notation;
+        }
+        else if (node2.data.paramNum === 1 && // node2 is the start of a sequence
+                 node1.data.paramNum === polymers1.length) { // node1 is the actual end 
+          console.log('end-to-start');
+          newNotation = sequence1.notation + '.' + sequence2.notation;
+        }
+        // otherwise it's not valid
+        else {
+          console.warn('Not a valid attempt to link nucleotide sequences');
+          return helm;
+        }
+      }   
       // otherwise there's a base in there somewhere, just give up
       else {
         console.warn('You can\'t link a base that\'s already in a sequence!');
         return helm;
       }
 
-      console.log(polymers1);
-      console.log(polymers2);
-      return helm;
+      // made it out, we have a valid sequence to add
+      newSequence = {
+        name: 'RNA' + postfix,
+        notation: newNotation,
+        type: node1.data.seqType
+      };
+      sequences.push(newSequence);
+
+      // and remove each of the sequences
+      for (var k = 0; k < sequences.length; ) {
+        if (sequences[k] === sequence1 || sequences[k] === sequence2) {
+          sequences.splice(k, 1);
+        }
+        else {
+          k++;
+        }
+      }
+
+      return getUpdatedHelmFromStrings();
     };
 
     // given the two nodes, tries to create a new connection between the two, if possible

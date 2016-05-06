@@ -138,6 +138,9 @@ angular.module('helmeditor2App')
             }
         }
 
+        if (!sequenceArray[sequenceArray.length - 1]) {
+            sequenceArray.splice(sequenceArray.length - 1, 1);
+        }
         return sequenceArray;
     };
 
