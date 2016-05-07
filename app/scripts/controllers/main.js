@@ -61,14 +61,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
       self.toggleModal();
     };
     
-    /* clear the modal dialog text area*/
-    self.clear = function () {
-      var modalInputField = document.getElementById('input');
-      if (modalInputField) {
-        modalInputField.value = '';          
-      }  
-    };
-
+   
     /* Invoke factory function to get HELM notation */
     self.getHelmNotation = function (polymerType, inputSequence) {
       var successCallback = function (helmNotation) {
@@ -176,7 +169,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
       CanvasDisplayService.resetCanvas();
       HELMNotationService.setHelm('');
     };
-    CanvasDisplayService.resetCanvas();
+    
 
     /* zoom and pan functions */
     $scope.zoom = function (scale, evt, svgCanvas){
@@ -581,7 +574,6 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
           HELMNotationService.removeSequence(currentNode.data.nodeType);
 
           var updatedHelm = HELMNotationService.getHelm();
-          // clearCanvas();
           CanvasDisplayService.resetCanvas();
           self.validateHelmNotation(updatedHelm);
           return;
@@ -602,7 +594,6 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
             nodeID -= priorSeqNodes;
             var updatedHELM = HELMNotationService.helmNodeRemoved(polymers, sequences[i], currentNode, nodeID);
             
-            // clearCanvas();
             CanvasDisplayService.resetCanvas();
             self.validateHelmNotation(updatedHELM);
           }
