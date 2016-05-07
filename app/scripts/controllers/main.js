@@ -65,7 +65,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
     self.clear = function () {
       var modalInputField = document.getElementById('input');
       if (modalInputField) {
-        modalInputField.value = '';  
+        modalInputField.value = '';          
       }  
     };
 
@@ -179,10 +179,8 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
     CanvasDisplayService.resetCanvas();
 
     /* zoom and pan functions */
-    var zoomCount = 0;
     $scope.zoom = function (scale, evt, svgCanvas){
       CanvasDisplayService.zoom(scale, evt, svgCanvas);
-      zoomCount++;
       if (evt) {
         evt.stopPropagation();
       }

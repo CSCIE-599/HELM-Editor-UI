@@ -26,6 +26,8 @@ angular.module('helmeditor2App')
     var radiusX = 3;
     var radiusY = 3;
 
+    var zoomCount = 0;
+
     // helper functions to create each type of node
     self.createRibose = function (nodeName,  nodeColor, xPos, yPos, sequenceName) {
       return self.createNode(nodeName, 'NUCLEOTIDE', '#c6c3fe', false, xPos, yPos, 'r', sequenceName);
@@ -325,6 +327,7 @@ angular.module('helmeditor2App')
         transMatrix[5] += (1-scale)*height/2;                
         newMatrix = 'matrix(' +  transMatrix.join(' ') + ')';
         mapMatrix.setAttributeNS(null, 'transform', newMatrix);
+        zoomCount++;
       }
     };
 
@@ -338,6 +341,7 @@ angular.module('helmeditor2App')
         mapMatrix.setAttributeNS(null, 'transform', newMatrix);
       }
     };
+
 
     var selectedNode = {};
     var selectedNodeID = {};
@@ -619,7 +623,12 @@ angular.module('helmeditor2App')
         makeRequestedConnections(connectionArray, graphedNodes);
       }
 
-      // TODO - do we need to zoom here? Can we even? Probably not...
+      //zoomin the default view by 20%
+      if(zoomCount === 0){
+        self.zoom(0.8, null, document.getElementById('mainCanvas'));
+        self.zoom(1.0, null, document.getElementById('lowerCanvas'));
+       }
+      
     };
 
     // spacing between monomers and connection length
