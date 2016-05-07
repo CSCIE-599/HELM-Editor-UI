@@ -435,8 +435,10 @@ angular.module('helmeditor2App')
       // find out what we'll call it if we need it
       var postfix = 1; // start at 1
       for (var i = 0; i < sequences.length; i++) {
-        if (sequences[i].name.indexOf(node1.data.seqType) === 0) {
-          var num = parseInt(sequences[i].name.substring(node1.data.seqType.length));
+        // also hardcode 'RNA' rather than node1.data.seqType
+        if (sequences[i].name.indexOf('RNA') === 0) {
+          // hardcode 3 in here rather than length of node1.data.seqType, since that's nucleotide, not RNA
+          var num = parseInt(sequences[i].name.substring(3));
           postfix = postfix > num ? postfix : num + 1;
         }
       }
