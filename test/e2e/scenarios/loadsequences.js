@@ -25,6 +25,15 @@ describe('loading sequences', function () {
     modalCloseButton.getAttribute('clientHeight').then(function (val) {
       expect(parseInt(val)).toBe(0);
     });
+    modalCloseButton.getCssValue('visibility').then(function (val) {
+      console.log(val);
+    });
+    modalCloseButton.getCssValue('display').then(function (val) {
+      console.log(val);
+    });
+    modalCloseButton.getAttribute('class').then(function (val) {
+      console.log(val);
+    });
 
     // load it by pressing the Load button
     var loadButton = element(by.css('.left-controls')).all(by.css('button')).first();
@@ -37,11 +46,17 @@ describe('loading sequences', function () {
     modalCloseButton.getAttribute('clientHeight').then(function (val) {
       expect(parseInt(val)).toBeGreaterThan(0);
     });
+    modalCloseButton.getCssValue('visibility').then(function (val) {
+      console.log(val);
+    });
+    modalCloseButton.getCssValue('display').then(function (val) {
+      console.log(val);
+    });
+    modalCloseButton.getAttribute('class').then(function (val) {
+      console.log(val);
+    });
     expect(modalDialog.isDisplayed()).toBeTruthy();
     expect(modalOverlay.isDisplayed()).toBeTruthy();
-    modalCloseButton.isDisplayed().then(function (val) {
-      expect(val).toBeTruthy();
-    });
 
     // close it by pressing the close button
     modalCloseButton.click();
