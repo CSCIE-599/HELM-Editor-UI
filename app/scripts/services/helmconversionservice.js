@@ -12,6 +12,7 @@ angular.module('helmeditor2App')
     .service('HelmConversionService', function () {
 
     var self = this;
+    self.error = '';
 
     //takes HELM notation,
     //returns arrays of sequences and connections
@@ -185,7 +186,10 @@ angular.module('helmeditor2App')
         }
 
         if (cyclicalSequences.length > 1) {
-            window.alert('Warning. The HELM Editor does not sequences with multiple cycles.');
+            self.error = 'Warning. The HELM Editor does not sequences with multiple cycles.';
+        }
+        else {
+            self.error = '';
         }
 
         // //check for links between different cyclical sequences

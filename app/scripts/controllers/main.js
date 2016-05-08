@@ -65,10 +65,10 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
     /* Invoke factory function to get HELM notation */
     self.getHelmNotation = function (polymerType, inputSequence) {
       var successCallback = function (helmNotation) {
-        self.result = '';
         self.helm = helmNotation;
         HELMNotationService.setHelm(helmNotation);
         CanvasDisplayService.loadHelmTranslationData(HelmConversionService.convertHelmNotationToSequence(helmNotation));
+        self.result = HelmConversionService.error;
         self.getCanonicalHelmNotation(self.helm);
       };
       var errorCallback = function(response) {
@@ -101,6 +101,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
           self.helm = inputSequence;
           HELMNotationService.setHelm(inputSequence);
           CanvasDisplayService.loadHelmTranslationData(HelmConversionService.convertHelmNotationToSequence(inputSequence));
+          self.result = HelmConversionService.error;
           self.getCanonicalHelmNotation(self.helm);
         }
         else {
