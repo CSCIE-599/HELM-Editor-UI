@@ -65,6 +65,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
     /* Invoke factory function to get HELM notation */
     self.getHelmNotation = function (polymerType, inputSequence) {
       var successCallback = function (helmNotation) {
+        self.result = '';
         self.helm = helmNotation;
         HELMNotationService.setHelm(helmNotation);
         CanvasDisplayService.loadHelmTranslationData(HelmConversionService.convertHelmNotationToSequence(helmNotation));
@@ -96,6 +97,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 
       var successCallback = function (valid) {
         if (valid) {
+          self.result = '';
           self.helm = inputSequence;
           HELMNotationService.setHelm(inputSequence);
           CanvasDisplayService.loadHelmTranslationData(HelmConversionService.convertHelmNotationToSequence(inputSequence));
