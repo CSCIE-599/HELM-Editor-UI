@@ -34,6 +34,9 @@ describe('loading sequences', function () {
     modalCloseButton.getAttribute('class').then(function (val) {
       console.log(val);
     });
+    modalCloseButton.getAttribute('hidden').then(function (val) {
+      console.log(val);
+    });
 
     // load it by pressing the Load button
     var loadButton = element(by.css('.left-controls')).all(by.css('button')).first();
@@ -53,6 +56,9 @@ describe('loading sequences', function () {
       console.log(val);
     });
     modalCloseButton.getAttribute('class').then(function (val) {
+      console.log(val);
+    });
+    modalCloseButton.getAttribute('hidden').then(function (val) {
       console.log(val);
     });
     expect(modalDialog.isDisplayed()).toBeTruthy();
