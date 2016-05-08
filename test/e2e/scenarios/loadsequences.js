@@ -188,5 +188,5 @@ describe('loading sequences', function () {
 
     // check the warning
     expect(element(by.css('.message-span')).getText()).toContain('Warning. The HELM Editor does not support sequences with multiple cycles.');
-  })
+  });
 });
