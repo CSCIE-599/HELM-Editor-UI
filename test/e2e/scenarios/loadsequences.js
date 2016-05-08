@@ -22,6 +22,7 @@ describe('loading sequences', function () {
     // load it by pressing the Load button
     var loadButton = element(by.css('.left-controls')).all(by.css('button')).first();
     loadButton.click();
+    browser.sleep(1000);
     expect(modalDialog.isDisplayed()).toBeTruthy();
     expect(modalOverlay.isDisplayed()).toBeTruthy();
     expect(modalCloseButton.isDisplayed()).toBeTruthy();
