@@ -100,14 +100,14 @@ describe('Service: HELMNotationService', function () {
       source: {
         sequenceName: 'RNA1',
         attachment: {
-          nodeNum: '5',
+          nodeNum: 5,
           point: 'R3'
         }
       },
       dest: {
         sequenceName: 'CHEM2',
         attachment: {
-          nodeNum: '1',
+          nodeNum: 1,
           point: 'R1'
         }
       }
@@ -130,14 +130,14 @@ describe('Service: HELMNotationService', function () {
       source: {
         sequenceName: 'RNA1',
         attachment: {
-          nodeNum: '5',
+          nodeNum: 5,
           point: 'R3'
         }
       },
       dest: {
         sequenceName: 'CHEM2',
         attachment: {
-          nodeNum: '1',
+          nodeNum: 1,
           point: 'R1'
         }
       }
@@ -147,14 +147,14 @@ describe('Service: HELMNotationService', function () {
       source: {
         sequenceName: 'RNA1',
         attachment: {
-          nodeNum: '2',
+          nodeNum: 2,
           point: 'R2'
         }
       },
       dest: {
         sequenceName: 'CHEM2',
         attachment: {
-          nodeNum: '2',
+          nodeNum: 2,
           point: 'R3'
         }
       }
@@ -164,14 +164,14 @@ describe('Service: HELMNotationService', function () {
       source: {
         sequenceName: 'CHEM2',
         attachment: {
-          nodeNum: '1',
+          nodeNum: 1,
           point: 'R2'
         }
       },
       dest: {
         sequenceName: 'CHEM2',
         attachment: {
-          nodeNum: '6',
+          nodeNum: 6,
           point: 'R3'
         }
       }

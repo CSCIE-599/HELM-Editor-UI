@@ -356,10 +356,40 @@ angular.module('helmeditor2App.MonomerLibrary', ['cb.x2js'])
       return results;
     };
 
+    // retrieves the monomer specified by ID, from the encoded monomer database (does not include fragments)
+    var getMonomerById = function (type, id) {
+      var group = getMonomersByType(type);
+      return searchRecursiveExact(group, id);
+    };
+
+    var searchRecursiveExact = function (group, id) {
+      // do we have monomers directly
+      if (group.monomers) {
+        for (var i = 0; i < group.monomers.length; i++) {
+          if (!group.monomers[i]._notation && group.monomers[i]._name.toLowerCase() === id.toLowerCase()) {
+            // found it
+            return group.monomers[i];
+          }
+        }
+      }
+
+      // otherwise, search deeper while we don't have an answer
+      else {
+        var res = null;
+        var j = 0;
+        while (!res && j < group.categories.length) {
+          res = searchRecursiveExact(group.categories[j], id);
+          j++;
+        }
+        return res;
+      }
+    };
+
     // and return the methods we actually want to expose
     self.getCategorizedDB = getCategorizedDB;
     self.getEncodedDB = getEncodedDB;
     self.getLinkedDB = getLinkedDB;
     self.getMonomersByType = getMonomersByType;
     self.searchMonomers = searchMonomers;
+    self.getMonomerById = getMonomerById;
   }]);
