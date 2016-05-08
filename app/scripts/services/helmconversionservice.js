@@ -186,7 +186,7 @@ angular.module('helmeditor2App')
         }
 
         if (cyclicalSequences.length > 1) {
-            self.error = 'Warning. The HELM Editor does not sequences with multiple cycles.';
+            self.error = 'Warning. The HELM Editor does not support sequences with multiple cycles.';
         }
         else {
             self.error = '';
