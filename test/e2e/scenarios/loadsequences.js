@@ -17,15 +17,31 @@ describe('loading sequences', function () {
 
     // and the close button
     var modalCloseButton = element(by.css('.ng-modal > .ng-modal-dialog > .ng-modal-close'));
-    expect(modalCloseButton.isDisplayed()).not.toBeTruthy();
+    // using width and height to check visibility, rather than isDisplayed() to work around firefox issue
+    // with the div under another div
+    modalCloseButton.getAttribute('clientWidth').then(function (val) {
+      expect(parseInt(val)).toBe(0);
+    });
+    modalCloseButton.getAttribute('clientHeight').then(function (val) {
+      expect(parseInt(val)).toBe(0);
+    });
 
     // load it by pressing the Load button
     var loadButton = element(by.css('.left-controls')).all(by.css('button')).first();
     loadButton.click();
-    browser.sleep(1000);
+    // using width and height to check visibility, rather than isDisplayed() to work around firefox issue
+    // with the div under another div
+    modalCloseButton.getAttribute('clientWidth').then(function (val) {
+      expect(parseInt(val)).toBeGreaterThan(0);
+    });
+    modalCloseButton.getAttribute('clientHeight').then(function (val) {
+      expect(parseInt(val)).toBeGreaterThan(0);
+    });
     expect(modalDialog.isDisplayed()).toBeTruthy();
     expect(modalOverlay.isDisplayed()).toBeTruthy();
-    expect(modalCloseButton.isDisplayed()).toBeTruthy();
+    modalCloseButton.isDisplayed().then(function (val) {
+      expect(val).toBeTruthy();
+    });
 
     // close it by pressing the close button
     modalCloseButton.click();
