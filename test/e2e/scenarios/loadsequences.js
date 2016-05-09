@@ -32,22 +32,23 @@ describe('loading sequences', function () {
     modalCloseButton.isDisplayed().then(function (val) {
       if (val) {
         modalCloseButton.click();
-        expect(modalDialog.isDisplayed()).not.toBeTruthy();
-        expect(modalOverlay.isDisplayed()).not.toBeTruthy();
-        expect(modalCloseButton.isDisplayed()).not.toBeTruthy();
       }
+      // otherwise click outside
+      else {
+        browser.actions().mouseMove(modalOverlay, {x: 1, y: 1}).click().perform();
+      }
+      expect(modalDialog.isDisplayed()).not.toBeTruthy();
+      expect(modalOverlay.isDisplayed()).not.toBeTruthy();
     });
 
     // load it again and close it by pressing the overlay
     loadButton.click();
     expect(modalDialog.isDisplayed()).toBeTruthy();
     expect(modalOverlay.isDisplayed()).toBeTruthy();
-    expect(modalCloseButton.isDisplayed()).toBeTruthy();
     // have to explicitly click on 1/1 to make sure it's the overlay and not antyhing on top of it
     browser.actions().mouseMove(modalOverlay, {x: 1, y: 1}).click().perform();
     expect(modalDialog.isDisplayed()).not.toBeTruthy();
     expect(modalOverlay.isDisplayed()).not.toBeTruthy();
-    expect(modalCloseButton.isDisplayed()).not.toBeTruthy();
   });
 
   /* Known wrong sequences loaded from web service */
