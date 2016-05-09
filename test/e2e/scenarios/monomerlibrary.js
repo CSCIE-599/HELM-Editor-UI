@@ -127,7 +127,6 @@ describe('monomer library', function () {
 
     // go to the chems
     typeButtons.get(2).click();
-    browser.sleep(5000);
 
     // click on types until you reach one where there are elements displayed
     expect(exploreViewDisplay.all(by.css('.category-holder')).get(4).all(by.css('.monomer-directive')).get(0).isDisplayed()).not.toBeTruthy();
