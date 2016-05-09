@@ -245,6 +245,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
     */
     /* Invoke factory function to get the HELM Image */
     $scope.showHelmImage = function () {
+      console.error('clicked');
       $scope.requestedview = '';  
       $scope.imageMessage = '';
       var successCallback = function (result) {
