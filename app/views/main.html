@@ -183,7 +183,12 @@
                 <td>{{main.molecularweight}}</td>
                 <td>{{main.molecularformula}}</td>
                 <td>{{main.extcoefficient}}</td>
-                <td><a ng-href="" ng-click='showHelmImage()'>{{main.helmImageLink}}</a></td>
+                <td>
+                  <button 
+                    class="btn"
+                    ng-click="showHelmImage()"
+                    ng-show="main.helmImageLink === 'Show'">{{main.helmImageLink}}</button>
+                </td>
               </tr>
             </table>
           </div>
