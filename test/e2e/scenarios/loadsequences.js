@@ -34,7 +34,10 @@ describe('loading sequences', function () {
     modalCloseButton.getAttribute('class').then(function (val) {
       console.log(val);
     });
-    modalCloseButton.getAttribute('hidden').then(function (val) {
+    modalCloseButton.getCssValue('hidden').then(function (val) {
+      console.log(val);
+    });
+    modalCloseButton.getCssValue('background-color').then(function (val) {
       console.log(val);
     });
 
@@ -58,7 +61,10 @@ describe('loading sequences', function () {
     modalCloseButton.getAttribute('class').then(function (val) {
       console.log(val);
     });
-    modalCloseButton.getAttribute('hidden').then(function (val) {
+    modalCloseButton.getCssValue('hidden').then(function (val) {
+      console.log(val);
+    });
+    modalCloseButton.getCssValue('background-color').then(function (val) {
       console.log(val);
     });
     expect(modalDialog.isDisplayed()).toBeTruthy();
