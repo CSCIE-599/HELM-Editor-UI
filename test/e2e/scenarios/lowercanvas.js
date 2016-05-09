@@ -58,8 +58,49 @@ describe('lower canvas functions', function () {
     expect(element(by.id('helmNotationSpan')).getText()).toBe('PEPTIDE1{A.D.C}$$$$V2.0');
 
     // select the Molecular Properties option
-    expect(element(by.css('.canvas-row-bottom .molecule-table')).isDisplayed()).not.toBeTruthy();
+    var moleculeTable = element(by.css('.canvas-row-bottom .molecule-table'));
+    expect(moleculeTable.isDisplayed()).not.toBeTruthy();
     element(by.css('.canvas-row-bottom select')).all(by.tagName('option')).get(2).click();
-    expect(element(by.css('.canvas-row-bottom .molecule-table')).isDisplayed()).toBeTruthy();
+    expect(moleculeTable.isDisplayed()).toBeTruthy();
+
+    // seek out the values we care about
+    var tableRows = moleculeTable.all(by.tagName('tr'));
+    var tableDataRows = tableRows.get(1).all(by.tagName('td'));
+    // sequence type
+    // this is currently not working
+    // expect(tableDataRows.get(0).getText()).toBe('PEPTIDE');
+
+    // molecular weight
+    expect(tableDataRows.get(1).getText()).toBe('307.323');
+
+    // molecular formula
+    expect(tableDataRows.get(2).getText()).toBe('C10H17N3O6S');
+
+    // extinction coefficient
+    expect(tableDataRows.get(3).getText()).toBe('0.0625');
+
+    // image link
+    expect(tableDataRows.get(4).all(by.tagName('a')).getAttribute('href')).toExist;
+  });
+
+  it('should be able to display the image modal', function () {
+    // load the dialog and type in a known correct sequence
+    element(by.css('.left-controls')).all(by.css('button')).first().click();
+    element(by.css('.ng-modal select')).all(by.tagName('option')).get(2).click();
+    element(by.css('.ng-modal textarea')).sendKeys('ADC');
+    element(by.id('modalLoadButton')).click();
+    expect(element(by.id('helmNotationSpan')).getText()).toBe('PEPTIDE1{A.D.C}$$$$V2.0');
+    element(by.css('.canvas-row-bottom select')).all(by.tagName('option')).get(2).click();
+
+    var moleculeTable = element(by.css('.canvas-row-bottom .molecule-table'));
+    var tableRows = moleculeTable.all(by.tagName('tr'));
+    var tableDataRows = tableRows.get(1).all(by.tagName('td'));
+    
+    expect(element(by.css('.modal-body img')).isPresent()).not.toBeTruthy();
+    tableDataRows.get(4).all(by.tagName('a')).click();
+    // give it time to show up, since it animates in
+    browser.sleep(1000);
+    // find the modal
+    expect(element(by.css('.modal-body img')).isDisplayed()).toBeTruthy();
   });
 });
