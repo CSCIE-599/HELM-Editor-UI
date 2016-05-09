@@ -97,6 +97,7 @@ describe('lower canvas functions', function () {
     var tableDataRows = tableRows.get(1).all(by.tagName('td'));
     
     expect(element(by.css('.modal-body img')).isPresent()).not.toBeTruthy();
+    expect(tableDataRows.get(4).element(by.tagName('button')).isDisplayed()).toBeTruthy();
     tableDataRows.get(4).element(by.tagName('button')).click();
 
     // give it time to show up, since it animates in
