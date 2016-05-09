@@ -248,10 +248,14 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
       $scope.requestedview = '';  
       $scope.imageMessage = '';
       var successCallback = function (result) {
+        console.warn('got it back');
+        console.warn(result);
         $scope.requestedview = result;
         $scope.imageMessage = '';
       };
       var errorCallback = function(response) {
+        console.warn('it failed for some reason');
+        console.warn(response);
         $scope.imageMessage = 'Image not available. See console for more information.';
         $scope.requestedview = '';
         console.error(response);
@@ -415,6 +419,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 
     //helper function - show image in modal
     $scope.openImageView = function () {
+      console.warn('opening image view');
       $uibModal.open({
         templateUrl: 'templates/imagemodal.html',
         controller: 'modal',

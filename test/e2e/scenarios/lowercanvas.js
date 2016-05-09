@@ -100,6 +100,12 @@ describe('lower canvas functions', function () {
     tableDataRows.get(4).element(by.tagName('a')).click();
     // give it time to show up, since it animates in
     browser.sleep(1500);
+
+    // log it out
+    browser.manage().logs().get('browser').then(function(browserLog) {
+      console.log('log: ' + require('util').inspect(browserLog));
+    });
+
     // find the modal
     expect(element(by.css('.modal-body img')).isDisplayed()).toBeTruthy();
   });
