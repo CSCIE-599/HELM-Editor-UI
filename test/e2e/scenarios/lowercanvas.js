@@ -103,7 +103,7 @@ describe('lower canvas functions', function () {
     // give it time to show up, since it animates in
     browser.sleep(1500);
 
-    element(by.css('.mocal-body img')).isPresent().then(function (val) {
+    element(by.css('.modal-body img')).isPresent().then(function (val) {
       // only check it for chrome
       if (val) {
         expect(element(by.css('.modal-body img')).isDisplayed()).toBeTruthy();
