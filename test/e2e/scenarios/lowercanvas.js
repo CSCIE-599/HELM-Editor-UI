@@ -80,7 +80,7 @@ describe('lower canvas functions', function () {
     expect(tableDataRows.get(3).getText()).toBe('0.0625');
 
     // image link
-    expect(tableDataRows.get(4).element(by.tagName('a')).getText()).toBe('Show');
+    expect(tableDataRows.get(4).element(by.tagName('button')).isPresent()).toBeTruthy();
   });
 
   it('should be able to display the image modal', function () {
@@ -97,16 +97,10 @@ describe('lower canvas functions', function () {
     var tableDataRows = tableRows.get(1).all(by.tagName('td'));
     
     expect(element(by.css('.modal-body img')).isPresent()).not.toBeTruthy();
-    var anchor = tableDataRows.get(4).element(by.tagName('a'));
-    browser.actions().mouseMove(anchor, {x: 1, y: 1}).click().perform();
+    tableDataRows.get(4).element(by.tagName('button')).click();
 
     // give it time to show up, since it animates in
     browser.sleep(1500);
-
-    // log it out
-    browser.manage().logs().get('browser').then(function(browserLog) {
-      console.log('log: ' + require('util').inspect(browserLog));
-    });
 
     // find the modal
     expect(element(by.css('.modal-body img')).isDisplayed()).toBeTruthy();
