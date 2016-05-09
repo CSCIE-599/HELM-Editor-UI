@@ -8,7 +8,7 @@ describe('monomer library', function () {
 
   it('should display the placeholder immediately upon loading', function () {
     var monomerLibraryHolder = element(by.css('.library-column'));
-    expect(monomerLibraryHolder.element(by.tagName('div')).get(1).isDisplayed()).toBeTruthy();
+    expect(monomerLibraryHolder.element(by.tagName('div')).last().isDisplayed()).toBeTruthy();
   });
 
   // it('should display all three main types', function () {
