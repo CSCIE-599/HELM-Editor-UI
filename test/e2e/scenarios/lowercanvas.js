@@ -97,7 +97,9 @@ describe('lower canvas functions', function () {
     var tableDataRows = tableRows.get(1).all(by.tagName('td'));
     
     expect(element(by.css('.modal-body img')).isPresent()).not.toBeTruthy();
-    tableDataRows.get(4).element(by.tagName('a')).click();
+    var anchor = tableDataRows.get(4).element(by.tagName('a'));
+    browser.actions().mouseMove(anchor, {x: 1, y: 1}).click().perform();
+
     // give it time to show up, since it animates in
     browser.sleep(1500);
 
