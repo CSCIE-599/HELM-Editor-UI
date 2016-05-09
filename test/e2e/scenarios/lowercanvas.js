@@ -99,7 +99,7 @@ describe('lower canvas functions', function () {
     expect(element(by.css('.modal-body img')).isPresent()).not.toBeTruthy();
     tableDataRows.get(4).all(by.tagName('a')).click();
     // give it time to show up, since it animates in
-    browser.sleep(1000);
+    browser.sleep(3000);
     // find the modal
     expect(element(by.css('.modal-body img')).isDisplayed()).toBeTruthy();
   });
