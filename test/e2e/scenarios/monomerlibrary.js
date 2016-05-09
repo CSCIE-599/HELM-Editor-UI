@@ -80,14 +80,7 @@ describe('monomer library', function () {
     exploreViewDisplay.all(by.css('.category-holder')).get(0).element(by.tagName('button')).click();
     expect(exploreViewDisplay.all(by.css('.category-holder')).get(0).all(by.css('.monomer-directive')).count()).toBe(5);
     expect(exploreViewDisplay.all(by.css('.monomer-directive')).get(0).isDisplayed()).toBeTruthy();
-    expect(exploreViewDisplay.all(by.css('.monomer-directive')).get(0).element(by.tagName('span')).getText()).toBe('A');
-
-    // try the sugars
-    exploreViewDisplay.all(by.css('.category-holder')).get(2).element(by.xpath('./button')).click();;
-    exploreViewDisplay.all(by.css('.category-holder')).get(2).all(by.css('.sub-category-holder')).get(0).element(by.tagName('button')).click();
-    expect(exploreViewDisplay.all(by.css('.category-holder')).get(2).all(by.css('.sub-category-holder')).get(0).all(by.css('.monomer-directive')).count()).toBe(6);
-    expect(exploreViewDisplay.all(by.css('.category-holder')).get(2).all(by.css('.sub-category-holder')).get(0).all(by.css('.monomer-directive')).get(4).isDisplayed()).toBeTruthy();
-    expect(exploreViewDisplay.all(by.css('.category-holder')).get(2).all(by.css('.sub-category-holder')).get(0).all(by.css('.monomer-directive')).get(4).element(by.tagName('span')).getText()).toBe('mR');    
+    expect(exploreViewDisplay.all(by.css('.monomer-directive')).get(0).element(by.tagName('span')).getText()).toBe('A');   
   });
 
   it('should be able to explore the PEPTIDES for a specific type of monomer', function () {
