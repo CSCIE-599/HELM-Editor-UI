@@ -84,7 +84,7 @@ describe('monomer library', function () {
 
     // try the Modified ones
     expect(exploreViewDisplay.isDisplayed()).toBeTruthy();
-    exploreViewDisplay.all(by.css('.category-holder')).get(1).element(by.xpath('./button')).click();
+    exploreViewDisplay.all(by.css('.category-holder')).get(1).all(by.tagName('button')).get(0).click();
     expect(exploreViewDisplay.isDisplayed()).toBeTruthy();
     // exploreViewDisplay.all(by.css('.sub-category-holder')).get(0).element(by.tagName('button')).click();
     // expect(exploreViewDisplay.all(by.css('.sub-category-holder')).get(0).all(by.css('.monomer-directive')).count()).toBe(10);
