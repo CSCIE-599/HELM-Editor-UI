@@ -25,7 +25,7 @@
           ng-show="library.libraryService.initComplete"
           ng-click="main.toggleSelectedMonomer({}, $event)"
           ui-on-drop="library.monomerDropped($event, $data)">
-          <div class="btn-group btn-group-sm btn-group-justified button-row" role="group" aria-label="Type selection">
+          <div id="libraryTypeButtons" class="btn-group btn-group-sm btn-group-justified button-row" role="group" aria-label="Type selection">
             <div 
               class="btn-group btn-group-sm" 
               role="group"
@@ -41,7 +41,7 @@
 
           <div class="sub-group">
             <!-- allow either searching or exploring -->
-            <div class="btn-group btn-group-sm btn-group-justified button-row" role="group" aria-label="View selection">
+            <div class="btn-group btn-group-sm btn-group-justified button-row view-selector" role="group" aria-label="View selection">
               <div class="btn-group btn-group-sm" role="group">
                 <button 
                   class="btn btn-secondary btn-selector-view"
@@ -60,7 +60,7 @@
               </div>
             </div>
             <div class="sub-group">
-              <div ng-show="library.searchViewVisible" style="height: 100%">
+              <div ng-show="library.searchViewVisible" id="searchViewDisplay" style="height: 100%">
                 <div class="input-row">
                   <label class="search-label">Search: </label>
                   <input class="search-input" type="text" ng-model="library.search">
@@ -73,7 +73,7 @@
                   </div>
                 </div>
               </div>
-              <div ng-show="library.exploreViewVisible" class="monomer-view">
+              <div ng-show="library.exploreViewVisible" id="exploreViewDisplay" class="monomer-view">
                 <!-- display each category under this that exists -->
                 <div 
                   class="category-holder" 
