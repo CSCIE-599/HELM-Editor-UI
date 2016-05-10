@@ -81,7 +81,9 @@ describe('HELM editor', function () {
     expect(element(by.id('helmNotationSpan')).getText()).toContain('RNA1{R(A)P}$$$$');
 
     // do it all again (dA this time)
-    var monomerdA = searchViewDisplay.all(by.css('.monomer-directive')).get(1).element(by.tagName('span'));
+    searchInput.clear();
+    searchInput.sendKeys('dA');
+    var monomerdA = searchViewDisplay.all(by.css('.monomer-directive')).get(0).element(by.tagName('span'));
     expect(monomerdA.getText()).toBe('dA');
     expect(monomerdA.getAttribute('class')).not.toContain('monomer-selected');
     monomerdA.click();
