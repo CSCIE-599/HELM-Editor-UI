@@ -25,7 +25,7 @@
           ng-show="library.libraryService.initComplete"
           ng-click="main.toggleSelectedMonomer({}, $event)"
           ui-on-drop="library.monomerDropped($event, $data)">
-          <div class="btn-group btn-group-sm btn-group-justified button-row" role="group" aria-label="Type selection">
+          <div id="libraryTypeButtons" class="btn-group btn-group-sm btn-group-justified button-row" role="group" aria-label="Type selection">
             <div 
               class="btn-group btn-group-sm" 
               role="group"
@@ -41,7 +41,7 @@
 
           <div class="sub-group">
             <!-- allow either searching or exploring -->
-            <div class="btn-group btn-group-sm btn-group-justified button-row" role="group" aria-label="View selection">
+            <div class="btn-group btn-group-sm btn-group-justified button-row view-selector" role="group" aria-label="View selection">
               <div class="btn-group btn-group-sm" role="group">
                 <button 
                   class="btn btn-secondary btn-selector-view"
@@ -60,7 +60,7 @@
               </div>
             </div>
             <div class="sub-group">
-              <div ng-show="library.searchViewVisible" style="height: 100%">
+              <div ng-show="library.searchViewVisible" id="searchViewDisplay" style="height: 100%">
                 <div class="input-row">
                   <label class="search-label">Search: </label>
                   <input class="search-input" type="text" ng-model="library.search">
@@ -73,7 +73,7 @@
                   </div>
                 </div>
               </div>
-              <div ng-show="library.exploreViewVisible" class="monomer-view">
+              <div ng-show="library.exploreViewVisible" id="exploreViewDisplay" class="monomer-view">
                 <!-- display each category under this that exists -->
                 <div 
                   class="category-holder" 
@@ -167,7 +167,7 @@
               </span>
             </p>
           <div ng-show='helm'>
-            <p><span>{{main.getHelm()}}</span></p>
+            <p><span id='helmNotationSpan'>{{main.getHelm()}}</span></p>
           </div>
           <div ng-show='moleculeprops'>
             <table class='molecule-table'>
@@ -183,7 +183,12 @@
                 <td>{{main.molecularweight}}</td>
                 <td>{{main.molecularformula}}</td>
                 <td>{{main.extcoefficient}}</td>
-                <td><a ng-href="" ng-click='showHelmImage()'>{{main.helmImageLink}}</a></td>
+                <td>
+                  <button 
+                    class="btn"
+                    ng-click="showHelmImage()"
+                    ng-show="main.helmImageLink === 'Show'">{{main.helmImageLink}}</button>
+                </td>
               </tr>
             </table>
           </div>
@@ -201,6 +206,7 @@
     <div>
       <p>New | <!--TODO: Load file functionality--><a>Load Files</a></p>
     </div>
+    <!--
     <div>
       <i>
         Example HELM Sequences:<br>
@@ -215,9 +221,13 @@
         Cyclic Peptide:<br>
         PEPTIDE1{A.R.C.A.A.K.T.C.D.A}$PEPTIDE1,PEPTIDE1,8:R3-3:R3$$$<br>
         PEPTIDE1{R.Y.F.L.W.V.F.P.L}$PEPTIDE1,PEPTIDE1,9:R2-1:R1$$$<br>
-        PEPTIDE1{T.R.L}|PEPTIDE2{R.Y.R}$PEPTIDE1,PEPTIDE1,3:R2-1:R1|PEPTIDE2,PEPTIDE2,3:R2-1:R1$$$<br><br>
+        PEPTIDE1{T.R.L}|PEPTIDE2{R.Y.R}$PEPTIDE1,PEPTIDE1,3:R2-1:R1|PEPTIDE2,PEPTIDE2,3:R2-1:R1$$$
+        <br><br>
+        Sequence with multiple cycles:<br>
+        PEPTIDE1{A.C.A.C.A.C.A.C.A}$PEPTIDE1,PEPTIDE1,1:R2-4:R2|PEPTIDE1,PEPTIDE1,6:R2-9:R2$$$
       </i>
     </div>
+    -->
     <form>
       <table>
         <tr>
@@ -237,9 +247,9 @@
         <tr>
           <td align='right' colspan='2'>
             <label>Reset Canvas <input type='checkbox' ng-model='main.shouldReset' ng-disabled='true'></label>
-            <button class='btn' ng-click='main.processInput(polymerType, inputSequence)'>Load</button>
-            <button class='btn' ng-click='main.clear()'>Clear</button>
-            <button class='btn' ng-click='main.toggleModal()'>Cancel</button>
+            <button class='btn' id='modalLoadButton' ng-click='main.processInput(polymerType, inputSequence)'>Load</button>
+            <button class='btn' id='modalClearButton' ng-click='main.clear()'>Clear</button>
+            <button class='btn' id='modalCancelButton' ng-click='main.toggleModal()'>Cancel</button>
           </td>
         </tr>
       </table>
