@@ -589,3 +589,7 @@ caption {
 .node-cover {
   cursor: pointer;
 }
+
+.ng-modal-dialog-content i {
+  overflow-wrap: break-word;
+}

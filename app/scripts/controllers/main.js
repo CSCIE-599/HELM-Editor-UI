@@ -68,6 +68,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
         self.helm = helmNotation;
         HELMNotationService.setHelm(helmNotation);
         CanvasDisplayService.loadHelmTranslationData(HelmConversionService.convertHelmNotationToSequence(helmNotation));
+        self.result = HelmConversionService.error;
         self.getCanonicalHelmNotation(self.helm);
       };
       var errorCallback = function(response) {
@@ -96,9 +97,11 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 
       var successCallback = function (valid) {
         if (valid) {
+          self.result = '';
           self.helm = inputSequence;
           HELMNotationService.setHelm(inputSequence);
           CanvasDisplayService.loadHelmTranslationData(HelmConversionService.convertHelmNotationToSequence(inputSequence));
+          self.result = HelmConversionService.error;
           self.getCanonicalHelmNotation(self.helm);
         }
         else {
@@ -569,9 +572,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 
         // if node is part of a CHEM sequence, just delete the chem sequence
         if (currentNode.data.seqType === 'CHEM') {
-          // nodeType for chem nodes is actually a sequence name like "CHEM1"
-          // and seqName is "undefined" for chem nodes (TODO: check why / fix?)
-          HELMNotationService.removeSequence(currentNode.data.nodeType);
+          HELMNotationService.removeSequence(currentNode.data.seqName);
 
           var updatedHelm = HELMNotationService.getHelm();
           CanvasDisplayService.resetCanvas();
