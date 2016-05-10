@@ -133,7 +133,6 @@ describe('monomer library', function () {
     var monomerLibraryHolder = element(by.css('.library-column'));
     var searchInput = monomerLibraryHolder.element(by.css('.search-input'));
 
-    // make sure the display shows up for RNA
     var searchViewDisplay = element(by.id('searchViewDisplay'));
     searchInput.sendKeys('as');
     expect(searchViewDisplay.all(by.css('.monomer-directive')).count()).toBe(1);
@@ -154,7 +153,6 @@ describe('monomer library', function () {
     var monomerLibraryHolder = element(by.css('.library-column'));
     var searchInput = monomerLibraryHolder.element(by.css('.search-input'));
 
-    // make sure the display shows up for RNA
     var searchViewDisplay = element(by.id('searchViewDisplay'));
     searchInput.sendKeys('as');
     expect(searchViewDisplay.all(by.css('.monomer-directive')).get(0).element(by.tagName('span')).getText()).toBe('nasP');
@@ -177,7 +175,6 @@ describe('monomer library', function () {
     var monomerLibraryHolder = element(by.css('.library-column'));
     var searchInput = monomerLibraryHolder.element(by.css('.search-input'));
 
-    // make sure the display shows up for RNA
     var searchViewDisplay = element(by.id('searchViewDisplay'));
     searchInput.sendKeys('a');
     expect(searchViewDisplay.all(by.css('.monomer-directive')).get(0).element(by.tagName('span')).getText()).toBe('A');
