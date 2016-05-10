@@ -38,11 +38,12 @@
       </text>
 
       <!-- annotation node and text inside it-->
-       <rect width="15" height="15" fill = "yellow"  
-       ng-attr-x="{{node.x() - 25}}"
-       ng-attr-y="{{node.lowery() - 20}}"
-       ng-attr-visibility="{{node.annotationVisible()}}"
-      />
+      <rect width="15" height="15" fill = "yellow"  
+        ng-attr-x="{{node.x() - 25}}"
+        ng-attr-y="{{node.lowery() - 20}}"
+        ng-attr-visibility="{{node.annotationVisible()}}">
+      </rect>
+      
       <text
         ng-attr-x="{{node.x() - 22}}" 
         ng-attr-y="{{node.lowery() - 10}}"
