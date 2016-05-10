@@ -572,9 +572,7 @@ app.controller('MainCtrl', ['$scope', 'webService', 'HelmConversionService', 'Ca
 
         // if node is part of a CHEM sequence, just delete the chem sequence
         if (currentNode.data.seqType === 'CHEM') {
-          // nodeType for chem nodes is actually a sequence name like "CHEM1"
-          // and seqName is "undefined" for chem nodes (TODO: check why / fix?)
-          HELMNotationService.removeSequence(currentNode.data.nodeType);
+          HELMNotationService.removeSequence(currentNode.data.seqName);
 
           var updatedHelm = HELMNotationService.getHelm();
           CanvasDisplayService.resetCanvas();
