@@ -16,6 +16,7 @@
     "inject": false,
     "browser": false,
     "by": false,
-    "element": false
+    "element": false,
+    "protractor": false
   }
 }
